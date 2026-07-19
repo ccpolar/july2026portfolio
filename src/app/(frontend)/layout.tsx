@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Archivo } from 'next/font/google'
 import React from 'react'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { getHomepage, getTheme } from '@/lib/data'
@@ -47,6 +48,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           Skip to the work
         </a>
         {children}
+        <SpeedInsights />
       </body>
     </html>
   )
