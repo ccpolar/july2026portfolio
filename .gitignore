@@ -1,0 +1,12 @@
+node_modules
+.next
+.env
+*.db
+*.db-journal
+/media
+.DS_Store
+next-env.d.ts
+*.tsbuildinfo
+.shots
+.impeccable/hook.cache.json
+backups

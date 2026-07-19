@@ -1,0 +1,40 @@
+{
+  "name": "cam-portfolio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "seed": "payload run src/seed/index.ts",
+    "migrate:export": "payload run src/migrate/export.ts",
+    "migrate:import": "payload run src/migrate/import.ts",
+    "generate:types": "payload generate:types",
+    "payload": "payload"
+  },
+  "dependencies": {
+    "@payloadcms/db-postgres": "3.86.0",
+    "@payloadcms/db-sqlite": "3.86.0",
+    "@payloadcms/live-preview-react": "^3.86.0",
+    "@payloadcms/next": "3.86.0",
+    "@payloadcms/richtext-lexical": "3.86.0",
+    "@payloadcms/storage-vercel-blob": "^3.86.0",
+    "graphql": "^16.9.0",
+    "next": "16.2.10",
+    "payload": "3.86.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "sharp": "0.35.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^19.0.2",
+    "@types/react-dom": "^19.0.2",
+    "playwright": "^1.61.1",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

@@ -1,0 +1,59 @@
+/* The page nobody plans for. It gets the same type, the same spacing and the
+   same care as the front door — a visitor who lands here by accident should
+   have no way of telling this was the unplanned one. On a portfolio arguing
+   that the details are looked after, this page is the argument. */
+.wrap {
+  padding-block: clamp(4rem, 12vw, 9rem) var(--section);
+  min-height: 64vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  margin-bottom: clamp(var(--space-lg), 5vw, var(--space-2xl));
+}
+
+/* Not the huge "404" every error page shouts. The number is filing
+   information, so it is set like filing information. */
+.code {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.rule {
+  width: 1.5rem;
+  height: 1px;
+  background: var(--line-strong);
+  flex: none;
+}
+
+.title {
+  font-size: var(--text-display);
+  font-weight: 620;
+  font-stretch: 88%;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  max-width: 15ch;
+}
+
+.body {
+  font-size: var(--text-lead);
+  color: var(--muted);
+  max-width: 46ch;
+  margin-top: clamp(var(--space-lg), 4vw, var(--space-xl));
+  line-height: 1.55;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: clamp(var(--space-lg), 3vw, var(--space-xl));
+}

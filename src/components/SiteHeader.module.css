@@ -1,0 +1,85 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  /* view-transition-name is set inline in SiteHeader.tsx, not here: CSS Modules
+     rewrites custom-idents, so a name declared in this file would arrive as
+     `SiteHeader-module__hash__site-header` and the rules in globals.css that
+     target it would silently never match. */
+  background: color-mix(in oklch, var(--bg) 88%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--dur) var(--ease-out-quart);
+}
+
+/* The rule only appears once the page has moved — at rest the header is
+   simply part of the page, not a bar sitting on top of it. */
+.header[data-scrolled='true'] {
+  border-bottom-color: var(--line);
+}
+
+.inner {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-block: var(--space-md);
+}
+
+.wordmark {
+  font-size: var(--text-body);
+  font-weight: 700;
+  font-stretch: 88%;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(var(--space-sm), 2.5vw, var(--space-lg));
+}
+
+.link {
+  font-size: var(--text-sm);
+  color: var(--muted);
+  text-decoration: none;
+  padding-block: var(--space-3xs);
+  transition: color var(--dur-fast) var(--ease-out-quart);
+}
+
+.link:hover {
+  color: var(--ink);
+}
+
+.mail {
+  font-size: var(--text-sm);
+  font-weight: 550;
+  color: var(--ink);
+  text-decoration: none;
+  position: relative;
+}
+
+.mail::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: var(--brand);
+  transform: scaleX(1);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease-out-expo);
+}
+
+.mail:hover::after {
+  transform: scaleX(0);
+  transform-origin: right;
+}
+
+@media (max-width: 34rem) {
+  .navOnly {
+    display: none;
+  }
+}

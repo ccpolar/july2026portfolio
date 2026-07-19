@@ -1,0 +1,244 @@
+/* The page ends on the brand colour. Everything above is white and quiet, so
+   the one drenched surface on the site is the moment that asks for the reply.
+   This is where the accent budget gets spent. */
+.section {
+  background: var(--brand);
+  color: var(--on-brand);
+  padding-block: var(--section);
+}
+
+.grid {
+  display: grid;
+  gap: clamp(var(--space-xl), 5vw, var(--space-3xl));
+}
+
+.heading {
+  font-size: var(--text-h2);
+  font-stretch: 90%;
+  color: var(--on-brand);
+  max-width: 16ch;
+}
+
+.blurb {
+  /* A transparency of the text colour, never a grey — grey on a saturated
+     fill reads as washed out. */
+  color: color-mix(in oklch, var(--on-brand) 72%, transparent);
+  font-size: var(--text-lead);
+  max-width: 44ch;
+  margin-top: var(--space-md);
+  line-height: 1.55;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: clamp(var(--space-lg), 3vw, var(--space-xl));
+}
+
+.primary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  background: var(--on-brand);
+  color: var(--brand);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+  padding: 0.875rem 1.5rem;
+  min-height: 2.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--on-brand);
+  transition:
+    background-color var(--dur) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.primary:hover {
+  background: color-mix(in oklch, var(--on-brand) 88%, var(--brand));
+}
+
+.primary:active,
+.secondary:active,
+.submit:active:not(:disabled) {
+  transform: scale(0.985);
+  transition-duration: 60ms;
+}
+
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  background: transparent;
+  color: var(--on-brand);
+  font-size: var(--text-sm);
+  font-weight: 550;
+  text-decoration: none;
+  padding: 0.875rem 1.5rem;
+  min-height: 2.75rem;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklch, var(--on-brand) 42%, transparent);
+  transition:
+    border-color var(--dur) var(--ease-out-quart),
+    background-color var(--dur) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.secondary:hover {
+  border-color: var(--on-brand);
+  background: color-mix(in oklch, var(--on-brand) 10%, transparent);
+}
+
+.arrow {
+  transition: transform var(--dur) var(--ease-out-expo);
+}
+
+.primary:hover .arrow,
+.secondary:hover .arrow {
+  transform: translateX(3px);
+}
+
+.aside {
+  display: grid;
+  gap: var(--space-lg);
+  align-content: start;
+}
+
+.asideTitle {
+  font-size: var(--text-body);
+  font-weight: 600;
+  color: var(--on-brand);
+}
+
+.asideBlurb {
+  color: color-mix(in oklch, var(--on-brand) 66%, transparent);
+  font-size: var(--text-sm);
+  max-width: 40ch;
+  margin-top: var(--space-2xs);
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  margin-top: var(--space-md);
+}
+
+.input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  background: color-mix(in oklch, var(--on-brand) 8%, transparent);
+  border: 1px solid color-mix(in oklch, var(--on-brand) 34%, transparent);
+  border-radius: var(--radius);
+  color: var(--on-brand);
+  font-size: var(--text-sm);
+  padding: 0.75rem 0.875rem;
+  min-height: 2.75rem;
+  transition: border-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.input::placeholder {
+  /* Placeholders carry the same contrast duty as body text. */
+  color: color-mix(in oklch, var(--on-brand) 68%, transparent);
+}
+
+.input:hover {
+  border-color: color-mix(in oklch, var(--on-brand) 58%, transparent);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--on-brand);
+  outline-offset: 2px;
+  border-color: transparent;
+}
+
+.submit {
+  flex: none;
+  background: color-mix(in oklch, var(--on-brand) 18%, transparent);
+  border: 1px solid color-mix(in oklch, var(--on-brand) 34%, transparent);
+  border-radius: var(--radius);
+  color: var(--on-brand);
+  font-size: var(--text-sm);
+  font-weight: 550;
+  padding: 0.75rem 1.125rem;
+  min-height: 2.75rem;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease-out-quart),
+    border-color var(--dur) var(--ease-out-quart),
+    opacity var(--dur) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.submit:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--on-brand) 30%, transparent);
+  border-color: var(--on-brand);
+}
+
+.submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* While the address is in flight the button breathes. It is the only thing on
+   the page that repeats, and it stops the moment there is an answer — a
+   pending state that stayed still would read as a dropped click. */
+.submit[data-pending='true'] {
+  animation: submit-pulse 1.4s var(--ease-out-quart) infinite;
+}
+
+@keyframes submit-pulse {
+  50% {
+    opacity: 0.72;
+  }
+}
+
+.status {
+  font-size: var(--text-sm);
+  margin-top: var(--space-2xs);
+  flex-basis: 100%;
+  /* The resting state is visible: if this animation never runs, the answer is
+     still on screen. */
+  animation: status-in 280ms var(--ease-out-expo) backwards;
+}
+
+@keyframes status-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+.statusOk {
+  color: var(--on-brand);
+}
+
+.statusErr {
+  color: var(--on-brand);
+  font-weight: 550;
+}
+
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  margin-top: var(--space-2xs);
+}
+
+.social {
+  font-size: var(--text-sm);
+  color: color-mix(in oklch, var(--on-brand) 72%, transparent);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out-quart);
+}
+
+.social:hover {
+  color: var(--on-brand);
+}
+
+@media (min-width: 60rem) {
+  .grid {
+    grid-template-columns: 6fr 5fr;
+    align-items: start;
+  }
+}

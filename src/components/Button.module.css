@@ -1,0 +1,53 @@
+.base {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--text-sm);
+  font-weight: 550;
+  text-decoration: none;
+  border-radius: var(--radius);
+  padding: 0.875rem 1.5rem;
+  min-height: 2.75rem;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease-out-quart),
+    border-color var(--dur) var(--ease-out-quart),
+    color var(--dur) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+/* Press acknowledgement. Kept under 100ms and very small — at this scale the
+   eye reads it as the surface taking the press, not as an animation. */
+.base:active {
+  transform: scale(0.985);
+  transition-duration: 60ms;
+}
+
+.primary {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.primary:hover {
+  background: var(--brand-hover);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+
+.secondary:hover {
+  border-color: var(--ink);
+  background: var(--brand-wash);
+}
+
+.arrow {
+  transition: transform var(--dur) var(--ease-out-expo);
+}
+
+.base:hover .arrow {
+  transform: translateX(3px);
+}

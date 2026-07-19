@@ -1,0 +1,190 @@
+.header {
+  padding-block: clamp(3rem, 7vw, 5rem) clamp(2rem, 4vw, 3rem);
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  text-decoration: none;
+  margin-bottom: var(--space-xl);
+  transition: color var(--dur-fast) var(--ease-out-quart);
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.backArrow {
+  transition: transform var(--dur) var(--ease-out-expo);
+}
+
+.back:hover .backArrow {
+  transform: translateX(-3px);
+}
+
+.title {
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
+  font-weight: 620;
+  font-stretch: 88%;
+  letter-spacing: -0.035em;
+  max-width: 20ch;
+}
+
+.summary {
+  font-size: var(--text-lead);
+  color: var(--muted);
+  max-width: 54ch;
+  margin-top: var(--space-md);
+  line-height: 1.55;
+}
+
+.facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+  margin-top: clamp(var(--space-lg), 3vw, var(--space-xl));
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--line);
+}
+
+.fact {
+  display: grid;
+  gap: 2px;
+}
+
+.factLabel {
+  font-size: var(--text-label);
+  color: var(--muted);
+}
+
+.factValue {
+  font-size: var(--text-sm);
+  font-weight: 550;
+}
+
+.cover {
+  margin-block: clamp(var(--space-lg), 4vw, var(--space-2xl));
+}
+
+.frame {
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface);
+  aspect-ratio: 16 / 9;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.body {
+  padding-bottom: var(--section);
+}
+
+/* The body's own bottom padding sets the gap above the gallery; this adds the
+   matching gap below it, before the next-project block. */
+.gallerySection {
+  padding-bottom: var(--section);
+}
+
+.prose {
+  max-width: 68ch;
+  font-size: var(--text-body);
+  line-height: 1.7;
+}
+
+.prose > * + * {
+  margin-top: var(--space-md);
+}
+
+.prose h2 {
+  font-size: var(--text-h3);
+  margin-top: var(--space-xl);
+}
+
+.prose a {
+  color: var(--brand);
+  text-underline-offset: 3px;
+}
+
+.empty {
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+.empty a {
+  color: var(--brand);
+  font-weight: 550;
+  text-underline-offset: 3px;
+}
+
+.next {
+  border-top: 1px solid var(--line);
+  padding-block: var(--space-2xl);
+}
+
+/* The last thing on the page is the next piece of work, not a text link to it.
+   Showing the photograph is both the honest answer to "what's next" and the
+   only argument the page has left to make. */
+.nextLink {
+  display: flex;
+  align-items: center;
+  gap: clamp(var(--space-md), 3vw, var(--space-xl));
+  text-decoration: none;
+  color: inherit;
+}
+
+.nextFrame {
+  flex: none;
+  width: clamp(9rem, 26vw, 22rem);
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.nextImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out-expo);
+}
+
+.nextLink:hover .nextImage,
+.nextLink:focus-visible .nextImage {
+  transform: scale(1.04);
+}
+
+.nextText {
+  display: grid;
+  gap: var(--space-3xs);
+}
+
+.nextLabel {
+  font-size: var(--text-label);
+  color: var(--muted);
+}
+
+.nextTitle {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2xs);
+  font-size: var(--text-h3);
+  font-weight: 600;
+  font-stretch: 94%;
+  letter-spacing: -0.02em;
+}
+
+.nextArrow {
+  transition: transform var(--dur) var(--ease-out-expo);
+}
+
+.nextLink:hover .nextArrow,
+.nextLink:focus-visible .nextArrow {
+  transform: translateX(4px);
+}

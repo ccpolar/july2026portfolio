@@ -1,0 +1,48 @@
+/* An editorial stack, not a carousel. Every image is present and large; scroll
+   is the only interaction. Full images stand alone across the width; two halves
+   in a row share it, giving the sequence a rhythm without any chrome. */
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(var(--space-xl), 5vw, var(--space-2xl)) var(--space-md);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin: 0;
+  flex: 1 1 100%;
+}
+
+/* A half grows to fill its row when it lands alone, so a lone half reads as a
+   full rather than leaving an awkward gap; two halves settle at 50% each. */
+.half {
+  flex: 1 1 calc(50% - var(--space-md) / 2);
+}
+
+.frame {
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.caption {
+  font-size: var(--text-label);
+  color: var(--muted);
+  max-width: 60ch;
+}
+
+/* Below tablet, halves stop pairing and stack full-width — two narrow columns
+   on a phone would shrink the work past the point of showing it off. */
+@media (max-width: 40rem) {
+  .half {
+    flex-basis: 100%;
+  }
+}

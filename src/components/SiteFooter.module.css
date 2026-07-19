@@ -1,0 +1,21 @@
+.footer {
+  padding-block: var(--space-xl);
+  border-top: 1px solid var(--line);
+  /* Name set inline in SiteFooter.tsx — see the note in SiteHeader.module.css. */
+}
+
+.inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-lg);
+  font-size: var(--text-label);
+  color: var(--muted);
+}
+
+.name {
+  font-weight: 600;
+  color: var(--ink);
+  font-stretch: 90%;
+}

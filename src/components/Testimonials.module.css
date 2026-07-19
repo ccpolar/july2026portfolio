@@ -1,0 +1,62 @@
+.section {
+  padding-block: var(--section);
+}
+
+.list {
+  display: grid;
+  gap: clamp(var(--space-xl), 4vw, var(--space-2xl));
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.item {
+  display: grid;
+  gap: var(--space-md);
+  max-width: 62ch;
+}
+
+/* Quotes are set at reading size, not blown up into pull-quote decoration.
+   A client's actual words are evidence; making them large makes them look
+   like marketing. */
+.quote {
+  font-size: var(--text-lead);
+  line-height: 1.5;
+  letter-spacing: -0.011em;
+  text-wrap: pretty;
+}
+
+.attrib {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.name {
+  color: var(--ink);
+  font-weight: 550;
+}
+
+.sep {
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  flex: none;
+}
+
+@media (min-width: 60rem) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(var(--space-2xl), 7vw, 7rem);
+  }
+
+  /* Stagger the second column so the pair reads as two voices rather than a
+     symmetrical two-up card row. */
+  .item:nth-child(even) {
+    transform: translateY(var(--space-2xl));
+  }
+}

@@ -1,0 +1,76 @@
+/* The one tinted band on the page. It marks a change of register — from
+   showing work to explaining how working together goes — without needing a
+   heading treatment to announce it. */
+.section {
+  background: var(--surface);
+  border-block: 1px solid var(--line);
+  padding-block: var(--section);
+}
+
+.grid {
+  display: grid;
+  gap: clamp(var(--space-xl), 5vw, var(--space-3xl));
+}
+
+.heading {
+  font-size: var(--text-h2);
+  font-stretch: 92%;
+}
+
+.body {
+  color: var(--muted);
+  font-size: var(--text-lead);
+  max-width: 46ch;
+  margin-top: var(--space-md);
+  line-height: 1.55;
+}
+
+.points {
+  display: grid;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* A ruled list, not cards. Each point is separated by a hairline and space —
+   the same information a card grid would carry, without the boxes. */
+.point {
+  display: grid;
+  gap: var(--space-2xs);
+  padding-block: var(--space-lg);
+  border-top: 1px solid var(--line);
+}
+
+.point:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.pointTitle {
+  font-size: var(--text-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.pointDetail {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  max-width: 52ch;
+}
+
+@media (min-width: 60rem) {
+  .grid {
+    grid-template-columns: 5fr 6fr;
+    align-items: start;
+  }
+
+  .points {
+    padding-top: var(--space-3xs);
+  }
+
+  .point {
+    grid-template-columns: minmax(0, 14rem) 1fr;
+    gap: var(--space-lg);
+    align-items: baseline;
+  }
+}

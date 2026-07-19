@@ -1,0 +1,116 @@
+.hero {
+  padding-block: clamp(3.5rem, 9vw, 7rem) var(--section);
+}
+
+/* Each element animates from its own offset, and the resting state below is
+   the visible one — if the animation never runs (reduced motion, a headless
+   render, a background tab) the hero still reads correctly. */
+.marker,
+.title,
+.aside {
+  animation: rise var(--dur-slow) var(--ease-out-expo) backwards;
+}
+
+.marker {
+  animation-delay: 40ms;
+}
+.title {
+  animation-delay: 120ms;
+}
+.aside {
+  animation-delay: 240ms;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+}
+
+.marker {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-size: var(--text-sm);
+  color: var(--muted);
+  margin-bottom: clamp(var(--space-lg), 5vw, var(--space-2xl));
+}
+
+.dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--signal);
+  flex: none;
+  position: relative;
+}
+
+/* The one bright note on the page. It pulses because it is a live claim. */
+.dot::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--signal);
+  animation: ping 2.8s var(--ease-out-quart) infinite;
+}
+
+@keyframes ping {
+  0% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+.title {
+  font-size: var(--text-display);
+  font-weight: 620;
+  font-stretch: 88%;
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  max-width: 18ch;
+}
+
+.aside {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+  margin-top: clamp(var(--space-xl), 6vw, var(--space-3xl));
+}
+
+.intro {
+  font-size: var(--text-lead);
+  color: var(--muted);
+  max-width: 52ch;
+  line-height: 1.55;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+/* Below the headline the fold reads as one wide band: the sentence anchored
+   left, the call to action pushed out to the right margin so it lines up with
+   the nav above it. Without that the button floats in the middle of the page
+   with nothing to sit against. */
+@media (min-width: 60rem) {
+  .aside {
+    grid-template-columns: minmax(0, 34rem) auto;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-2xl);
+  }
+
+  .actions {
+    justify-content: flex-end;
+  }
+}
