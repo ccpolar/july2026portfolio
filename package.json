@@ -10,6 +10,7 @@
     "seed": "payload run src/seed/index.ts",
     "migrate:export": "payload run src/migrate/export.ts",
     "migrate:import": "payload run src/migrate/import.ts",
+    "migrate:sync-schema": "payload run src/migrate/sync-schema.ts",
     "generate:types": "payload generate:types",
     "payload": "payload"
   },

@@ -54,14 +54,23 @@ Vercel → project → **Settings → Environment Variables**. Add:
 | `PAYLOAD_SECRET` | a long random string — generate: `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"` |
 | `NEXT_PUBLIC_SERVER_URL` | your site URL, e.g. `https://your-site.vercel.app` (update after the first deploy tells you the real domain) |
 
-`BLOB_READ_WRITE_TOKEN` is already there from Step 4. Then **Deploy**. Payload
-creates all its tables on first boot.
+`BLOB_READ_WRITE_TOKEN` is already there from Step 4. Then **Deploy**.
 
-## 6. Migrate your content
+**The first deploy will fail**, with an error like `relation "projects" does not
+exist`. This is expected — Payload only auto-creates its database tables when
+`NODE_ENV` isn't `production`, and Vercel always builds with `NODE_ENV=production`,
+so the schema never gets created there. Step 6 fixes this (it creates the schema
+as a side effect of running from your own machine, where `NODE_ENV` isn't set).
+Once Step 6 is done, redeploy from **Deployments → ⋯ → Redeploy** and it will
+succeed.
+
+## 6. Migrate your content (this also creates the database schema)
 
 This moves your projects, testimonials, theme, and images into the live database
-and Blob store. Run it **once, from your machine**, pointed at production. In a
-terminal in the project folder (PowerShell shown; use real values):
+and Blob store — and, because it runs on your machine rather than on Vercel, it's
+also what actually creates the tables in Postgres. Run it **once, from your
+machine**, pointed at production. In a terminal in the project folder
+(PowerShell shown; use real values):
 
 ```powershell
 $env:DATABASE_URI="postgres://...your Neon string..."
@@ -94,10 +103,20 @@ between environments.)
 
 ## Notes
 
-- **Schema auto-syncs** (`push: true` in the Postgres config). Deploying a change
-  that alters a collection or the theme will adjust the live database on boot.
-  Convenient for a solo site; if you later want stricter control, switch to
-  Payload's migration workflow and set `push: false`.
+- **Schema sync only runs outside production** (`push: true` in the Postgres
+  config, but Payload disables `push` whenever `NODE_ENV=production` — which
+  Vercel always sets). `migrate:import` created the schema as a side effect of
+  running from your own machine. If you later add or change a field on a
+  collection/global, Vercel's build will **not** update the live table — sync
+  it yourself first, from your machine, pointed at production:
+  ```powershell
+  $env:DATABASE_URI="postgres://...prod..."
+  $env:PAYLOAD_SECRET="...same secret..."
+  npm run migrate:sync-schema
+  ```
+  Then redeploy. This only alters the schema, not your data. For stricter
+  control later (real up/down migration files, reviewed before running),
+  switch to Payload's formal migration workflow.
 - **Custom domain**: add it under Vercel → Settings → Domains, then update
   `NEXT_PUBLIC_SERVER_URL` to match and redeploy.
 - **Backups**: your snapshot lives in `backups/`. Re-run `npm run migrate:export`
