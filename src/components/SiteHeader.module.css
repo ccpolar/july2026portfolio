@@ -20,7 +20,7 @@
 
 .inner {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
   padding-block: var(--space-md);
@@ -32,6 +32,16 @@
   font-stretch: 88%;
   letter-spacing: -0.02em;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Height comes inline from the admin's logo-height setting. */
+.logo {
+  display: block;
+  width: auto;
+  max-width: 14rem;
+  object-fit: contain;
 }
 
 .nav {

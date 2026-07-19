@@ -68,10 +68,10 @@ const run = async () => {
   }
 
   if (process.env.MIGRATE_FORCE === '1') {
-    for (const collection of ['projects', 'testimonials', 'media'] as const) {
+    for (const collection of ['projects', 'posts', 'testimonials', 'media'] as const) {
       await payload.delete({ collection, where: { id: { exists: true } } })
     }
-    payload.logger.info('MIGRATE_FORCE: cleared projects, testimonials, media.')
+    payload.logger.info('MIGRATE_FORCE: cleared projects, posts, testimonials, media.')
   }
 
   // 1. Re-upload media, building an old-id -> new-id map.
@@ -116,7 +116,21 @@ const run = async () => {
   }
   payload.logger.info(`Created ${bundle.projects.length} projects.`)
 
-  // 3. Recreate testimonials.
+  // 3. Recreate blog posts (older bundles have none).
+  for (const post of bundle.posts ?? []) {
+    const coverId = idOf(post.cover)
+    await payload.create({
+      collection: 'posts',
+      data: {
+        ...strip(post),
+        cover: coverId ? mediaMap.get(coverId) : undefined,
+        body: post.body ? remapUploads(post.body, mediaMap) : undefined,
+      } as RequiredDataFromCollectionSlug<'posts'>,
+    })
+  }
+  payload.logger.info(`Created ${bundle.posts?.length ?? 0} blog posts.`)
+
+  // 4. Recreate testimonials.
   for (const t of bundle.testimonials) {
     await payload.create({
       collection: 'testimonials',
@@ -125,12 +139,20 @@ const run = async () => {
   }
   payload.logger.info(`Created ${bundle.testimonials.length} testimonials.`)
 
-  // 4. Restore globals.
+  // 5. Restore globals. Identity is special-cased for its logo relationship.
   for (const slug of ['homepage', 'contact', 'theme'] as const) {
     const data = bundle.globals?.[slug]
     if (data) await payload.updateGlobal({ slug, data: strip(data) })
   }
-  payload.logger.info('Restored homepage, contact and theme.')
+  const identity = bundle.globals?.identity
+  if (identity) {
+    const logoId = idOf(identity.logo)
+    await payload.updateGlobal({
+      slug: 'identity',
+      data: { ...strip(identity), logo: logoId ? (mediaMap.get(logoId) ?? null) : null },
+    })
+  }
+  payload.logger.info('Restored homepage, contact, theme and identity.')
 
   payload.logger.info('Migration import complete. Create your admin user at /admin.')
   process.exit(0)

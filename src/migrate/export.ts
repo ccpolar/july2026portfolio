@@ -21,21 +21,23 @@ const MEDIA_SRC = path.resolve(process.cwd(), 'media')
 const run = async () => {
   const payload = await getPayload({ config })
 
-  const all = async (collection: 'projects' | 'testimonials' | 'media') => {
+  const all = async (collection: 'projects' | 'posts' | 'testimonials' | 'media') => {
     const { docs } = await payload.find({ collection, depth: 0, limit: 1000, pagination: false })
     return docs
   }
 
-  const [projects, testimonials, media] = await Promise.all([
+  const [projects, posts, testimonials, media] = await Promise.all([
     all('projects'),
+    all('posts'),
     all('testimonials'),
     all('media'),
   ])
 
-  const [homepage, contact, theme] = await Promise.all([
+  const [homepage, contact, theme, identity] = await Promise.all([
     payload.findGlobal({ slug: 'homepage', depth: 0 }),
     payload.findGlobal({ slug: 'contact', depth: 0 }),
     payload.findGlobal({ slug: 'theme', depth: 0 }),
+    payload.findGlobal({ slug: 'identity', depth: 0 }),
   ])
 
   await mkdir(path.join(OUT, 'media'), { recursive: true })
@@ -58,19 +60,21 @@ const run = async () => {
     exportedAt: new Date().toISOString(),
     counts: {
       projects: projects.length,
+      posts: posts.length,
       testimonials: testimonials.length,
       media: media.length,
     },
     media,
     projects,
+    posts,
     testimonials,
-    globals: { homepage, contact, theme },
+    globals: { homepage, contact, theme, identity },
   }
 
   await writeFile(path.join(OUT, 'content.json'), JSON.stringify(bundle, null, 2))
 
   payload.logger.info(
-    `Exported ${projects.length} projects, ${testimonials.length} testimonials, ${media.length} media (${copied} files copied).`,
+    `Exported ${projects.length} projects, ${posts.length} posts, ${testimonials.length} testimonials, ${media.length} media (${copied} files copied).`,
   )
   if (missing.length) {
     payload.logger.warn(`Missing original files (skipped): ${missing.join(', ')}`)

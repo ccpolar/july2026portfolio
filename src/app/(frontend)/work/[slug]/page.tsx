@@ -9,7 +9,7 @@ import { MediaImage } from '@/components/MediaImage'
 import { ProjectGallery } from '@/components/ProjectGallery'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
-import { getContact } from '@/lib/data'
+import { getChrome } from '@/lib/chrome'
 import { projectTransitionName } from '@/lib/viewTransition'
 
 import styles from './page.module.css'
@@ -73,9 +73,9 @@ const Arrow = ({ className, back }: { className?: string; back?: boolean }) => (
 
 export default async function ProjectPage({ params }: Params) {
   const { slug } = await params
-  const [project, contact, siblings] = await Promise.all([
+  const [project, chrome, siblings] = await Promise.all([
     getProject(slug),
-    getContact(),
+    getChrome(),
     getSiblings(),
   ])
 
@@ -95,7 +95,7 @@ export default async function ProjectPage({ params }: Params) {
 
   return (
     <>
-      <SiteHeader email={contact.email} />
+      <SiteHeader {...chrome} />
       <main>
         <div className={`shell ${styles.header}`}>
           <a className={styles.back} href="/#work">
@@ -139,7 +139,7 @@ export default async function ProjectPage({ params }: Params) {
           ) : (
             <p className={styles.empty}>
               The full write-up for this one isn’t published yet — happy to walk you through it
-              directly. <a href={`mailto:${contact.email}`}>Ask me about it</a>.
+              directly. <a href={`mailto:${chrome.email}`}>Ask me about it</a>.
             </p>
           )}
         </div>
@@ -177,7 +177,7 @@ export default async function ProjectPage({ params }: Params) {
           </div>
         ) : null}
       </main>
-      <SiteFooter />
+      <SiteFooter siteName={chrome.siteName} />
     </>
   )
 }

@@ -9,12 +9,14 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Media } from './collections/Media'
+import { Posts } from './collections/Posts'
 import { Projects } from './collections/Projects'
 import { Subscribers } from './collections/Subscribers'
 import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
 import { Contact } from './globals/Contact'
 import { Homepage } from './globals/Homepage'
+import { Identity } from './globals/Identity'
 import { Theme } from './globals/Theme'
 
 const filename = fileURLToPath(import.meta.url)
@@ -42,8 +44,8 @@ export default buildConfig({
       titleSuffix: '· Cam',
     },
   },
-  collections: [Projects, Testimonials, Media, Subscribers, Users],
-  globals: [Homepage, Contact, Theme],
+  collections: [Projects, Posts, Testimonials, Media, Subscribers, Users],
+  globals: [Homepage, Contact, Theme, Identity],
   editor: lexicalEditor(),
   db: isPostgres
     ? postgresAdapter({

@@ -5,19 +5,21 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { Testimonials } from '@/components/Testimonials'
 import { WorkSection } from '@/components/WorkSection'
+import { getChrome } from '@/lib/chrome'
 import { getContact, getFeaturedProjects, getHomepage, getTestimonials } from '@/lib/data'
 
 export default async function HomePage() {
-  const [home, contact, projects, testimonials] = await Promise.all([
+  const [home, contact, projects, testimonials, chrome] = await Promise.all([
     getHomepage(),
     getContact(),
     getFeaturedProjects(),
     getTestimonials(),
+    getChrome(),
   ])
 
   return (
     <>
-      <SiteHeader email={contact.email} />
+      <SiteHeader {...chrome} />
       <main>
         <Hero home={home} contact={contact} />
         <WorkSection home={home} projects={projects} />
@@ -25,7 +27,7 @@ export default async function HomePage() {
         <Testimonials testimonials={testimonials} />
         <ContactSection contact={contact} />
       </main>
-      <SiteFooter />
+      <SiteFooter siteName={chrome.siteName} />
     </>
   )
 }

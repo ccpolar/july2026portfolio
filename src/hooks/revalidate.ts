@@ -51,13 +51,34 @@ export const revalidateHomeDelete: CollectionAfterDeleteHook = ({ doc, req }) =>
   return doc
 }
 
+// '/' is included because the header's Blog link appears and disappears with
+// the count of published posts.
+const postPaths = (doc: { slug?: string | null }) => [
+  '/',
+  '/blog',
+  ...(doc?.slug ? [`/blog/${doc.slug}`] : []),
+]
+
+export const revalidatePost: CollectionAfterChangeHook = ({ doc, previousDoc, req }) => {
+  const paths = new Set([...postPaths(doc), ...postPaths(previousDoc ?? {})])
+  flush(req, [...paths])
+  return doc
+}
+
+export const revalidatePostDelete: CollectionAfterDeleteHook = ({ doc, req }) => {
+  flush(req, postPaths(doc))
+  return doc
+}
+
 // Theme and site copy touch every page, so the whole tree goes.
 export const revalidateEverything: GlobalAfterChangeHook = ({ doc, req }) => {
-  flush(req, ['/'])
-  try {
-    revalidatePath('/work/[slug]', 'page')
-  } catch {
-    req.payload.logger.debug('Skipped revalidating project pages (no request scope)')
+  flush(req, ['/', '/blog'])
+  for (const dynamic of ['/work/[slug]', '/blog/[slug]']) {
+    try {
+      revalidatePath(dynamic, 'page')
+    } catch {
+      req.payload.logger.debug(`Skipped revalidating ${dynamic} (no request scope)`)
+    }
   }
   return doc
 }

@@ -1,6 +1,7 @@
 import { ButtonLink } from '@/components/Button'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
+import type { ChromeProps } from '@/lib/chrome'
 
 import styles from './NotFoundView.module.css'
 
@@ -10,9 +11,9 @@ import styles from './NotFoundView.module.css'
  * matching nothing at all. Two files are unavoidable — the app has separate
  * root layouts for the site and the admin — but the page itself is one.
  */
-export const NotFoundView = ({ email }: { email: string }) => (
+export const NotFoundView = ({ chrome }: { chrome: ChromeProps }) => (
   <>
-    <SiteHeader email={email} />
+    <SiteHeader {...chrome} />
     <main className={`shell ${styles.wrap}`}>
       <p className={styles.marker}>
         <span className={styles.code}>404</span>
@@ -34,11 +35,11 @@ export const NotFoundView = ({ email }: { email: string }) => (
         <ButtonLink href="/#work" withArrow>
           See the work
         </ButtonLink>
-        <ButtonLink href={`mailto:${email}?subject=Broken link`} variant="secondary">
+        <ButtonLink href={`mailto:${chrome.email}?subject=Broken link`} variant="secondary">
           Tell me what broke
         </ButtonLink>
       </div>
     </main>
-    <SiteFooter />
+    <SiteFooter siteName={chrome.siteName} />
   </>
 )

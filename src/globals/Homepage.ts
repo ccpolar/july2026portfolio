@@ -108,6 +108,27 @@ export const Homepage: GlobalConfig = {
           ],
         },
         {
+          label: 'Blog page',
+          description: 'The blog index at /blog. Posts themselves live under Content → Blog posts.',
+          fields: [
+            {
+              name: 'blogHeading',
+              type: 'text',
+              required: true,
+              defaultValue: 'Blog',
+              maxLength: 60,
+            },
+            {
+              name: 'blogIntro',
+              type: 'textarea',
+              maxLength: 240,
+              admin: {
+                description: 'Optional. A line under the heading on the blog page.',
+              },
+            },
+          ],
+        },
+        {
           label: 'SEO',
           fields: [
             {

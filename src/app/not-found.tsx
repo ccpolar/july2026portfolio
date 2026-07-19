@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { NotFoundView } from '@/components/NotFoundView'
-import { getContact } from '@/lib/data'
+import { getChrome } from '@/lib/chrome'
 
 /**
  * The 404 for URLs that match no route at all.
@@ -17,6 +17,6 @@ export const metadata: Metadata = {
 }
 
 export default async function RootNotFound() {
-  const contact = await getContact()
-  return <NotFoundView email={contact.email} />
+  const chrome = await getChrome()
+  return <NotFoundView chrome={chrome} />
 }

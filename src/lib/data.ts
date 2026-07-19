@@ -42,3 +42,29 @@ export const getTestimonials = cache(async () => {
   })
   return docs
 })
+
+export const getIdentity = cache(async () => {
+  const payload = await client()
+  return payload.findGlobal({ slug: 'identity', depth: 1 })
+})
+
+export const countPublishedPosts = cache(async () => {
+  const payload = await client()
+  const { totalDocs } = await payload.count({
+    collection: 'posts',
+    where: { published: { equals: true } },
+  })
+  return totalDocs
+})
+
+export const getPublishedPosts = cache(async () => {
+  const payload = await client()
+  const { docs } = await payload.find({
+    collection: 'posts',
+    where: { published: { equals: true } },
+    sort: '-publishedAt',
+    depth: 1,
+    limit: 50,
+  })
+  return docs
+})

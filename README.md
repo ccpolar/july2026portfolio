@@ -23,8 +23,10 @@ The seed creates `cam@polarcreativegroup.com` / `changeme-please`. **Change it i
 | --- | --- |
 | **Site → Homepage** | Hero line, intro, availability dot, section headings, the three approach points, SEO title/description |
 | **Site → Contact** | Email (the primary CTA), booking link, newsletter blurb, social links |
-| **Site → Theme** | Brand colour, signal colour, corner radius |
+| **Site → Theme** | Every site colour (background, text, surface, border, brand, signal), corner radius |
+| **Site → Logo & Name** | Site name, plus an optional header logo with a height control |
 | **Content → Projects** | Each homepage row + its own `/work/<slug>` page. `order` sets the sequence; untick `featured` to hide |
+| **Content → Blog posts** | The blog at `/blog`; each post gets its own page. The Blog nav link appears once one post is published |
 | **Content → Testimonials** | Quotes. Untick `published` on all of them and the section disappears rather than showing an empty shell |
 | **Content → Subscribers** | Newsletter sign-ups |
 

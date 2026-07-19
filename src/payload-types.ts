@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     projects: Project;
+    posts: Post;
     testimonials: Testimonial;
     media: Media;
     subscribers: Subscriber;
@@ -80,6 +81,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    posts: PostsSelect<false> | PostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
@@ -97,11 +99,13 @@ export interface Config {
     homepage: Homepage;
     contact: Contact;
     theme: Theme;
+    identity: Identity;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     theme: ThemeSelect<false> | ThemeSelect<true>;
+    identity: IdentitySelect<false> | IdentitySelect<true>;
   };
   locale: null;
   widgets: {
@@ -261,6 +265,53 @@ export interface Media {
   };
 }
 /**
+ * Posts on the blog page. The Blog link only appears in the site header once at least one post is published.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number;
+  title: string;
+  /**
+   * Auto-filled from the title if left blank.
+   */
+  slug?: string | null;
+  /**
+   * Posts are ordered newest first by this date.
+   */
+  publishedAt: string;
+  /**
+   * Untick to keep a draft hidden from the site.
+   */
+  published?: boolean | null;
+  /**
+   * One or two sentences shown on the blog page under the title.
+   */
+  excerpt: string;
+  /**
+   * Optional. Shown on the blog page and at the top of the post.
+   */
+  cover?: (number | null) | Media;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Real words from real clients. If none are published, the homepage simply omits this section — it never shows an empty shell.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -357,6 +408,10 @@ export interface PayloadLockedDocument {
         value: number | Project;
       } | null)
     | ({
+        relationTo: 'posts';
+        value: number | Post;
+      } | null)
+    | ({
         relationTo: 'testimonials';
         value: number | Testimonial;
       } | null)
@@ -442,6 +497,21 @@ export interface ProjectsSelect<T extends boolean = true> {
       };
   featured?: T;
   order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  publishedAt?: T;
+  published?: T;
+  excerpt?: T;
+  cover?: T;
+  body?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -622,6 +692,11 @@ export interface Homepage {
         id?: string | null;
       }[]
     | null;
+  blogHeading: string;
+  /**
+   * Optional. A line under the heading on the blog page.
+   */
+  blogIntro?: string | null;
   metaTitle: string;
   metaDescription: string;
   updatedAt?: string | null;
@@ -703,6 +778,29 @@ export interface Theme {
   createdAt?: string | null;
 }
 /**
+ * The site’s name, and an optional logo to show in the header instead of it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "identity".
+ */
+export interface Identity {
+  id: number;
+  /**
+   * Shown in the header when no logo is uploaded, and in the footer.
+   */
+  siteName: string;
+  /**
+   * Optional. Replaces the name in the header. A wide logo with a transparent background works best — SVG or PNG.
+   */
+  logo?: (number | null) | Media;
+  /**
+   * How tall the logo renders in the header, in pixels.
+   */
+  logoHeight?: number | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -722,6 +820,8 @@ export interface HomepageSelect<T extends boolean = true> {
         detail?: T;
         id?: T;
       };
+  blogHeading?: T;
+  blogIntro?: T;
   metaTitle?: T;
   metaDescription?: T;
   updatedAt?: T;
@@ -767,6 +867,18 @@ export interface ThemeSelect<T extends boolean = true> {
   brandColor?: T;
   signalColor?: T;
   radius?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "identity_select".
+ */
+export interface IdentitySelect<T extends boolean = true> {
+  siteName?: T;
+  logo?: T;
+  logoHeight?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

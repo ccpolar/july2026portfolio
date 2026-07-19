@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { NotFoundView } from '@/components/NotFoundView'
-import { getContact } from '@/lib/data'
+import { getChrome } from '@/lib/chrome'
 
 export const metadata: Metadata = {
   title: 'Nothing at this address — Cam',
@@ -11,6 +11,6 @@ export const metadata: Metadata = {
 // exists). Renders inside the (frontend) layout, so it already has the fonts
 // and the theme.
 export default async function NotFound() {
-  const contact = await getContact()
-  return <NotFoundView email={contact.email} />
+  const chrome = await getChrome()
+  return <NotFoundView chrome={chrome} />
 }

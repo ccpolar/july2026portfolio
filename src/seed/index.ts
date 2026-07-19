@@ -246,6 +246,7 @@ const run = async () => {
             'I design and build, so nothing is lost in a handover. What you get runs on every screen, and every word and image on it is yours to change.',
         },
       ],
+      blogHeading: 'Blog',
       metaTitle: 'Cam — Freelance designer',
       metaDescription:
         'Freelance designer working with founders and small studios on brand identity and web. Considered work, shown early, built to last.',
@@ -280,6 +281,11 @@ const run = async () => {
       signalColor: '#bfc824', // availability-dot green
       radius: 'sharp',
     },
+  })
+
+  await payload.updateGlobal({
+    slug: 'identity',
+    data: { siteName: 'Cam' },
   })
 
   payload.logger.info('Seed complete.')

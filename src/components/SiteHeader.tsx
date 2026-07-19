@@ -6,9 +6,12 @@ import styles from './SiteHeader.module.css'
 
 type Props = {
   email: string
+  siteName: string
+  logo: { url: string; height: number } | null
+  showBlog: boolean
 }
 
-export const SiteHeader = ({ email }: Props) => {
+export const SiteHeader = ({ email, siteName, logo, showBlog }: Props) => {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -25,16 +28,30 @@ export const SiteHeader = ({ email }: Props) => {
       style={{ viewTransitionName: 'site-header' }}
     >
       <div className={`shell ${styles.inner}`}>
-        <a className={styles.wordmark} href="#top">
-          Cam
+        <a className={styles.wordmark} href="/" aria-label={`${siteName} — home`}>
+          {logo ? (
+            <img
+              className={styles.logo}
+              src={logo.url}
+              alt={siteName}
+              style={{ height: logo.height }}
+            />
+          ) : (
+            siteName
+          )}
         </a>
         <nav className={styles.nav} aria-label="Primary">
-          <a className={`${styles.link} ${styles.navOnly}`} href="#work">
+          <a className={`${styles.link} ${styles.navOnly}`} href="/#work">
             Work
           </a>
-          <a className={`${styles.link} ${styles.navOnly}`} href="#approach">
+          <a className={`${styles.link} ${styles.navOnly}`} href="/#approach">
             Approach
           </a>
+          {showBlog ? (
+            <a className={styles.link} href="/blog">
+              Blog
+            </a>
+          ) : null}
           <a className={styles.mail} href={`mailto:${email}`}>
             Get in touch
           </a>

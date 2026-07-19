@@ -3,6 +3,7 @@ import { Archivo } from 'next/font/google'
 import React from 'react'
 
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
+import { TopoBackground } from '@/components/TopoBackground'
 import { getHomepage, getTheme } from '@/lib/data'
 import { themeToCss } from '@/lib/theme'
 
@@ -42,6 +43,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         />
       </head>
       <body>
+        <TopoBackground />
         <LivePreviewTheme initialData={theme} />
         <a className="skip-link" href="#work">
           Skip to the work
