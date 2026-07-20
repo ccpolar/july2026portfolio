@@ -2,6 +2,7 @@ import type { Contact, Homepage } from '@/payload-types'
 
 import { ButtonLink } from './Button'
 import styles from './Hero.module.css'
+import { OpenContactButton } from './OpenContactButton'
 
 type Props = {
   home: Homepage
@@ -22,9 +23,7 @@ export const Hero = ({ home, contact }: Props) => (
     <div className={styles.aside}>
       <p className={styles.intro}>{home.heroIntro}</p>
       <div className={styles.actions}>
-        <ButtonLink href={`mailto:${contact.email}`} withArrow>
-          Start a project
-        </ButtonLink>
+        <OpenContactButton withArrow>Start a project</OpenContactButton>
         {contact.bookingUrl ? (
           <ButtonLink href={contact.bookingUrl} variant="secondary">
             Book a call

@@ -1,0 +1,79 @@
+/* Same drenched brand surface as the homepage's contact section — reusing it
+   here means ContactForm's on-brand-tuned input/button styles work as-is,
+   and the popup reads as the same "one saturated moment" wherever it opens
+   from, not a generic white modal bolted on top of the page. */
+.dialog {
+  margin: auto;
+  padding: clamp(var(--space-xl), 5vw, var(--space-2xl));
+  border: none;
+  border-radius: var(--radius);
+  width: min(28rem, calc(100vw - 2.5rem));
+  max-height: min(34rem, calc(100vh - 3rem));
+  overflow-y: auto;
+  background: var(--brand);
+  color: var(--on-brand);
+
+  opacity: 0;
+  transform: translateY(0.75rem) scale(0.98);
+  transition:
+    opacity var(--dur) var(--ease-out-quart),
+    transform var(--dur) var(--ease-out-quart),
+    overlay var(--dur) var(--ease-out-quart) allow-discrete,
+    display var(--dur) var(--ease-out-quart) allow-discrete;
+}
+
+.dialog[open] {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  .dialog[open] {
+    opacity: 0;
+    transform: translateY(0.75rem) scale(0.98);
+  }
+}
+
+.dialog::backdrop {
+  background: color-mix(in oklch, var(--ink) 50%, transparent);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease-out-quart) allow-discrete;
+}
+
+.dialog[open]::backdrop {
+  opacity: 1;
+}
+
+@starting-style {
+  .dialog[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+.close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--on-brand);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.close:hover {
+  background: color-mix(in oklch, var(--on-brand) 14%, transparent);
+}
+
+.heading {
+  font-size: var(--text-h3);
+  font-stretch: 92%;
+  max-width: 20ch;
+  padding-right: var(--space-2xl);
+}

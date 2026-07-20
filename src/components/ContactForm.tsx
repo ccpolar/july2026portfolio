@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useId } from 'react'
 
 import { type ContactState, submitContact } from '@/app/(frontend)/actions'
 
@@ -10,6 +10,14 @@ const initial: ContactState = { status: 'idle', message: '' }
 
 export const ContactForm = () => {
   const [state, formAction, pending] = useActionState(submitContact, initial)
+  // Renders twice on the homepage (inline in the contact section, and again
+  // inside the popup) — a fixed id would collide, so every field id is
+  // scoped to this instance.
+  const id = useId()
+  const nameId = `${id}-name`
+  const emailId = `${id}-email`
+  const messageId = `${id}-message`
+  const statusId = `${id}-status`
 
   return (
     <form className={styles.form} action={formAction} noValidate>
@@ -22,12 +30,12 @@ export const ContactForm = () => {
         aria-hidden="true"
       />
 
-      <label className="sr-only" htmlFor="contact-name">
+      <label className="sr-only" htmlFor={nameId}>
         Name
       </label>
       <input
         className={styles.input}
-        id="contact-name"
+        id={nameId}
         name="name"
         type="text"
         autoComplete="name"
@@ -35,27 +43,27 @@ export const ContactForm = () => {
         required
       />
 
-      <label className="sr-only" htmlFor="contact-email">
+      <label className="sr-only" htmlFor={emailId}>
         Email address
       </label>
       <input
         className={styles.input}
-        id="contact-email"
+        id={emailId}
         name="email"
         type="email"
         autoComplete="email"
         placeholder="you@studio.com"
         required
-        aria-describedby={state.message ? 'contact-status' : undefined}
+        aria-describedby={state.message ? statusId : undefined}
         aria-invalid={state.status === 'error'}
       />
 
-      <label className="sr-only" htmlFor="contact-message">
+      <label className="sr-only" htmlFor={messageId}>
         Message
       </label>
       <textarea
         className={styles.textarea}
-        id="contact-message"
+        id={messageId}
         name="message"
         rows={4}
         placeholder="What are you working on?"
@@ -72,7 +80,7 @@ export const ContactForm = () => {
           // React reuses the node and a changed answer appears silently.
           key={state.message}
           className={`${styles.status} ${state.status === 'ok' ? styles.statusOk : styles.statusErr}`}
-          id="contact-status"
+          id={statusId}
           role="status"
           aria-live="polite"
         >

@@ -68,6 +68,10 @@
 }
 
 .mail {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
   font-size: var(--text-sm);
   font-weight: 550;
   color: var(--ink);

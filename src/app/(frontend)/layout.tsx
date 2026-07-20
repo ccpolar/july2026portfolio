@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import { Archivo } from 'next/font/google'
 import React from 'react'
 
+import { ContactModal } from '@/components/ContactModal'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { SiteBackground } from '@/components/SiteBackground'
-import { getHomepage, getTheme } from '@/lib/data'
+import { getContact, getHomepage, getTheme } from '@/lib/data'
 import { themeToCss } from '@/lib/theme'
 
 import './globals.css'
@@ -33,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
-  const theme = await getTheme()
+  const [theme, contact] = await Promise.all([getTheme(), getContact()])
 
   return (
     <html lang="en" className={archivo.variable}>
@@ -52,6 +53,10 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           </a>
           {children}
         </div>
+        {/* One dialog for the whole site — the header's "Get in touch" and
+            the hero's "Start a project" both open it by id rather than each
+            holding their own copy. */}
+        <ContactModal heading={contact.heading} />
       </body>
     </html>
   )

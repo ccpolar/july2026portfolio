@@ -2,16 +2,17 @@
 
 import { useEffect, useState } from 'react'
 
+import { openContactModal } from '@/lib/contactModal'
+
 import styles from './SiteHeader.module.css'
 
 type Props = {
-  email: string
   siteName: string
   logo: { url: string; height: number } | null
   showBlog: boolean
 }
 
-export const SiteHeader = ({ email, siteName, logo, showBlog }: Props) => {
+export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -52,9 +53,9 @@ export const SiteHeader = ({ email, siteName, logo, showBlog }: Props) => {
               Blog
             </a>
           ) : null}
-          <a className={styles.mail} href={`mailto:${email}`}>
+          <button type="button" className={styles.mail} onClick={openContactModal}>
             Get in touch
-          </a>
+          </button>
         </nav>
       </div>
     </header>

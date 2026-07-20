@@ -27,6 +27,9 @@
 .primary {
   background: var(--brand);
   color: var(--on-brand);
+  /* --signal is the one token the theme reserves for vivid emphasis — right
+     for the site's single most important button. */
+  border-color: var(--signal);
 }
 
 .primary:hover {
