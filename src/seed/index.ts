@@ -247,7 +247,6 @@ const run = async () => {
         },
       ],
       blogHeading: 'Blog',
-      metaTitle: 'Cam — Freelance designer',
       metaDescription:
         'Freelance designer working with founders and small studios on brand identity and web. Considered work, shown early, built to last.',
     },
@@ -285,7 +284,7 @@ const run = async () => {
 
   await payload.updateGlobal({
     slug: 'identity',
-    data: { siteName: 'Cam' },
+    data: { siteName: 'Cam', browserTitle: 'Cam — Freelance designer' },
   })
 
   payload.logger.info('Seed complete.')

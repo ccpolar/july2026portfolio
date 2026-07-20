@@ -5,8 +5,9 @@ import React from 'react'
 import { ContactModal } from '@/components/ContactModal'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { SiteBackground } from '@/components/SiteBackground'
-import { getContact, getHomepage, getTheme } from '@/lib/data'
+import { getContact, getHomepage, getIdentity, getTheme } from '@/lib/data'
 import { themeToCss } from '@/lib/theme'
+import type { Media } from '@/payload-types'
 
 import './globals.css'
 import styles from './layout.module.css'
@@ -21,12 +22,22 @@ const archivo = Archivo({
 })
 
 export async function generateMetadata(): Promise<Metadata> {
-  const home = await getHomepage()
+  const [home, identity] = await Promise.all([getHomepage(), getIdentity()])
+
+  const title = identity?.browserTitle || 'Cam — Designer'
+  const faviconMedia =
+    identity?.favicon && typeof identity.favicon === 'object' ? (identity.favicon as Media) : null
+  // Small and square is the point of a favicon — the thumb variant (480px)
+  // is already far bigger than any browser renders it, but it's the
+  // smallest one Payload generates.
+  const faviconUrl = faviconMedia?.sizes?.thumb?.url ?? faviconMedia?.url ?? undefined
+
   return {
-    title: home.metaTitle ?? 'Cam — Designer',
+    title,
     description: home.metaDescription ?? undefined,
+    icons: faviconUrl ? { icon: faviconUrl } : undefined,
     openGraph: {
-      title: home.metaTitle ?? 'Cam — Designer',
+      title,
       description: home.metaDescription ?? undefined,
       type: 'website',
     },

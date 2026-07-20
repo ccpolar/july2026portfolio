@@ -697,7 +697,6 @@ export interface Homepage {
    * Optional. A line under the heading on the blog page.
    */
   blogIntro?: string | null;
-  metaTitle: string;
   metaDescription: string;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -778,7 +777,7 @@ export interface Theme {
   createdAt?: string | null;
 }
 /**
- * The site’s name, and an optional logo to show in the header instead of it.
+ * The site’s name and logo, the browser tab’s icon and title, and how each is used.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "identity".
@@ -786,17 +785,29 @@ export interface Theme {
 export interface Identity {
   id: number;
   /**
-   * Shown in the header when no logo is uploaded, and in the footer.
+   * Shown in the header when no logo is uploaded (or it’s turned off below), and in the footer.
    */
   siteName: string;
   /**
-   * Optional. Replaces the name in the header. A wide logo with a transparent background works best — SVG or PNG.
+   * Optional. A wide logo with a transparent background works best — SVG or PNG.
    */
   logo?: (number | null) | Media;
+  /**
+   * Show the logo in the header instead of the site name.
+   */
+  showLogo?: boolean | null;
   /**
    * How tall the logo renders in the header, in pixels.
    */
   logoHeight?: number | null;
+  /**
+   * Shown in the browser tab and bookmarks. Square and simple reads best — most browsers render it very small.
+   */
+  favicon?: (number | null) | Media;
+  /**
+   * The browser tab’s title, and the page title search engines see. Short reads best — under ~60 characters.
+   */
+  browserTitle: string;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -822,7 +833,6 @@ export interface HomepageSelect<T extends boolean = true> {
       };
   blogHeading?: T;
   blogIntro?: T;
-  metaTitle?: T;
   metaDescription?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -878,7 +888,10 @@ export interface ThemeSelect<T extends boolean = true> {
 export interface IdentitySelect<T extends boolean = true> {
   siteName?: T;
   logo?: T;
+  showLogo?: T;
   logoHeight?: T;
+  favicon?: T;
+  browserTitle?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

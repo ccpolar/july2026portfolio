@@ -27,11 +27,15 @@ export const getChrome = cache(async (): Promise<ChromeProps> => {
   // The header renders the logo ~28px tall, so the 480px thumb variant is
   // plenty even on retina. SVGs get no variants and fall back to the original.
   const url = media?.sizes?.thumb?.url ?? media?.url ?? null
+  // showLogo is a new field — existing docs saved before it existed have it
+  // absent (not false), and the header showed the logo whenever one was
+  // uploaded, so absent must still mean "on" here.
+  const showLogo = identity?.showLogo !== false
 
   return {
     email: contact.email,
     siteName: identity?.siteName || 'Cam',
-    logo: url ? { url, height: identity?.logoHeight ?? 28 } : null,
+    logo: url && showLogo ? { url, height: identity?.logoHeight ?? 28 } : null,
     showBlog: postCount > 0,
   }
 })

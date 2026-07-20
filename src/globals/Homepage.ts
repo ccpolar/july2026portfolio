@@ -130,13 +130,8 @@ export const Homepage: GlobalConfig = {
         },
         {
           label: 'SEO',
+          description: 'The browser tab title lives under Site → Branding.',
           fields: [
-            {
-              name: 'metaTitle',
-              type: 'text',
-              required: true,
-              maxLength: 70,
-            },
             {
               name: 'metaDescription',
               type: 'textarea',
