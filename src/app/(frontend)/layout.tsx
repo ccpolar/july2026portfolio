@@ -3,11 +3,12 @@ import { Archivo } from 'next/font/google'
 import React from 'react'
 
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
-import { TopoBackground } from '@/components/TopoBackground'
+import { SiteBackground } from '@/components/SiteBackground'
 import { getHomepage, getTheme } from '@/lib/data'
 import { themeToCss } from '@/lib/theme'
 
 import './globals.css'
+import styles from './layout.module.css'
 
 // One family, two axes. Width carries the display voice so the page never
 // needs a second typeface to create contrast.
@@ -43,12 +44,14 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         />
       </head>
       <body>
-        <TopoBackground />
+        <SiteBackground />
         <LivePreviewTheme initialData={theme} />
-        <a className="skip-link" href="#work">
-          Skip to the work
-        </a>
-        {children}
+        <div className={styles.content}>
+          <a className="skip-link" href="#work">
+            Skip to the work
+          </a>
+          {children}
+        </div>
       </body>
     </html>
   )

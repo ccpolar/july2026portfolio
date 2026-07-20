@@ -1,0 +1,19 @@
+/* Sits behind all page content. A negative z-index won't do that job here:
+   per CSS stacking rules it paints behind *every* plain in-flow element,
+   including ones with no explicit position — which on this page is
+   everything — so the canvas would never be topmost anywhere and could
+   never receive the mousemove that lights a cell. Instead this stays in
+   the normal (non-negative) stacking order at the lowest tier, and the
+   real content is lifted above it via `.content` in the frontend layout,
+   so it still visually covers the grid wherever there's something to show. */
+.wrap {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-base);
+}
+
+@media print {
+  .wrap {
+    display: none;
+  }
+}

@@ -1,0 +1,38 @@
+/* Gives all real page content (header, sections, footer) an explicit
+   stacking position above the fixed SiteBackground canvas, which sits at
+   z-index: var(--z-base) with no positioning context of its own to lose to
+   otherwise — see SiteBackground.module.css for why a negative z-index on
+   the canvas can't do this job instead.
+
+   pointer-events: none here, restored on actual content below, is what lets
+   the canvas react to the cursor at all: hit-testing doesn't care whether a
+   box is visually empty, so without this every section's padding and every
+   gap between elements would still claim the mouse before it ever reached
+   the canvas underneath, everywhere on the page. Restoring it on text,
+   links, and form controls keeps selection and clicking working exactly as
+   normal on anything a visitor would actually read or use. */
+.content {
+  position: relative;
+  z-index: var(--z-raised);
+  pointer-events: none;
+}
+
+.content a,
+.content button,
+.content input,
+.content textarea,
+.content select,
+.content p,
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6,
+.content li,
+.content blockquote,
+.content figcaption,
+.content img,
+.content svg {
+  pointer-events: auto;
+}
