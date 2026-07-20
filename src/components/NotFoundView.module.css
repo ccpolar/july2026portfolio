@@ -10,6 +10,36 @@
   justify-content: center;
 }
 
+/* Same settle the homepage hero opens with — this page gets no less care
+   than the front door (see the file comment above). Resting state is the
+   visible one, so nothing depends on the animation actually running. */
+.marker,
+.title,
+.body,
+.actions {
+  animation: rise var(--dur-slow) var(--ease-out-expo) backwards;
+}
+
+.marker {
+  animation-delay: 40ms;
+}
+.title {
+  animation-delay: 120ms;
+}
+.body {
+  animation-delay: 200ms;
+}
+.actions {
+  animation-delay: 280ms;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+}
+
 .marker {
   display: flex;
   align-items: center;
