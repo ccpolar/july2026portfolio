@@ -17,24 +17,19 @@ import styles from './SiteBackground.module.css'
  * Renders nothing until those colours resolve (a single effect, essentially
  * instant) rather than flash a hardcoded colour first.
  */
+// Fixed per design direction, not theme-derived like the hover fill below.
+const BORDER_COLOR = '#cbcbcb'
+
 export const SiteBackground = () => {
-  const [colors, setColors] = useState<{ border: string; hover: string } | null>(null)
+  const [hoverColor, setHoverColor] = useState<string | null>(null)
 
   useEffect(() => {
-    setColors({
-      // Deliberately not --line: that token is scoped to a single 1px
-      // divider, and the owner may set it to anything, including something
-      // bold — fine for a hairline, overwhelming across ~2,000 grid cells.
-      // --ink at low alpha gives a quiet neutral grid that always suits the
-      // page it's drawn on, light or dark. --signal is the one token the
-      // theme explicitly says can be "as vivid as you like", which is exactly
-      // right for a rare, momentary hover fill.
-      border: resolveCssColor('color-mix(in srgb, var(--ink) 12%, transparent)'),
-      hover: resolveCssColor('var(--signal)'),
-    })
+    // --signal is the one token the theme explicitly says can be "as vivid
+    // as you like", which is exactly right for a rare, momentary hover fill.
+    setHoverColor(resolveCssColor('var(--signal)'))
   }, [])
 
-  if (!colors) return null
+  if (!hoverColor) return null
 
   return (
     <div className={styles.wrap} aria-hidden="true">
@@ -44,8 +39,8 @@ export const SiteBackground = () => {
         squareSize={25}
         shape="square"
         hoverTrailAmount={0}
-        borderColor={colors.border}
-        hoverFillColor={colors.hover}
+        borderColor={BORDER_COLOR}
+        hoverFillColor={hoverColor}
       />
     </div>
   )
