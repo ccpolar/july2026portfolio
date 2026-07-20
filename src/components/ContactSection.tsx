@@ -1,5 +1,6 @@
 import type { Contact } from '@/payload-types'
 
+import { ContactForm } from './ContactForm'
 import styles from './ContactSection.module.css'
 import { NewsletterForm } from './NewsletterForm'
 
@@ -24,11 +25,9 @@ export const ContactSection = ({ contact }: { contact: Contact }) => (
         </h2>
         {contact.blurb ? <p className={styles.blurb}>{contact.blurb}</p> : null}
 
+        <ContactForm />
+
         <div className={styles.actions}>
-          <a className={styles.primary} href={`mailto:${contact.email}`}>
-            {contact.email}
-            <Arrow className={styles.arrow} />
-          </a>
           {contact.bookingUrl ? (
             <a
               className={styles.secondary}
@@ -40,6 +39,9 @@ export const ContactSection = ({ contact }: { contact: Contact }) => (
               <Arrow className={styles.arrow} />
             </a>
           ) : null}
+          <a className={styles.emailFallback} href={`mailto:${contact.email}`}>
+            or email {contact.email} directly
+          </a>
         </div>
       </div>
 

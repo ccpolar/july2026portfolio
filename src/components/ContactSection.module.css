@@ -32,33 +32,11 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-md);
-  margin-top: clamp(var(--space-lg), 3vw, var(--space-xl));
-}
-
-.primary {
-  display: inline-flex;
   align-items: center;
-  gap: var(--space-2xs);
-  background: var(--on-brand);
-  color: var(--brand);
-  font-size: var(--text-sm);
-  font-weight: 600;
-  text-decoration: none;
-  padding: 0.875rem 1.5rem;
-  min-height: 2.75rem;
-  border-radius: var(--radius);
-  border: 1px solid var(--on-brand);
-  transition:
-    background-color var(--dur) var(--ease-out-quart),
-    transform var(--dur-fast) var(--ease-out-quart);
+  gap: var(--space-md);
+  margin-top: var(--space-md);
 }
 
-.primary:hover {
-  background: color-mix(in oklch, var(--on-brand) 88%, var(--brand));
-}
-
-.primary:active,
 .secondary:active,
 .submit:active:not(:disabled) {
   transform: scale(0.985);
@@ -93,9 +71,19 @@
   transition: transform var(--dur) var(--ease-out-expo);
 }
 
-.primary:hover .arrow,
 .secondary:hover .arrow {
   transform: translateX(3px);
+}
+
+.emailFallback {
+  font-size: var(--text-sm);
+  color: color-mix(in oklch, var(--on-brand) 72%, transparent);
+  text-decoration: none;
+  transition: color var(--dur-fast) var(--ease-out-quart);
+}
+
+.emailFallback:hover {
+  color: var(--on-brand);
 }
 
 .aside {
