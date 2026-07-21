@@ -1,7 +1,5 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 import { openContactModal } from '@/lib/contactModal'
 
 import styles from './SiteHeader.module.css'
@@ -13,21 +11,8 @@ type Props = {
 }
 
 export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
-  const [scrolled, setScrolled] = useState(false)
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
   return (
-    <header
-      className={styles.header}
-      data-scrolled={scrolled}
-      style={{ viewTransitionName: 'site-header' }}
-    >
+    <header className={styles.header} style={{ viewTransitionName: 'site-header' }}>
       <div className={`shell ${styles.inner}`}>
         <a className={styles.wordmark} href="/" aria-label={`${siteName} — home`}>
           {logo ? (

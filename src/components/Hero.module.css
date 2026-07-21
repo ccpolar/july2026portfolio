@@ -114,3 +114,32 @@
     justify-content: flex-end;
   }
 }
+
+/* Only present at all when a hero photo is set — the text stacks with the
+   photo below it until there's room for them side by side. */
+.grid {
+  display: grid;
+  gap: clamp(var(--space-xl), 6vw, var(--space-3xl));
+}
+
+@media (min-width: 64rem) {
+  .grid {
+    grid-template-columns: 1fr var(--hero-image-size, 40%);
+    align-items: center;
+  }
+}
+
+.imageFrame {
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface);
+  aspect-ratio: 4 / 5;
+  animation: rise var(--dur-slow) var(--ease-out-expo) backwards;
+  animation-delay: 160ms;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

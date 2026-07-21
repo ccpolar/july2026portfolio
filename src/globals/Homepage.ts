@@ -55,6 +55,32 @@ export const Homepage: GlobalConfig = {
                 condition: (_, siblingData) => Boolean(siblingData?.available),
               },
             },
+            {
+              name: 'heroImage',
+              type: 'upload',
+              relationTo: 'media',
+              admin: {
+                description:
+                  'Optional. Sits to the right of the headline on wide screens, and below it on narrower ones.',
+              },
+            },
+            {
+              name: 'heroImageSize',
+              type: 'number',
+              defaultValue: 40,
+              min: 24,
+              max: 60,
+              admin: {
+                description: 'How much of the hero’s width the photo takes up, on wide screens.',
+                condition: (_, siblingData) => Boolean(siblingData?.heroImage),
+                components: {
+                  Field: {
+                    path: '/components/admin/RangeField#RangeField',
+                    clientProps: { unit: '%' },
+                  },
+                },
+              },
+            },
           ],
         },
         {

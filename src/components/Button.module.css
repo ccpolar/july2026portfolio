@@ -39,7 +39,9 @@
 .secondary {
   background: transparent;
   color: var(--ink);
-  border-color: var(--line-strong);
+  /* Same --signal border as .primary — the two sit side by side in the hero
+     and should read as one red, not two slightly different ones. */
+  border-color: var(--signal);
 }
 
 .secondary:hover {

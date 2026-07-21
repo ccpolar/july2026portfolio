@@ -675,6 +675,14 @@ export interface Homepage {
    */
   available?: boolean | null;
   availabilityLabel?: string | null;
+  /**
+   * Optional. Sits to the right of the headline on wide screens, and below it on narrower ones.
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * How much of the hero’s width the photo takes up, on wide screens.
+   */
+  heroImageSize?: number | null;
   workHeading: string;
   /**
    * Optional. Leave blank to let the work start immediately.
@@ -820,6 +828,8 @@ export interface HomepageSelect<T extends boolean = true> {
   heroIntro?: T;
   available?: T;
   availabilityLabel?: T;
+  heroImage?: T;
+  heroImageSize?: T;
   workHeading?: T;
   workIntro?: T;
   approachHeading?: T;

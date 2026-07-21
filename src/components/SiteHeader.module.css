@@ -8,14 +8,7 @@
      target it would silently never match. */
   background: color-mix(in oklch, var(--bg) 88%, transparent);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--dur) var(--ease-out-quart);
-}
-
-/* The rule only appears once the page has moved — at rest the header is
-   simply part of the page, not a bar sitting on top of it. */
-.header[data-scrolled='true'] {
-  border-bottom-color: var(--line);
+  border-bottom: 1px solid var(--line);
 }
 
 .inner {
