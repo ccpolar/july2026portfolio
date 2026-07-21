@@ -12,6 +12,8 @@ const slugify = (value: string) =>
 
 export const Projects: CollectionConfig = {
   slug: 'projects',
+  // Slug stays 'projects' (no data migration); only the admin label changes.
+  labels: { singular: 'Project', plural: 'Recent Work' },
   access: {
     read: () => true,
   },
@@ -20,7 +22,7 @@ export const Projects: CollectionConfig = {
     defaultColumns: ['title', 'client', 'year', 'featured'],
     group: 'Content',
     description:
-      'Each project is one row on the homepage. Drag to reorder — the order here is the order visitors see.',
+      'Each project is one row on the homepage’s Recent Work. Drag to reorder — the order here is the order visitors see. Use “Add to portfolio” on a project to also show it in a portfolio category.',
   },
   defaultSort: 'order',
   hooks: {
@@ -173,6 +175,17 @@ export const Projects: CollectionConfig = {
           },
         },
       ],
+    },
+    {
+      // Presentational only — stores nothing. Renders the one-click "copy this
+      // project into a portfolio category" control (see the component).
+      name: 'transferToPortfolio',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '/components/admin/TransferToPortfolio#TransferToPortfolio',
+        },
+      },
     },
   ],
 }

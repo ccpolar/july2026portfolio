@@ -144,7 +144,7 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Each project is one row on the homepage. Drag to reorder — the order here is the order visitors see.
+ * Each project is one row on the homepage’s Recent Work. Drag to reorder — the order here is the order visitors see. Use “Add to portfolio” on a project to also show it in a portfolio category.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects".

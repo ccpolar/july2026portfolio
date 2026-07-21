@@ -1,0 +1,67 @@
+/* Uses Payload admin theme tokens so it sits naturally in the edit form. */
+.wrap {
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--theme-elevation-150);
+  border-radius: 4px;
+  background: var(--theme-elevation-50);
+}
+
+.label {
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.help {
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-600);
+  margin: 0 0 0.75rem;
+  max-width: 60ch;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn {
+  font: inherit;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--theme-elevation-250);
+  border-radius: 4px;
+  background: var(--theme-input-bg);
+  color: var(--theme-text);
+  cursor: pointer;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease;
+}
+
+.btn:hover:not(:disabled) {
+  border-color: var(--theme-elevation-450);
+  background: var(--theme-elevation-100);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hint {
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-500);
+  margin: 0;
+}
+
+.ok {
+  font-size: 0.8125rem;
+  margin: 0.75rem 0 0;
+  color: var(--theme-success-500, #2e7d32);
+}
+
+.err {
+  font-size: 0.8125rem;
+  margin: 0.75rem 0 0;
+  color: var(--theme-error-500, #c62828);
+}
