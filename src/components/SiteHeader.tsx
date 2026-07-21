@@ -27,7 +27,10 @@ export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
           )}
         </a>
         <nav className={styles.nav} aria-label="Primary">
-          <a className={`${styles.link} ${styles.navOnly}`} href="/#work">
+          <a className={`${styles.link} ${styles.navOnly}`} href="/">
+            Home
+          </a>
+          <a className={`${styles.link} ${styles.navOnly}`} href="/portfolio">
             Work
           </a>
           <a className={`${styles.link} ${styles.navOnly}`} href="/#approach">
