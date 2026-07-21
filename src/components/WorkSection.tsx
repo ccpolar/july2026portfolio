@@ -3,6 +3,7 @@ import React from 'react'
 import type { Homepage, Project } from '@/payload-types'
 import { projectTransitionName } from '@/lib/viewTransition'
 
+import { ButtonLink } from './Button'
 import { MediaImage } from './MediaImage'
 import styles from './WorkSection.module.css'
 
@@ -94,6 +95,14 @@ export const WorkSection = ({ home, projects }: Props) => {
             </div>
           </a>
         ))}
+      </div>
+
+      {/* Recent work is a taste; the full portfolio is the meal. This is the
+          one obvious next step from the homepage into everything else. */}
+      <div className={styles.more}>
+        <ButtonLink href="/portfolio" withArrow>
+          View full portfolio
+        </ButtonLink>
       </div>
     </section>
   )

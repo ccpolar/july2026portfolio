@@ -127,10 +127,18 @@ const fetchPhoto = async (id: string) => {
 const run = async () => {
   const payload = await getPayload({ config })
 
-  for (const collection of ['projects', 'testimonials', 'media'] as const) {
+  for (const collection of [
+    'projects',
+    'branding',
+    'merchandise',
+    'advertising',
+    'websites',
+    'testimonials',
+    'media',
+  ] as const) {
     await payload.delete({ collection, where: { id: { exists: true } } })
   }
-  payload.logger.info('Cleared projects, testimonials and media.')
+  payload.logger.info('Cleared projects, portfolio, testimonials and media.')
 
   const email = process.env.SEED_ADMIN_EMAIL ?? 'cam@polarcreativegroup.com'
   // Local convenience only. Set SEED_ADMIN_PASSWORD before seeding anything
@@ -187,6 +195,88 @@ const run = async () => {
     })
     payload.logger.info(`Seeded project: ${p.title}${gallery.length ? ` (+${gallery.length} gallery)` : ''}`)
   }
+
+  // — Portfolio categories —
+  // Placeholder demo content so the /portfolio page renders during design.
+  // Photo ids are reused from the verified pool above. Replace via /admin.
+  const makeMedia = async (photo: string, alt: string, name: string) => {
+    const doc = await payload.create({
+      collection: 'media',
+      data: { alt },
+      file: { data: await fetchPhoto(photo), mimetype: 'image/jpeg', name, size: 0 },
+    })
+    return doc.id
+  }
+
+  const brandingSeed: { title: string; photo: string; blockSize: 'small' | 'medium' | 'large' }[] = [
+    { title: 'Fold Coffee — mark', photo: 'photo-1493857671505-72967e2e2760', blockSize: 'large' },
+    { title: 'Ossa — wordmark', photo: 'photo-1517248135467-4c7edcad34c4', blockSize: 'small' },
+    { title: 'Meridian — pattern', photo: 'photo-1523275335684-37898b6baf30', blockSize: 'medium' },
+    { title: 'Ilex — stationery', photo: 'photo-1498804103079-a6351b050096', blockSize: 'medium' },
+    { title: 'Fold — packaging', photo: 'photo-1442512595331-e89e73853f31', blockSize: 'small' },
+    { title: 'Meridian — signage', photo: 'photo-1521302080334-4bebac2763a6', blockSize: 'large' },
+  ]
+  let bOrder = 0
+  for (const b of brandingSeed) {
+    const image = await makeMedia(b.photo, `${b.title} — branding piece`, `branding-${bOrder}.jpg`)
+    await payload.create({
+      collection: 'branding',
+      data: { title: b.title, image, blockSize: b.blockSize, order: bOrder++ },
+    })
+  }
+
+  const merchSeed = [
+    'photo-1560343090-f0409e92791a',
+    'photo-1523275335684-37898b6baf30',
+    'photo-1600891964092-4316c288032e',
+    'photo-1517248135467-4c7edcad34c4',
+    'photo-1414235077428-338989a2e8c0',
+    'photo-1559925393-8be0ec4767c8',
+  ]
+  let mOrder = 0
+  for (const photo of merchSeed) {
+    const image = await makeMedia(photo, `Merchandise item ${mOrder + 1}`, `merch-${mOrder}.jpg`)
+    await payload.create({
+      collection: 'merchandise',
+      data: { title: `Merch piece ${mOrder + 1}`, image, order: mOrder++ },
+    })
+  }
+
+  const adSeed: { title: string; photo: string; caption?: string }[] = [
+    { title: 'Campaign — outdoor', photo: 'photo-1498804103079-a6351b050096', caption: 'Out-of-home, city centre run.' },
+    { title: 'Campaign — press', photo: 'photo-1521302080334-4bebac2763a6' },
+    { title: 'Campaign — social', photo: 'photo-1559496417-e7f25cb247f3', caption: 'Launch week social set.' },
+    { title: 'Campaign — print', photo: 'photo-1414235077428-338989a2e8c0' },
+    { title: 'Campaign — transit', photo: 'photo-1600891964092-4316c288032e' },
+    { title: 'Campaign — editorial', photo: 'photo-1523275335684-37898b6baf30' },
+  ]
+  let aOrder = 0
+  for (const a of adSeed) {
+    const image = await makeMedia(a.photo, `${a.title} — advertising work`, `ad-${aOrder}.jpg`)
+    await payload.create({
+      collection: 'advertising',
+      data: { title: a.title, image, caption: a.caption, order: aOrder++ },
+    })
+  }
+
+  const siteSeed: { title: string; photo: string; liveUrl?: string }[] = [
+    { title: 'Fold Coffee', photo: 'photo-1493857671505-72967e2e2760', liveUrl: 'https://example.com' },
+    { title: 'Ossa Studio', photo: 'photo-1517248135467-4c7edcad34c4', liveUrl: 'https://example.com' },
+    { title: 'Meridian', photo: 'photo-1559925393-8be0ec4767c8' },
+    { title: 'Ilex', photo: 'photo-1498804103079-a6351b050096', liveUrl: 'https://example.com' },
+  ]
+  let wOrder = 0
+  for (const s of siteSeed) {
+    const screenshot = await makeMedia(s.photo, `${s.title} website screenshot`, `site-${wOrder}.jpg`)
+    await payload.create({
+      collection: 'websites',
+      data: { title: s.title, screenshot, liveUrl: s.liveUrl, order: wOrder++ },
+    })
+  }
+
+  payload.logger.info(
+    `Seeded portfolio: ${brandingSeed.length} branding, ${merchSeed.length} merch, ${adSeed.length} advertising, ${siteSeed.length} websites.`,
+  )
 
   // PLACEHOLDER — these two are invented. Replace them with the real quotes
   // you have, or untick "published" and the homepage drops the section.

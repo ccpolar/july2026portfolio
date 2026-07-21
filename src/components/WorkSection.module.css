@@ -25,6 +25,14 @@
   gap: clamp(var(--space-2xl), 9vw, 8rem);
 }
 
+/* The step out of the homepage sampler into the whole body of work. Centred
+   and set apart so it reads as a deliberate invitation, not another row. */
+.more {
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(var(--space-2xl), 6vw, var(--space-3xl));
+}
+
 .row {
   display: grid;
   gap: var(--space-lg);

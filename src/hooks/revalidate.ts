@@ -70,6 +70,18 @@ export const revalidatePostDelete: CollectionAfterDeleteHook = ({ doc, req }) =>
   return doc
 }
 
+// Every portfolio category renders on the /portfolio page, so any add/edit/
+// delete in any of the four collections refreshes that one page.
+export const revalidatePortfolio: CollectionAfterChangeHook = ({ doc, req }) => {
+  flush(req, ['/portfolio'])
+  return doc
+}
+
+export const revalidatePortfolioDelete: CollectionAfterDeleteHook = ({ doc, req }) => {
+  flush(req, ['/portfolio'])
+  return doc
+}
+
 // Theme and site copy touch every page, so the whole tree goes.
 export const revalidateEverything: GlobalAfterChangeHook = ({ doc, req }) => {
   flush(req, ['/', '/blog'])

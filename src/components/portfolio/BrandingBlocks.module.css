@@ -1,0 +1,103 @@
+/* Touch/coarse pointers get a plain tidy grid — no drag (drag-vs-scroll on a
+   phone is unwinnable). The masonry + drag only switches on for fine pointers. */
+.wall {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.block {
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.caption {
+  font-size: var(--text-label);
+  color: var(--muted);
+  padding: var(--space-2xs) var(--space-xs) var(--space-xs);
+}
+
+/* On a real pointer (desktop), the wall becomes a draggable masonry. */
+@media (pointer: fine) and (min-width: 48rem) {
+  .wall {
+    display: block;
+    position: relative;
+    column-count: 4;
+    column-gap: var(--space-lg);
+  }
+
+  .block {
+    break-inside: avoid;
+    margin-bottom: var(--space-lg);
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    /* A block that's been moved lifts off the wall; the transition is only for
+       the settle, never while actively dragging (see .dragging). */
+    transition:
+      box-shadow var(--dur) var(--ease-out-quart),
+      transform var(--dur) var(--ease-out-expo);
+    will-change: transform;
+  }
+
+  .block[data-dragged='true'] {
+    position: relative;
+    z-index: var(--z-raised);
+    box-shadow: 0 10px 30px color-mix(in oklch, var(--ink) 18%, transparent);
+  }
+
+  .block:active {
+    cursor: grabbing;
+  }
+
+  /* While the pointer is down and moving, kill the transform transition so the
+     block tracks the cursor 1:1 instead of lagging behind it. */
+  .dragging {
+    transition: box-shadow var(--dur) var(--ease-out-quart);
+    cursor: grabbing;
+  }
+
+  .small {
+    column-span: none;
+  }
+
+  /* Size hints nudge how tall a block wants to be by biasing large ones to
+     span visually — with column layout we approximate via width feel using a
+     transform-free approach: large blocks get a subtle scale of prominence
+     through order, so here we just let natural image ratio drive height and
+     use the hint for a min-height accent. */
+  .large .image {
+    min-height: 18rem;
+    object-fit: cover;
+  }
+
+  .medium .image {
+    min-height: 12rem;
+    object-fit: cover;
+  }
+
+  .small .image {
+    min-height: 7rem;
+    object-fit: cover;
+  }
+}
+
+/* The whole toy is decorative motion — under reduced-motion the settle easing
+   is dropped, but drag itself (user-driven) stays. */
+@media (prefers-reduced-motion: reduce) {
+  .block {
+    transition: none !important;
+  }
+}

@@ -9,6 +9,10 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Media } from './collections/Media'
+import { Advertising } from './collections/portfolio/Advertising'
+import { Branding } from './collections/portfolio/Branding'
+import { Merchandise } from './collections/portfolio/Merchandise'
+import { Websites } from './collections/portfolio/Websites'
 import { Posts } from './collections/Posts'
 import { Projects } from './collections/Projects'
 import { Subscribers } from './collections/Subscribers'
@@ -44,7 +48,18 @@ export default buildConfig({
       titleSuffix: '· Cam',
     },
   },
-  collections: [Projects, Posts, Testimonials, Media, Subscribers, Users],
+  collections: [
+    Projects,
+    Branding,
+    Merchandise,
+    Advertising,
+    Websites,
+    Posts,
+    Testimonials,
+    Media,
+    Subscribers,
+    Users,
+  ],
   globals: [Homepage, Contact, Theme, Identity],
   editor: lexicalEditor(),
   db: isPostgres

@@ -68,6 +68,10 @@ export interface Config {
   blocks: {};
   collections: {
     projects: Project;
+    branding: Branding;
+    merchandise: Merchandise;
+    advertising: Advertising;
+    websites: Website;
     posts: Post;
     testimonials: Testimonial;
     media: Media;
@@ -81,6 +85,10 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
+    branding: BrandingSelect<false> | BrandingSelect<true>;
+    merchandise: MerchandiseSelect<false> | MerchandiseSelect<true>;
+    advertising: AdvertisingSelect<false> | AdvertisingSelect<true>;
+    websites: WebsitesSelect<false> | WebsitesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -265,6 +273,101 @@ export interface Media {
   };
 }
 /**
+ * Branding pieces, shown as draggable blocks on the portfolio page. The block size below varies the layout.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "branding".
+ */
+export interface Branding {
+  id: number;
+  title: string;
+  /**
+   * The piece itself — any orientation. It fills its block.
+   */
+  image: number | Media;
+  /**
+   * How large this block sits in the gallery. Mix sizes for a lively wall.
+   */
+  blockSize?: ('small' | 'medium' | 'large') | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Merchandise shots, shown as an auto-scrolling carousel on the portfolio page. Square or product-on-plain-background images read best.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "merchandise".
+ */
+export interface Merchandise {
+  id: number;
+  title: string;
+  /**
+   * The product shot. It scrolls past in the carousel — consistent framing across items looks best.
+   */
+  image: number | Media;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Advertising design, shown as a gallery grid on the portfolio page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "advertising".
+ */
+export interface Advertising {
+  id: number;
+  title: string;
+  /**
+   * The ad or campaign image.
+   */
+  image: number | Media;
+  /**
+   * Optional. A short line shown under the image.
+   */
+  caption?: string | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Website design, shown inside a browser frame on the portfolio page. Upload a tall full-page screenshot — it scrolls inside the frame on hover.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "websites".
+ */
+export interface Website {
+  id: number;
+  /**
+   * The project or client name.
+   */
+  title: string;
+  /**
+   * A tall, full-page screenshot of the site (capture the whole page, not just the top). It sits inside the browser frame and scrolls on hover.
+   */
+  screenshot: number | Media;
+  /**
+   * Optional. The real site address, e.g. https://example.com — shown in the frame’s address bar and makes the frame a link that opens the live site.
+   */
+  liveUrl?: string | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Posts on the blog page. The Blog link only appears in the site header once at least one post is published.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -408,6 +511,22 @@ export interface PayloadLockedDocument {
         value: number | Project;
       } | null)
     | ({
+        relationTo: 'branding';
+        value: number | Branding;
+      } | null)
+    | ({
+        relationTo: 'merchandise';
+        value: number | Merchandise;
+      } | null)
+    | ({
+        relationTo: 'advertising';
+        value: number | Advertising;
+      } | null)
+    | ({
+        relationTo: 'websites';
+        value: number | Website;
+      } | null)
+    | ({
         relationTo: 'posts';
         value: number | Post;
       } | null)
@@ -496,6 +615,53 @@ export interface ProjectsSelect<T extends boolean = true> {
         id?: T;
       };
   featured?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "branding_select".
+ */
+export interface BrandingSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  blockSize?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "merchandise_select".
+ */
+export interface MerchandiseSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "advertising_select".
+ */
+export interface AdvertisingSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  caption?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "websites_select".
+ */
+export interface WebsitesSelect<T extends boolean = true> {
+  title?: T;
+  screenshot?: T;
+  liveUrl?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;

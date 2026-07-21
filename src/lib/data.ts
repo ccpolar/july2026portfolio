@@ -48,6 +48,24 @@ export const getIdentity = cache(async () => {
   return payload.findGlobal({ slug: 'identity', depth: 1 })
 })
 
+// The four portfolio categories. Each is its own collection, sorted by the
+// admin's manual order, images resolved (depth 1) so the page can render them.
+export const getPortfolio = cache(async () => {
+  const payload = await client()
+  const [branding, merchandise, advertising, websites] = await Promise.all([
+    payload.find({ collection: 'branding', sort: 'order', depth: 1, limit: 100 }),
+    payload.find({ collection: 'merchandise', sort: 'order', depth: 1, limit: 100 }),
+    payload.find({ collection: 'advertising', sort: 'order', depth: 1, limit: 100 }),
+    payload.find({ collection: 'websites', sort: 'order', depth: 1, limit: 100 }),
+  ])
+  return {
+    branding: branding.docs,
+    merchandise: merchandise.docs,
+    advertising: advertising.docs,
+    websites: websites.docs,
+  }
+})
+
 export const countPublishedPosts = cache(async () => {
   const payload = await client()
   const { totalDocs } = await payload.count({
