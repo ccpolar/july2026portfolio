@@ -72,6 +72,7 @@ export interface Config {
     merchandise: Merchandise;
     advertising: Advertising;
     websites: Website;
+    moodboard: Moodboard;
     posts: Post;
     testimonials: Testimonial;
     media: Media;
@@ -89,6 +90,7 @@ export interface Config {
     merchandise: MerchandiseSelect<false> | MerchandiseSelect<true>;
     advertising: AdvertisingSelect<false> | AdvertisingSelect<true>;
     websites: WebsitesSelect<false> | WebsitesSelect<true>;
+    moodboard: MoodboardSelect<false> | MoodboardSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -273,7 +275,7 @@ export interface Media {
   };
 }
 /**
- * Branding pieces, shown as draggable blocks on the portfolio page. The block size below varies the layout.
+ * Branding pieces, shown as a four-column grid on the portfolio page.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "branding".
@@ -282,13 +284,9 @@ export interface Branding {
   id: number;
   title: string;
   /**
-   * The piece itself — any orientation. It fills its block.
+   * The piece itself. Every cell in the grid is the same size, so consistent framing looks best.
    */
   image: number | Media;
-  /**
-   * How large this block sits in the gallery. Mix sizes for a lively wall.
-   */
-  blockSize?: ('small' | 'medium' | 'large') | null;
   /**
    * Lower numbers appear first.
    */
@@ -362,6 +360,30 @@ export interface Website {
   liveUrl?: string | null;
   /**
    * Lower numbers appear first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Images on the moodboard page, where visitors can pick up and move the blocks around. Mix the block sizes for a livelier wall.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "moodboard".
+ */
+export interface Moodboard {
+  id: number;
+  title: string;
+  /**
+   * Any orientation — it fills its block.
+   */
+  image: number | Media;
+  /**
+   * How large this block sits on the board.
+   */
+  blockSize?: ('small' | 'medium' | 'large') | null;
+  /**
+   * Lower numbers appear first (before anyone moves things).
    */
   order?: number | null;
   updatedAt: string;
@@ -527,6 +549,10 @@ export interface PayloadLockedDocument {
         value: number | Website;
       } | null)
     | ({
+        relationTo: 'moodboard';
+        value: number | Moodboard;
+      } | null)
+    | ({
         relationTo: 'posts';
         value: number | Post;
       } | null)
@@ -626,7 +652,6 @@ export interface ProjectsSelect<T extends boolean = true> {
 export interface BrandingSelect<T extends boolean = true> {
   title?: T;
   image?: T;
-  blockSize?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -662,6 +687,18 @@ export interface WebsitesSelect<T extends boolean = true> {
   title?: T;
   screenshot?: T;
   liveUrl?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "moodboard_select".
+ */
+export interface MoodboardSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  blockSize?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;

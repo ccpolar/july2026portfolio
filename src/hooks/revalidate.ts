@@ -82,6 +82,16 @@ export const revalidatePortfolioDelete: CollectionAfterDeleteHook = ({ doc, req 
   return doc
 }
 
+export const revalidateMoodboard: CollectionAfterChangeHook = ({ doc, req }) => {
+  flush(req, ['/moodboard'])
+  return doc
+}
+
+export const revalidateMoodboardDelete: CollectionAfterDeleteHook = ({ doc, req }) => {
+  flush(req, ['/moodboard'])
+  return doc
+}
+
 // Theme and site copy touch every page, so the whole tree goes.
 export const revalidateEverything: GlobalAfterChangeHook = ({ doc, req }) => {
   flush(req, ['/', '/blog'])

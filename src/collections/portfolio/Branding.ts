@@ -9,10 +9,9 @@ export const Branding: CollectionConfig = {
   access: { read: () => true },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'blockSize', 'order'],
+    defaultColumns: ['title', 'order'],
     group: 'Portfolio',
-    description:
-      'Branding pieces, shown as draggable blocks on the portfolio page. The block size below varies the layout.',
+    description: 'Branding pieces, shown as a four-column grid on the portfolio page.',
   },
   defaultSort: 'order',
   hooks: {
@@ -21,20 +20,7 @@ export const Branding: CollectionConfig = {
   },
   fields: [
     { name: 'title', type: 'text', required: true },
-    imageField('The piece itself — any orientation. It fills its block.'),
-    {
-      name: 'blockSize',
-      type: 'select',
-      defaultValue: 'medium',
-      options: [
-        { label: 'Small', value: 'small' },
-        { label: 'Medium', value: 'medium' },
-        { label: 'Large', value: 'large' },
-      ],
-      admin: {
-        description: 'How large this block sits in the gallery. Mix sizes for a lively wall.',
-      },
-    },
+    imageField('The piece itself. Every cell in the grid is the same size, so consistent framing looks best.'),
     orderField,
   ],
 }

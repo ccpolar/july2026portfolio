@@ -48,6 +48,17 @@ export const getIdentity = cache(async () => {
   return payload.findGlobal({ slug: 'identity', depth: 1 })
 })
 
+export const getMoodboard = cache(async () => {
+  const payload = await client()
+  const { docs } = await payload.find({
+    collection: 'moodboard',
+    sort: 'order',
+    depth: 1,
+    limit: 100,
+  })
+  return docs
+})
+
 // The four portfolio categories. Each is its own collection, sorted by the
 // admin's manual order, images resolved (depth 1) so the page can render them.
 export const getPortfolio = cache(async () => {

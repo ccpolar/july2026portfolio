@@ -2,26 +2,31 @@
 
 import { useRef, useState } from 'react'
 
-import type { Branding } from '@/payload-types'
+import type { Moodboard } from '@/payload-types'
 
-import { MediaImage } from '../MediaImage'
-import styles from './BrandingBlocks.module.css'
+import { MediaImage } from './MediaImage'
+import styles from './MoodboardBlocks.module.css'
 
 /**
- * The branding wall: a gallery of blocks a visitor can pick up and drag around.
- * Drag is a pointer-fine affordance only — on touch devices the same blocks lay
- * out as a plain, tidy grid (see the CSS), because drag-vs-scroll on a phone is
- * a fight nobody wins. Positions live in component state and reset on reload;
- * that's intentional — it's a toy to play with, not a layout to save.
+ * The moodboard: a wall of blocks a visitor can pick up and drag around.
+ * Drag is a pointer-fine affordance only — on touch devices the same blocks
+ * lay out as a plain, tidy grid (see the CSS), because drag-vs-scroll on a
+ * phone is a fight nobody wins. Positions live in component state and reset on
+ * reload; that's intentional — it's a board to play with, not a layout to save.
  */
-export const BrandingBlocks = ({ items }: { items: Branding[] }) => {
-  const containerRef = useRef<HTMLDivElement>(null)
+export const MoodboardBlocks = ({ items }: { items: Moodboard[] }) => {
   const [offsets, setOffsets] = useState<Record<number, { x: number; y: number }>>({})
   const [dragId, setDragId] = useState<number | null>(null)
-  const drag = useRef<{ id: number; startX: number; startY: number; baseX: number; baseY: number } | null>(null)
+  const drag = useRef<{
+    id: number
+    startX: number
+    startY: number
+    baseX: number
+    baseY: number
+  } | null>(null)
 
   const onPointerDown = (e: React.PointerEvent, id: number) => {
-    // Only left mouse / pen / touch-as-pointer; ignore right-click.
+    // Left button / pen / touch only; ignore right-click.
     if (e.button !== 0) return
     const base = offsets[id] ?? { x: 0, y: 0 }
     drag.current = { id, startX: e.clientX, startY: e.clientY, baseX: base.x, baseY: base.y }
@@ -47,7 +52,11 @@ export const BrandingBlocks = ({ items }: { items: Branding[] }) => {
 
   const endDrag = (e: React.PointerEvent) => {
     if (!drag.current) return
-    ;(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
+    try {
+      ;(e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId)
+    } catch {
+      /* no-op */
+    }
     drag.current = null
     setDragId(null)
   }
@@ -55,14 +64,16 @@ export const BrandingBlocks = ({ items }: { items: Branding[] }) => {
   if (!items.length) return null
 
   return (
-    <div className={styles.wall} ref={containerRef}>
+    <div className={styles.wall}>
       {items.map((item) => {
         const off = offsets[item.id]
         const dragging = dragId === item.id
         return (
           <figure
             key={item.id}
-            className={`${styles.block} ${styles[item.blockSize ?? 'medium']} ${dragging ? styles.dragging : ''}`}
+            className={`${styles.block} ${styles[item.blockSize ?? 'medium']} ${
+              dragging ? styles.dragging : ''
+            }`}
             style={off ? { transform: `translate(${off.x}px, ${off.y}px)` } : undefined}
             data-dragged={off ? 'true' : undefined}
             onPointerDown={(e) => onPointerDown(e, item.id)}

@@ -33,6 +33,9 @@ export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
           <a className={`${styles.link} ${styles.navOnly}`} href="/portfolio">
             Work
           </a>
+          <a className={`${styles.link} ${styles.navOnly}`} href="/moodboard">
+            Moodboard
+          </a>
           <a className={`${styles.link} ${styles.navOnly}`} href="/#approach">
             Approach
           </a>

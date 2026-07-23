@@ -29,7 +29,7 @@
   padding: var(--space-2xs) var(--space-xs) var(--space-xs);
 }
 
-/* On a real pointer (desktop), the wall becomes a draggable masonry. */
+/* On a real pointer (desktop), the board becomes a draggable masonry. */
 @media (pointer: fine) and (min-width: 48rem) {
   .wall {
     display: block;
@@ -44,7 +44,7 @@
     cursor: grab;
     touch-action: none;
     user-select: none;
-    /* A block that's been moved lifts off the wall; the transition is only for
+    /* A block that's been moved lifts off the board; the transition is only for
        the settle, never while actively dragging (see .dragging). */
     transition:
       box-shadow var(--dur) var(--ease-out-quart),
@@ -69,15 +69,6 @@
     cursor: grabbing;
   }
 
-  .small {
-    column-span: none;
-  }
-
-  /* Size hints nudge how tall a block wants to be by biasing large ones to
-     span visually — with column layout we approximate via width feel using a
-     transform-free approach: large blocks get a subtle scale of prominence
-     through order, so here we just let natural image ratio drive height and
-     use the hint for a min-height accent. */
   .large .image {
     min-height: 18rem;
     object-fit: cover;
@@ -94,8 +85,7 @@
   }
 }
 
-/* The whole toy is decorative motion — under reduced-motion the settle easing
-   is dropped, but drag itself (user-driven) stays. */
+/* The settle easing is decorative; drag itself (user-driven) always stays. */
 @media (prefers-reduced-motion: reduce) {
   .block {
     transition: none !important;

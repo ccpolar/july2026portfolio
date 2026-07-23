@@ -9,6 +9,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Media } from './collections/Media'
+import { Moodboard } from './collections/Moodboard'
 import { Advertising } from './collections/portfolio/Advertising'
 import { Branding } from './collections/portfolio/Branding'
 import { Merchandise } from './collections/portfolio/Merchandise'
@@ -54,6 +55,7 @@ export default buildConfig({
     Merchandise,
     Advertising,
     Websites,
+    Moodboard,
     Posts,
     Testimonials,
     Media,

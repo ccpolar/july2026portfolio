@@ -133,6 +133,7 @@ const run = async () => {
     'merchandise',
     'advertising',
     'websites',
+    'moodboard',
     'testimonials',
     'media',
   ] as const) {
@@ -208,20 +209,20 @@ const run = async () => {
     return doc.id
   }
 
-  const brandingSeed: { title: string; photo: string; blockSize: 'small' | 'medium' | 'large' }[] = [
-    { title: 'Fold Coffee — mark', photo: 'photo-1493857671505-72967e2e2760', blockSize: 'large' },
-    { title: 'Ossa — wordmark', photo: 'photo-1517248135467-4c7edcad34c4', blockSize: 'small' },
-    { title: 'Meridian — pattern', photo: 'photo-1523275335684-37898b6baf30', blockSize: 'medium' },
-    { title: 'Ilex — stationery', photo: 'photo-1498804103079-a6351b050096', blockSize: 'medium' },
-    { title: 'Fold — packaging', photo: 'photo-1442512595331-e89e73853f31', blockSize: 'small' },
-    { title: 'Meridian — signage', photo: 'photo-1521302080334-4bebac2763a6', blockSize: 'large' },
+  const brandingSeed: { title: string; photo: string }[] = [
+    { title: 'Fold Coffee — mark', photo: 'photo-1493857671505-72967e2e2760' },
+    { title: 'Ossa — wordmark', photo: 'photo-1517248135467-4c7edcad34c4' },
+    { title: 'Meridian — pattern', photo: 'photo-1523275335684-37898b6baf30' },
+    { title: 'Ilex — stationery', photo: 'photo-1498804103079-a6351b050096' },
+    { title: 'Fold — packaging', photo: 'photo-1442512595331-e89e73853f31' },
+    { title: 'Meridian — signage', photo: 'photo-1521302080334-4bebac2763a6' },
   ]
   let bOrder = 0
   for (const b of brandingSeed) {
     const image = await makeMedia(b.photo, `${b.title} — branding piece`, `branding-${bOrder}.jpg`)
     await payload.create({
       collection: 'branding',
-      data: { title: b.title, image, blockSize: b.blockSize, order: bOrder++ },
+      data: { title: b.title, image, order: bOrder++ },
     })
   }
 
@@ -277,6 +278,27 @@ const run = async () => {
   payload.logger.info(
     `Seeded portfolio: ${brandingSeed.length} branding, ${merchSeed.length} merch, ${adSeed.length} advertising, ${siteSeed.length} websites.`,
   )
+
+  // — Moodboard —
+  const moodSeed: { title: string; photo: string; blockSize: 'small' | 'medium' | 'large' }[] = [
+    { title: 'Raked light', photo: 'photo-1559496417-e7f25cb247f3', blockSize: 'large' },
+    { title: 'Worn concrete', photo: 'photo-1521302080334-4bebac2763a6', blockSize: 'small' },
+    { title: 'Brass + oak', photo: 'photo-1517248135467-4c7edcad34c4', blockSize: 'medium' },
+    { title: 'Paper stock', photo: 'photo-1498804103079-a6351b050096', blockSize: 'medium' },
+    { title: 'Low-light interior', photo: 'photo-1559925393-8be0ec4767c8', blockSize: 'small' },
+    { title: 'Table setting', photo: 'photo-1414235077428-338989a2e8c0', blockSize: 'large' },
+    { title: 'Cool ceramic', photo: 'photo-1600891964092-4316c288032e', blockSize: 'medium' },
+    { title: 'Morning counter', photo: 'photo-1442512595331-e89e73853f31', blockSize: 'small' },
+  ]
+  let moodOrder = 0
+  for (const m of moodSeed) {
+    const image = await makeMedia(m.photo, `${m.title} — moodboard reference`, `mood-${moodOrder}.jpg`)
+    await payload.create({
+      collection: 'moodboard',
+      data: { title: m.title, image, blockSize: m.blockSize, order: moodOrder++ },
+    })
+  }
+  payload.logger.info(`Seeded moodboard: ${moodSeed.length} images.`)
 
   // PLACEHOLDER — these two are invented. Replace them with the real quotes
   // you have, or untick "published" and the homepage drops the section.

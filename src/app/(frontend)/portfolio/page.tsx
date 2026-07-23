@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 
 import { AdvertisingGrid } from '@/components/portfolio/AdvertisingGrid'
-import { BrandingBlocks } from '@/components/portfolio/BrandingBlocks'
+import { BrandingGrid } from '@/components/portfolio/BrandingGrid'
 import { MerchCarousel } from '@/components/portfolio/MerchCarousel'
 import { WebsiteShowcase } from '@/components/portfolio/WebsiteShowcase'
 import { SiteFooter } from '@/components/SiteFooter'
@@ -29,9 +29,9 @@ export default async function PortfolioPage() {
     {
       id: 'branding',
       title: 'Branding',
-      note: 'Pick up a block and move it — the wall is yours to rearrange.',
+      note: null,
       show: branding.length > 0,
-      content: <BrandingBlocks items={branding} />,
+      content: <BrandingGrid items={branding} />,
     },
     {
       id: 'merchandise',
