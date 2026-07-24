@@ -1,6 +1,6 @@
 'use client'
 
-import { useFormFields } from '@payloadcms/ui'
+import { useDocumentInfo, useFormFields } from '@payloadcms/ui'
 import { useState } from 'react'
 
 import styles from './TransferToPortfolio.module.css'
@@ -33,6 +33,9 @@ export const TransferToPortfolio = () => {
     title: fields?.title?.value as string | undefined,
     cover: fields?.cover?.value as number | { id: number } | undefined,
   }))
+  // The saved project's own id — present once it exists, so a branding copy can
+  // link back to it and become clickable on the portfolio page.
+  const { id: projectId } = useDocumentInfo()
 
   const coverId =
     cover && typeof cover === 'object' ? cover.id : typeof cover === 'number' ? cover : undefined
@@ -52,6 +55,9 @@ export const TransferToPortfolio = () => {
         body: JSON.stringify({
           title: (title && title.trim()) || 'Untitled',
           [category.imageField]: coverId,
+          // Only branding carries a project link; setting it makes the copied
+          // thumbnail clickable straight through to this project's case study.
+          ...(category.slug === 'branding' && projectId ? { project: projectId } : {}),
         }),
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)

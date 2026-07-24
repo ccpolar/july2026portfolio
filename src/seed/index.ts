@@ -151,6 +151,7 @@ const run = async () => {
     payload.logger.info(`Created admin user ${email} (password: ${password})`)
   }
 
+  const projectIdBySlug: Record<string, number> = {}
   let order = 0
   for (const p of PROJECTS) {
     const media = await payload.create({
@@ -179,7 +180,7 @@ const run = async () => {
       gallery.push({ image: galleryMedia.id, caption: g.caption, size: g.size ?? 'full' })
     }
 
-    await payload.create({
+    const created = await payload.create({
       collection: 'projects',
       data: {
         title: p.title,
@@ -194,6 +195,7 @@ const run = async () => {
         order: order++,
       },
     })
+    projectIdBySlug[p.slug] = created.id
     payload.logger.info(`Seeded project: ${p.title}${gallery.length ? ` (+${gallery.length} gallery)` : ''}`)
   }
 
@@ -209,20 +211,22 @@ const run = async () => {
     return doc.id
   }
 
-  const brandingSeed: { title: string; photo: string }[] = [
-    { title: 'Fold Coffee — mark', photo: 'photo-1493857671505-72967e2e2760' },
-    { title: 'Ossa — wordmark', photo: 'photo-1517248135467-4c7edcad34c4' },
-    { title: 'Meridian — pattern', photo: 'photo-1523275335684-37898b6baf30' },
-    { title: 'Ilex — stationery', photo: 'photo-1498804103079-a6351b050096' },
-    { title: 'Fold — packaging', photo: 'photo-1442512595331-e89e73853f31' },
-    { title: 'Meridian — signage', photo: 'photo-1521302080334-4bebac2763a6' },
+  // projectSlug links each piece back to a Recent Work case study, so its
+  // thumbnail is clickable on the portfolio page.
+  const brandingSeed: { title: string; photo: string; projectSlug: string }[] = [
+    { title: 'Fold Coffee — mark', photo: 'photo-1493857671505-72967e2e2760', projectSlug: 'fold-coffee' },
+    { title: 'Ossa — wordmark', photo: 'photo-1517248135467-4c7edcad34c4', projectSlug: 'ossa' },
+    { title: 'Meridian — pattern', photo: 'photo-1523275335684-37898b6baf30', projectSlug: 'meridian' },
+    { title: 'Ilex — stationery', photo: 'photo-1498804103079-a6351b050096', projectSlug: 'ilex' },
+    { title: 'Fold — packaging', photo: 'photo-1442512595331-e89e73853f31', projectSlug: 'fold-coffee' },
+    { title: 'Meridian — signage', photo: 'photo-1521302080334-4bebac2763a6', projectSlug: 'meridian' },
   ]
   let bOrder = 0
   for (const b of brandingSeed) {
     const image = await makeMedia(b.photo, `${b.title} — branding piece`, `branding-${bOrder}.jpg`)
     await payload.create({
       collection: 'branding',
-      data: { title: b.title, image, order: bOrder++ },
+      data: { title: b.title, image, project: projectIdBySlug[b.projectSlug], order: bOrder++ },
     })
   }
 

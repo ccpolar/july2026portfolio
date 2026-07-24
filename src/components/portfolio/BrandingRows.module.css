@@ -8,6 +8,8 @@
   margin: 0;
   display: grid;
   gap: var(--space-md);
+  text-decoration: none;
+  color: inherit;
 }
 
 .frame {
@@ -26,13 +28,43 @@
   transition: transform var(--dur-slow) var(--ease-out-expo);
 }
 
-.row:hover .image {
+.link:hover .image,
+.link:focus-visible .image {
   transform: scale(1.03);
 }
 
 .caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-lg);
+}
+
+.title {
   font-size: var(--text-h3);
   font-weight: 600;
   font-stretch: 94%;
   letter-spacing: -0.02em;
+}
+
+/* Only linked rows carry the cue — the affordance appears exactly where a
+   click leads somewhere. */
+.cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--brand);
+  flex: none;
+}
+
+.arrow {
+  transition: transform var(--dur) var(--ease-out-expo);
+}
+
+.link:hover .arrow,
+.link:focus-visible .arrow {
+  transform: translateX(4px);
 }

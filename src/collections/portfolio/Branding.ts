@@ -9,9 +9,10 @@ export const Branding: CollectionConfig = {
   access: { read: () => true },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'order'],
+    defaultColumns: ['title', 'project', 'order'],
     group: 'Portfolio',
-    description: 'Branding pieces, shown as a four-column grid on the portfolio page.',
+    description:
+      'Branding pieces, shown as wide stacked thumbnails on the portfolio page. Link one to a Recent Work project and its thumbnail becomes clickable, opening that project’s full case study.',
   },
   defaultSort: 'order',
   hooks: {
@@ -20,7 +21,16 @@ export const Branding: CollectionConfig = {
   },
   fields: [
     { name: 'title', type: 'text', required: true },
-    imageField('The piece itself. Every cell in the grid is the same size, so consistent framing looks best.'),
+    imageField('The piece itself — wide/landscape framing reads best here.'),
+    {
+      name: 'project',
+      type: 'relationship',
+      relationTo: 'projects',
+      admin: {
+        description:
+          'Optional. The Recent Work project this piece belongs to. When set, clicking the thumbnail opens that project’s full case study. (Copying a project in from Recent Work sets this automatically.)',
+      },
+    },
     orderField,
   ],
 }

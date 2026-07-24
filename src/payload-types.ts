@@ -275,7 +275,7 @@ export interface Media {
   };
 }
 /**
- * Branding pieces, shown as a four-column grid on the portfolio page.
+ * Branding pieces, shown as wide stacked thumbnails on the portfolio page. Link one to a Recent Work project and its thumbnail becomes clickable, opening that project’s full case study.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "branding".
@@ -284,9 +284,13 @@ export interface Branding {
   id: number;
   title: string;
   /**
-   * The piece itself. Every cell in the grid is the same size, so consistent framing looks best.
+   * The piece itself — wide/landscape framing reads best here.
    */
   image: number | Media;
+  /**
+   * Optional. The Recent Work project this piece belongs to. When set, clicking the thumbnail opens that project’s full case study. (Copying a project in from Recent Work sets this automatically.)
+   */
+  project?: (number | null) | Project;
   /**
    * Lower numbers appear first.
    */
@@ -652,6 +656,7 @@ export interface ProjectsSelect<T extends boolean = true> {
 export interface BrandingSelect<T extends boolean = true> {
   title?: T;
   image?: T;
+  project?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;
