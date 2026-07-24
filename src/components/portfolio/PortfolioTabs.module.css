@@ -1,0 +1,61 @@
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(var(--space-md), 4vw, var(--space-2xl));
+  border-bottom: 1px solid var(--line);
+  margin-bottom: clamp(var(--space-xl), 5vw, var(--space-2xl));
+}
+
+.tab {
+  background: none;
+  border: none;
+  padding: 0 0 var(--space-sm);
+  margin-bottom: -1px;
+  cursor: pointer;
+  font-size: var(--text-lead);
+  font-weight: 550;
+  font-stretch: 96%;
+  letter-spacing: -0.01em;
+  color: var(--muted);
+  position: relative;
+  transition: color var(--dur-fast) var(--ease-out-quart);
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tabActive {
+  color: var(--ink);
+}
+
+/* The one moment of accent on this bar: the active category is underlined in
+   the brand colour, sitting on the hairline below the row. */
+.tabActive::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: var(--brand);
+}
+
+/* Each panel fades in as it becomes the active one; the hairline reveal is
+   quiet enough to read as a change of view, not a flourish. */
+.panel:not([hidden]) {
+  animation: panel-in var(--dur) var(--ease-out-quart) both;
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.375rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel:not([hidden]) {
+    animation: none;
+  }
+}

@@ -1,5 +1,5 @@
 .head {
-  padding-block: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 4vw, 3rem);
+  padding-block: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 4vw, 2.5rem);
 }
 
 .heading {
@@ -17,33 +17,11 @@
   line-height: 1.55;
 }
 
-.section {
-  padding-block: clamp(var(--space-2xl), 6vw, var(--space-3xl));
-  border-top: 1px solid var(--line);
-}
-
-.sectionHead {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-sm) var(--space-lg);
-  margin-bottom: clamp(var(--space-lg), 4vw, var(--space-2xl));
-}
-
-.sectionTitle {
-  font-size: var(--text-h2);
-  font-stretch: 92%;
-}
-
-.note {
-  font-size: var(--text-sm);
-  color: var(--muted);
-  max-width: 32ch;
+.body {
+  padding-bottom: var(--section);
 }
 
 .empty {
   color: var(--muted);
   max-width: 60ch;
-  padding-bottom: var(--section);
 }

@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 
 import { AdvertisingGrid } from '@/components/portfolio/AdvertisingGrid'
-import { BrandingGrid } from '@/components/portfolio/BrandingGrid'
+import { BrandingRows } from '@/components/portfolio/BrandingRows'
 import { MerchCarousel } from '@/components/portfolio/MerchCarousel'
+import { PortfolioTabs } from '@/components/portfolio/PortfolioTabs'
 import { WebsiteShowcase } from '@/components/portfolio/WebsiteShowcase'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -19,42 +20,47 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
+const Empty = ({ label }: { label: string }) => (
+  <p className={styles.empty}>No {label.toLowerCase()} here yet — this section is being filled.</p>
+)
+
 export default async function PortfolioPage() {
   const [chrome, portfolio] = await Promise.all([getChrome(), getPortfolio()])
   const { branding, merchandise, advertising, websites } = portfolio
 
-  // Each section is drawn only when it has something to show — an empty
-  // category is silently skipped rather than announcing a gap.
-  const sections = [
+  // All four categories are always tabs; Branding is the default view. An empty
+  // category shows a quiet placeholder rather than vanishing, so the nav stays
+  // consistent.
+  const panels = [
     {
       id: 'branding',
-      title: 'Branding',
-      note: null,
-      show: branding.length > 0,
-      content: <BrandingGrid items={branding} />,
+      label: 'Branding',
+      content: branding.length ? <BrandingRows items={branding} /> : <Empty label="Branding" />,
     },
     {
       id: 'merchandise',
-      title: 'Merchandise',
-      note: null,
-      show: merchandise.length > 0,
-      content: <MerchCarousel items={merchandise} />,
+      label: 'Merchandise',
+      content: merchandise.length ? (
+        <MerchCarousel items={merchandise} />
+      ) : (
+        <Empty label="Merchandise" />
+      ),
     },
     {
       id: 'advertising',
-      title: 'Advertising',
-      note: null,
-      show: advertising.length > 0,
-      content: <AdvertisingGrid items={advertising} />,
+      label: 'Advertising',
+      content: advertising.length ? (
+        <AdvertisingGrid items={advertising} />
+      ) : (
+        <Empty label="Advertising" />
+      ),
     },
     {
       id: 'websites',
-      title: 'Website design',
-      note: null,
-      show: websites.length > 0,
-      content: <WebsiteShowcase items={websites} />,
+      label: 'Website design',
+      content: websites.length ? <WebsiteShowcase items={websites} /> : <Empty label="Websites" />,
     },
-  ].filter((s) => s.show)
+  ]
 
   return (
     <>
@@ -67,28 +73,9 @@ export default async function PortfolioPage() {
           </p>
         </div>
 
-        {sections.length ? (
-          sections.map((section) => (
-            <section
-              className={`shell ${styles.section}`}
-              key={section.id}
-              id={section.id}
-              aria-labelledby={`${section.id}-heading`}
-            >
-              <div className={styles.sectionHead}>
-                <h2 className={styles.sectionTitle} id={`${section.id}-heading`}>
-                  {section.title}
-                </h2>
-                {section.note ? <p className={styles.note}>{section.note}</p> : null}
-              </div>
-              {section.content}
-            </section>
-          ))
-        ) : (
-          <p className={`shell ${styles.empty}`}>
-            The full portfolio is being assembled — check back shortly.
-          </p>
-        )}
+        <div className={`shell ${styles.body}`}>
+          <PortfolioTabs panels={panels} defaultId="branding" />
+        </div>
       </main>
       <SiteFooter siteName={chrome.siteName} />
     </>
