@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { AdvertisingGrid } from '@/components/portfolio/AdvertisingGrid'
+import { AdvertisingGallery } from '@/components/portfolio/AdvertisingGallery'
 import { BrandingRows } from '@/components/portfolio/BrandingRows'
 import { MerchCarousel } from '@/components/portfolio/MerchCarousel'
 import { PortfolioTabs } from '@/components/portfolio/PortfolioTabs'
@@ -50,7 +50,7 @@ export default async function PortfolioPage() {
       id: 'advertising',
       label: 'Advertising',
       content: advertising.length ? (
-        <AdvertisingGrid items={advertising} />
+        <AdvertisingGallery items={advertising} />
       ) : (
         <Empty label="Advertising" />
       ),
