@@ -79,6 +79,14 @@ export default buildConfig({
       enabled: Boolean(blobToken),
       collections: { media: true },
       token: blobToken,
+      // Upload straight from the browser to Blob storage instead of through the
+      // serverless function. That's the only way past Vercel's hard 4.5 MB
+      // request-body limit, so large source files can be uploaded. Trade-off:
+      // the server never sees the bytes, so Payload can't generate the resized
+      // WebP variants — client-uploaded images are stored and served at their
+      // original resolution (MediaImage falls back to the original URL when no
+      // sizes exist). Export images at a sensible size to keep pages light.
+      clientUploads: true,
     }),
   ],
   secret: process.env.PAYLOAD_SECRET || '',
