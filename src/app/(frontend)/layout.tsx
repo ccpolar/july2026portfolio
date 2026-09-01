@@ -29,8 +29,12 @@ export async function generateMetadata(): Promise<Metadata> {
     identity?.favicon && typeof identity.favicon === 'object' ? (identity.favicon as Media) : null
   // Prefer the resized thumb when it exists (server-processed uploads); large
   // client-uploaded images have no size variants, so fall back to the original.
-  const faviconUrl = faviconMedia?.sizes?.thumb?.url ?? faviconMedia?.url ?? undefined
-  const faviconType = faviconMedia?.mimeType ?? undefined
+  // Take the type from the SAME variant being linked — the thumb can be a
+  // different format (jpeg) than the original (webp), and a mismatched type
+  // hint makes some browsers skip the icon.
+  const faviconVariant = faviconMedia?.sizes?.thumb
+  const faviconUrl = faviconVariant?.url ?? faviconMedia?.url ?? undefined
+  const faviconType = faviconVariant?.mimeType ?? faviconMedia?.mimeType ?? undefined
 
   return {
     title,
