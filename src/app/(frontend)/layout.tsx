@@ -27,15 +27,19 @@ export async function generateMetadata(): Promise<Metadata> {
   const title = identity?.browserTitle || 'Cam — Designer'
   const faviconMedia =
     identity?.favicon && typeof identity.favicon === 'object' ? (identity.favicon as Media) : null
-  // Small and square is the point of a favicon — the thumb variant (480px)
-  // is already far bigger than any browser renders it, but it's the
-  // smallest one Payload generates.
+  // Prefer the resized thumb when it exists (server-processed uploads); large
+  // client-uploaded images have no size variants, so fall back to the original.
   const faviconUrl = faviconMedia?.sizes?.thumb?.url ?? faviconMedia?.url ?? undefined
+  const faviconType = faviconMedia?.mimeType ?? undefined
 
   return {
     title,
     description: home.metaDescription ?? undefined,
-    icons: faviconUrl ? { icon: faviconUrl } : undefined,
+    // Declare the type so browsers identify the format (e.g. webp) correctly,
+    // and register it as the shortcut icon too for older/bookmark contexts.
+    icons: faviconUrl
+      ? { icon: [{ url: faviconUrl, type: faviconType }], shortcut: [faviconUrl] }
+      : undefined,
     openGraph: {
       title,
       description: home.metaDescription ?? undefined,
