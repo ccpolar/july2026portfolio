@@ -44,7 +44,14 @@
 }
 
 .viewport {
-  overflow: hidden;
+  /* Scroll, not a transform: the drift and the visitor's grab have to share
+     one axis, and this way a trackpad swipe and a touch flick work natively.
+     The scrollbar is hidden — the belt itself is the affordance. */
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  cursor: grab;
   /* Soft-fade both edges so items enter and leave rather than snapping at a
      hard border. */
   -webkit-mask-image: linear-gradient(
@@ -65,24 +72,17 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  /* One full item's worth of duration per item keeps the speed constant no
-     matter how many the admin adds. */
-  animation: marquee calc(var(--count, 6) * 3.5s) linear infinite;
 }
 
-.viewport:hover .track,
-/* Keyboard users get the same courtesy: the belt holds still while focus is
-   anywhere inside it, so a shot can be opened without chasing it. */
-.viewport:focus-within .track {
-  animation-play-state: paused;
+.viewport::-webkit-scrollbar {
+  display: none;
 }
 
-/* The track is two identical halves; moving left by exactly half its width
-   lands copy two where copy one started — a seamless loop. */
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
+/* While the belt is being dragged the cursor is a closed hand, and no text or
+   image can be selected out from under the gesture. */
+.dragging {
+  cursor: grabbing;
+  user-select: none;
 }
 
 .item {
@@ -122,15 +122,6 @@
   }
 }
 
-/* Ambient motion is exactly what reduced-motion silences: the belt holds
-   still, showing the first set of items as a static row that can be scrolled
-   by hand. */
-@media (prefers-reduced-motion: reduce) {
-  .track {
-    animation: none;
-    overflow-x: auto;
-  }
-}
 
 /* — Grid view — the same square shots, all present and still. */
 .grid {

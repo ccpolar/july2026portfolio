@@ -135,5 +135,5 @@ export const useLightbox = (items: LightboxItem[]) => {
     </dialog>
   )
 
-  return { open, element }
+  return { open, element, isOpen: index !== null }
 }

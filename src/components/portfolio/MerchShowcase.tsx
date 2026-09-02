@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, type CSSProperties } from 'react'
+import { useState } from 'react'
 
 import type { Merchandise } from '@/payload-types'
 
 import { MediaImage } from '../MediaImage'
 import { useLightbox } from './Lightbox'
+import { useDraggableBelt } from './useDraggableBelt'
 import styles from './MerchShowcase.module.css'
 
 const CarouselIcon = () => (
@@ -29,10 +30,9 @@ type View = 'carousel' | 'grid'
 /**
  * Merchandise in either of two views, switched by the visitor.
  *
- * Carousel: an endless, self-scrolling belt. The track holds two copies of the
- * items back to back and translates by exactly half its width, so the loop is
- * seamless with no visible jump. Pure CSS — it pauses on hover and focus, and
- * stops entirely under reduced motion (see the module).
+ * Carousel: an endless belt that drifts on its own and can be grabbed and
+ * thrown to get through it faster. The items are rendered twice so the loop
+ * has no seam; see useDraggableBelt for how it moves.
  *
  * Grid: every shot at once, nothing moving — the view for actually studying
  * the work rather than watching it go by.
@@ -41,12 +41,17 @@ type View = 'carousel' | 'grid'
  */
 export const MerchShowcase = ({ items }: { items: Merchandise[] }) => {
   const [view, setView] = useState<View>('carousel')
-  const { open, element } = useLightbox(items)
+  const { open, element, isOpen } = useLightbox(items)
+  const { viewportRef, trackRef, dragging, beltProps } = useDraggableBelt({
+    itemCount: items.length,
+    frozen: isOpen || view !== 'carousel',
+  })
 
   if (!items.length) return null
 
-  // Two copies so the -50% translate lands the second copy exactly where the
-  // first began. aria-hidden on the clone so screen readers read each once.
+  // Two copies, so crossing into the second can be silently rewound to the
+  // identical spot in the first. aria-hidden on the clone so screen readers
+  // read each shot once.
   const run = [
     ...items.map((item, index) => ({ item, index, clone: false })),
     ...items.map((item, index) => ({ item, index, clone: true })),
@@ -99,8 +104,13 @@ export const MerchShowcase = ({ items }: { items: Merchandise[] }) => {
       {/* key on the view so switching remounts the container and the settle
           animation replays, marking the change without a transition library. */}
       {view === 'carousel' ? (
-        <div className={styles.viewport} key="carousel">
-          <ul className={styles.track} style={{ '--count': items.length } as CSSProperties}>
+        <div
+          className={`${styles.viewport} ${dragging ? styles.dragging : ''}`}
+          key="carousel"
+          ref={viewportRef}
+          {...beltProps}
+        >
+          <ul className={styles.track} ref={trackRef}>
             {run.map(({ item, index, clone }, i) => (
               <li className={styles.item} key={`${item.id}-${i}`} aria-hidden={clone || undefined}>
                 {thumb(item, index, clone)}
