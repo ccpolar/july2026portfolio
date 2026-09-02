@@ -4,6 +4,7 @@ import React from 'react'
 
 import { ContactModal } from '@/components/ContactModal'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
+import { NoImageDownloads } from '@/components/NoImageDownloads'
 import { SiteBackground } from '@/components/SiteBackground'
 import { getContact, getHomepage, getIdentity, getTheme } from '@/lib/data'
 import { themeToCss } from '@/lib/theme'
@@ -66,6 +67,8 @@ export default async function FrontendLayout({ children }: { children: React.Rea
       <body>
         <SiteBackground />
         <LivePreviewTheme initialData={theme} />
+        {/* Public site only — /admin keeps its normal right-click. */}
+        <NoImageDownloads />
         <div className={styles.content}>
           <a className="skip-link" href="#work">
             Skip to the work

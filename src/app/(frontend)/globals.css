@@ -112,6 +112,15 @@ svg {
   max-width: 100%;
 }
 
+/* The work is not for taking. Paired with NoImageDownloads (which blocks the
+   right-click and long-press menus), this closes the drag-to-desktop copy —
+   a deterrent against the reflex grab, not real protection. */
+img {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
 h1,
 h2,
 h3 {
