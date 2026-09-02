@@ -2,9 +2,12 @@
    is the only interaction. Full images stand alone across the width; two halves
    in a row share it, giving the sequence a rhythm without any chrome. */
 .gallery {
+  /* Set per project in /admin, so a project whose artwork was split across
+     several files can close the gap to nothing and read as one image. */
+  --gallery-gap: 48px;
   display: flex;
   flex-wrap: wrap;
-  gap: clamp(var(--space-xl), 5vw, var(--space-2xl)) var(--space-md);
+  gap: var(--gallery-gap);
 }
 
 /* Same page-load settle as the hero (opacity + slight rise), not a
@@ -47,7 +50,7 @@
 /* A half grows to fill its row when it lands alone, so a lone half reads as a
    full rather than leaving an awkward gap; two halves settle at 50% each. */
 .half {
-  flex: 1 1 calc(50% - var(--space-md) / 2);
+  flex: 1 1 calc(50% - var(--gallery-gap) / 2);
 }
 
 .frame {
@@ -74,4 +77,15 @@
   .half {
     flex-basis: 100%;
   }
+}
+
+/* Gap 0 — the pieces of one artwork that had to be exported as several files.
+   Nothing may show between them: no rounded corners, and no staggered rise,
+   which would tear the seam open while the page settles. */
+.seamless .frame {
+  border-radius: 0;
+}
+
+.seamless .item {
+  animation: none;
 }

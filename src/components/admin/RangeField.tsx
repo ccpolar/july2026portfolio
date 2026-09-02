@@ -3,20 +3,23 @@
 import { FieldLabel, useField } from '@payloadcms/ui'
 import type { NumberFieldClientProps } from 'payload'
 
-type Props = NumberFieldClientProps & { unit?: string }
+type Props = NumberFieldClientProps & { unit?: string; fallback?: number }
 
 /** A plain <input type="number"> is fine for most numbers, but for a small,
  * bounded range like logo height a slider makes the effect of each value
  * obvious without trial and error. */
 export const RangeField = (props: Props) => {
-  const { path, field, unit = '' } = props
+  const { path, field, unit = '', fallback } = props
   const { value, setValue, showError, errorMessage } = useField<number>({ path })
 
   const min = typeof field?.min === 'number' ? field.min : 0
   const max = typeof field?.max === 'number' ? field.max : 100
-  // Payload's form state already seeds `value` from the field's defaultValue
-  // on load; this only covers the instant before that state settles.
-  const current = typeof value === 'number' ? value : min
+  // Payload's form state seeds `value` from the field's defaultValue on
+  // create, but a document saved before this field existed has no value at
+  // all. `fallback` is the default the site actually renders with, so the
+  // slider never shows a position the page isn't in.
+  const current =
+    typeof value === 'number' ? value : typeof fallback === 'number' ? fallback : min
 
   return (
     <div className="field-type number">

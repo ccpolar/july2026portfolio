@@ -117,6 +117,24 @@ export const Projects: CollectionConfig = {
       },
     },
     {
+      name: 'galleryGap',
+      type: 'number',
+      defaultValue: 48,
+      min: 0,
+      max: 96,
+      label: 'Space between gallery images',
+      admin: {
+        description:
+          'The gap between the images below, in pixels. Set it to 0 when one artwork has been split across several files — the pieces then butt together with no seam.',
+        components: {
+          Field: {
+            path: '/components/admin/RangeField#RangeField',
+            clientProps: { unit: 'px', fallback: 48 },
+          },
+        },
+      },
+    },
+    {
       name: 'gallery',
       type: 'array',
       labels: { singular: 'Image', plural: 'Gallery' },

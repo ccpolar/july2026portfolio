@@ -146,7 +146,7 @@ export default async function ProjectPage({ params }: Params) {
 
         {project.gallery?.length ? (
           <div className={`shell ${styles.gallerySection}`}>
-            <ProjectGallery items={project.gallery} />
+            <ProjectGallery items={project.gallery} gap={project.galleryGap} />
           </div>
         ) : null}
 

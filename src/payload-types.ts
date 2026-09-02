@@ -199,6 +199,10 @@ export interface Project {
     [k: string]: unknown;
   } | null;
   /**
+   * The gap between the images below, in pixels. Set it to 0 when one artwork has been split across several files — the pieces then butt together with no seam.
+   */
+  galleryGap?: number | null;
+  /**
    * More images from the project, stacked below the write-up. Leave empty to show just the cover. Two half-width images in a row sit side by side.
    */
   gallery?:
@@ -636,6 +640,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   summary?: T;
   cover?: T;
   body?: T;
+  galleryGap?: T;
   gallery?:
     | T
     | {
