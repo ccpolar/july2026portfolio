@@ -13,8 +13,14 @@ type Props = {
 }
 
 export const Hero = ({ home, contact }: Props) => {
+  // Require a real, resolvable image before switching to the two-column hero:
+  // it must be a populated media object with a file URL. If the hero media is
+  // missing (e.g. its file was deleted), fall back to the clean text-only hero
+  // rather than an empty or broken image frame.
   const image =
-    home.heroImage && typeof home.heroImage === 'object' ? home.heroImage : null
+    home.heroImage && typeof home.heroImage === 'object' && home.heroImage.url
+      ? home.heroImage
+      : null
   const imageSize = home.heroImageSize ?? 40
 
   const content = (
