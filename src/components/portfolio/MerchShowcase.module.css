@@ -1,3 +1,48 @@
+/* — View switch — the visitor's choice between the moving belt and the
+   still grid. Sits above the work, right-aligned, quiet enough not to
+   compete with it. */
+.head {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-md);
+}
+
+.switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: calc(var(--radius) + 2px);
+}
+
+.option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: var(--space-2xs) var(--space-sm);
+  border: none;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color var(--dur-fast) var(--ease-out-quart),
+    background-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.option:hover {
+  color: var(--ink);
+}
+
+.optionActive,
+.optionActive:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
 .viewport {
   overflow: hidden;
   /* Soft-fade both edges so items enter and leave rather than snapping at a
@@ -84,5 +129,40 @@
   .track {
     animation: none;
     overflow-x: auto;
+  }
+}
+
+/* — Grid view — the same square shots, all present and still. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
+  gap: clamp(var(--space-md), 3vw, var(--space-xl));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gridItem {
+  margin: 0;
+}
+
+/* Switching view is a change of state, not a page load: both containers
+   settle in so the swap registers without anything sliding about. */
+.viewport,
+.grid {
+  animation: view-in var(--dur) var(--ease-out-quart) both;
+}
+
+@keyframes view-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .viewport,
+  .grid {
+    animation: none;
   }
 }

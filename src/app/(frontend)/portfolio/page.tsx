@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { AdvertisingGallery } from '@/components/portfolio/AdvertisingGallery'
 import { BrandingRows } from '@/components/portfolio/BrandingRows'
-import { MerchCarousel } from '@/components/portfolio/MerchCarousel'
+import { MerchShowcase } from '@/components/portfolio/MerchShowcase'
 import { PortfolioTabs } from '@/components/portfolio/PortfolioTabs'
 import { WebsiteShowcase } from '@/components/portfolio/WebsiteShowcase'
 import { SiteFooter } from '@/components/SiteFooter'
@@ -41,7 +41,7 @@ export default async function PortfolioPage() {
       id: 'merchandise',
       label: 'Merchandise',
       content: merchandise.length ? (
-        <MerchCarousel items={merchandise} />
+        <MerchShowcase items={merchandise} />
       ) : (
         <Empty label="Merchandise" />
       ),
