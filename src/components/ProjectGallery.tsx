@@ -30,6 +30,10 @@ export const ProjectGallery = ({ items, gap }: Props) => {
     >
       {items.map((item: GalleryItem) => {
         const half = item.size === 'half'
+        // An all-whitespace caption is not a caption: rendering it would add
+        // an empty line under the image, which at gap 0 shows up as exactly
+        // the seam the setting is there to remove.
+        const caption = item.caption?.trim()
         return (
           <figure
             className={`${styles.item} ${half ? styles.half : ''}`}
@@ -42,7 +46,7 @@ export const ProjectGallery = ({ items, gap }: Props) => {
                 sizes={half ? '(min-width: 40rem) 43rem, 100vw' : '(min-width: 88rem) 88rem, 100vw'}
               />
             </div>
-            {item.caption ? <figcaption className={styles.caption}>{item.caption}</figcaption> : null}
+            {caption ? <figcaption className={styles.caption}>{caption}</figcaption> : null}
           </figure>
         )
       })}

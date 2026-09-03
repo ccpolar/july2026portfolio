@@ -52,6 +52,11 @@
   scrollbar-width: none;
   overscroll-behavior-x: contain;
   cursor: grab;
+  /* The layout drops pointer-events on content so the background canvas can
+     see the cursor, restoring it per element (see layout.module.css). A
+     scroll container has to claim the pointer itself: without this, a touch
+     swipe lands on a child image and never pans the belt. */
+  pointer-events: auto;
   /* Soft-fade both edges so items enter and leave rather than snapping at a
      hard border. */
   -webkit-mask-image: linear-gradient(
