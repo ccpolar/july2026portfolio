@@ -9,7 +9,6 @@ import styles from './IntakeForm.module.css'
 // Deliberately loose, matching the server: catches typos, doesn't police addresses.
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-const BUDGETS = ['<$5k', '$5k–15k', '$15k–40k', '$40k+']
 const TIMELINES = ['ASAP', '1–3 months', '3–6 months', 'Flexible']
 
 const EMPTY: IntakeAnswers = {
@@ -85,10 +84,12 @@ const buildSteps = (services: string[]): Step[] => [
   },
   {
     key: 'budget',
-    kind: 'single',
-    heading: () => 'Roughly, what’s the budget?',
-    options: BUDGETS,
-    valid: (a) => Boolean(a.budget),
+    kind: 'text',
+    heading: () => 'What budget do you have in mind?',
+    hint: 'A rough number or range is fine.',
+    placeholder: 'e.g. $2,500',
+    autoComplete: 'off',
+    valid: (a) => a.budget.trim().length > 0,
   },
   {
     key: 'timeline',
@@ -269,7 +270,7 @@ export const IntakeForm = ({ services, onDone }: { services: string[]; onDone: (
       const current = answers.services
       set('services', current.includes(option) ? current.filter((o) => o !== option) : [...current, option])
     } else {
-      set(step.key as 'budget' | 'timeline', option)
+      set('timeline', option)
     }
   }
 
@@ -358,8 +359,8 @@ export const IntakeForm = ({ services, onDone }: { services: string[]; onDone: (
                 const selected =
                   step.kind === 'multi'
                     ? answers.services.includes(option)
-                    : answers[step.key as 'budget' | 'timeline'] === option
-                const firstFocusable = step.kind === 'single' ? (answers[step.key as 'budget' | 'timeline'] ? selected : i === 0) : i === 0
+                    : answers.timeline === option
+                const firstFocusable = step.kind === 'single' ? (answers.timeline ? selected : i === 0) : i === 0
                 return (
                   <button
                     key={option}
@@ -397,8 +398,8 @@ export const IntakeForm = ({ services, onDone }: { services: string[]; onDone: (
               value={String(answers[step.key] ?? '')}
               placeholder={step.placeholder}
               autoComplete={step.autoComplete}
-              autoCapitalize={step.kind === 'text' ? 'words' : 'off'}
-              spellCheck={step.kind === 'text'}
+              autoCapitalize={step.kind === 'text' && step.key !== 'budget' ? 'words' : 'off'}
+              spellCheck={step.kind === 'text' && step.key !== 'budget'}
               aria-describedby={[hintId, emailError ? `${fieldId}-error` : undefined].filter(Boolean).join(' ') || undefined}
               aria-invalid={Boolean(emailError)}
               onChange={(e) => set(step.key, e.target.value as never)}

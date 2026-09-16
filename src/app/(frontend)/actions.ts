@@ -11,7 +11,14 @@ export type SubscribeState = {
 // Deliberately loose: the goal is to catch typos, not to police valid addresses.
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-const GENERIC_ERROR = 'Something went wrong on my end. Email me directly and I’ll get back to you.'
+// Formspree form addresses aren't secrets (a plain Formspree form puts them in
+// the page's HTML), so they're defaults here rather than relying on env vars
+// that only ever existed in local .env — without them every production send
+// stopped before reaching Formspree. An env var still overrides either one.
+const FORMSPREE_CONTACT =
+  process.env.FORMSPREE_CONTACT_ENDPOINT || 'https://formspree.io/f/mlgabppb'
+const FORMSPREE_NEWSLETTER =
+  process.env.FORMSPREE_NEWSLETTER_ENDPOINT || 'https://formspree.io/f/xlgabpob'
 
 async function postToFormspree(endpoint: string, data: Record<string, string>) {
   const res = await fetch(endpoint, {
@@ -19,7 +26,12 @@ async function postToFormspree(endpoint: string, data: Record<string, string>) {
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(data),
   })
-  if (!res.ok) throw new Error(`Formspree responded ${res.status}`)
+  if (!res.ok) {
+    // Formspree explains rejections in the body (spam block, unconfirmed form,
+    // domain restriction); keep it so the Vercel logs say why.
+    const detail = (await res.text().catch(() => '')).slice(0, 300)
+    throw new Error(`Formspree responded ${res.status}: ${detail}`)
+  }
 }
 
 export async function subscribe(
@@ -62,13 +74,11 @@ export async function subscribe(
 
     // Payload is the system of record for subscribers — a Formspree hiccup
     // here is a missed notification, not a failed signup, so it stays silent.
-    const formspreeEndpoint = process.env.FORMSPREE_NEWSLETTER_ENDPOINT
-    if (formspreeEndpoint) {
-      try {
-        await postToFormspree(formspreeEndpoint, { email, source: 'homepage' })
-      } catch {
-        // ignored — see comment above
-      }
+    try {
+      await postToFormspree(FORMSPREE_NEWSLETTER, { email, source: 'homepage' })
+    } catch (err) {
+      // Not surfaced to the visitor — see comment above — but logged.
+      console.error('[newsletter] Formspree notification failed:', err instanceof Error ? err.message : err)
     }
 
     return { status: 'ok', message: 'Thanks — I’ll be in touch when there’s something worth sharing.' }
@@ -122,11 +132,8 @@ export async function submitIntake(answers: IntakeAnswers): Promise<IntakeResult
     return { status: 'error', message: 'That email looks incomplete — go back and check it.' }
   }
 
-  const endpoint = process.env.FORMSPREE_CONTACT_ENDPOINT
-  if (!endpoint) return { status: 'error', message: GENERIC_ERROR }
-
   try {
-    await postToFormspree(endpoint, {
+    await postToFormspree(FORMSPREE_CONTACT, {
       name,
       email,
       company,
@@ -139,7 +146,8 @@ export async function submitIntake(answers: IntakeAnswers): Promise<IntakeResult
       _replyto: email,
     })
     return { status: 'ok' }
-  } catch {
+  } catch (err) {
+    console.error('[intake] Formspree send failed:', err instanceof Error ? err.message : err)
     return { status: 'error', message: 'That didn’t go through — nothing you did. Your answers are still here.' }
   }
 }
