@@ -11,9 +11,8 @@
 
 .page .heading {
   font-size: clamp(2.25rem, 5.5vw, 4rem);
-  font-weight: 620;
-  font-stretch: 88%;
-  letter-spacing: -0.035em;
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
 }
 
 .page .intro {
@@ -30,7 +29,6 @@
 
 .heading {
   font-size: var(--text-h2);
-  font-stretch: 92%;
 }
 
 .intro {
@@ -91,9 +89,8 @@
 
 .title {
   font-size: var(--text-h3);
-  font-weight: 600;
-  font-stretch: 94%;
-  letter-spacing: -0.02em;
+  font-weight: 500;
+  letter-spacing: var(--tracking-heading);
   display: inline-flex;
   align-items: baseline;
   gap: var(--space-2xs);
@@ -131,7 +128,7 @@
 
 .cue {
   font-size: var(--text-label);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--brand);
   display: inline-flex;
   align-items: center;

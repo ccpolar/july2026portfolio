@@ -14,7 +14,6 @@
 
 .heading {
   font-size: var(--text-h2);
-  font-stretch: 90%;
   color: var(--on-brand);
   max-width: 16ch;
 }
@@ -50,7 +49,7 @@
   background: transparent;
   color: var(--on-brand);
   font-size: var(--text-sm);
-  font-weight: 550;
+  font-weight: 500;
   text-decoration: none;
   padding: 0.875rem 1.5rem;
   min-height: 2.75rem;
@@ -94,7 +93,7 @@
 
 .asideTitle {
   font-size: var(--text-body);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--on-brand);
 }
 
@@ -147,7 +146,7 @@
   border-radius: var(--radius);
   color: var(--on-brand);
   font-size: var(--text-sm);
-  font-weight: 550;
+  font-weight: 500;
   padding: 0.75rem 1.125rem;
   min-height: 2.75rem;
   cursor: pointer;
@@ -203,7 +202,7 @@
 
 .statusErr {
   color: var(--on-brand);
-  font-weight: 550;
+  font-weight: 500;
 }
 
 .socials {

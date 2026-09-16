@@ -25,9 +25,8 @@
 
 .heading {
   font-size: var(--text-h2);
-  font-weight: 650;
-  font-stretch: 92%;
-  letter-spacing: -0.03em;
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
   line-height: 1.1;
 }
 
@@ -86,10 +85,11 @@
 
 .title {
   font-size: var(--text-body);
-  font-weight: 620;
-  letter-spacing: -0.015em;
+  font-weight: 500;
+  letter-spacing: var(--tracking-title);
   line-height: 1.3;
   color: var(--on);
+  font-family: var(--font-text);
 }
 
 /* The same height in every card, so a row's descriptions start on one line
@@ -147,8 +147,8 @@
 
 .priceValue {
   font-size: var(--text-body);
-  font-weight: 620;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  letter-spacing: var(--tracking-title);
   color: var(--on);
   text-align: right;
 }

@@ -65,9 +65,7 @@
 .title {
   font-size: clamp(2.625rem, 6.6vw, 5.25rem);
   font-weight: 700;
-  font-stretch: 96%;
-  letter-spacing: -0.028em;
-  word-spacing: 0.02em;
+  letter-spacing: var(--tracking-display);
   line-height: 1.02;
   max-width: 15ch;
   text-wrap: balance;

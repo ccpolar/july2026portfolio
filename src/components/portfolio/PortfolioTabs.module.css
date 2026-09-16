@@ -13,9 +13,8 @@
   margin-bottom: -1px;
   cursor: pointer;
   font-size: var(--text-lead);
-  font-weight: 550;
-  font-stretch: 96%;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  letter-spacing: var(--tracking-title);
   color: var(--muted);
   position: relative;
   transition: color var(--dur-fast) var(--ease-out-quart);

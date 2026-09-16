@@ -66,9 +66,8 @@
 
 .title {
   font-size: var(--text-display);
-  font-weight: 620;
-  font-stretch: 88%;
-  letter-spacing: -0.035em;
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
   line-height: 0.98;
   max-width: 15ch;
 }

@@ -68,8 +68,7 @@
 .initial {
   font-size: var(--text-body);
   font-weight: 700;
-  font-stretch: 88%;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--tracking-heading);
   line-height: 1;
 }
 

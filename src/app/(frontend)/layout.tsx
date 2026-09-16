@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import { Archivo } from 'next/font/google'
 import React from 'react'
 
 import { ContactModal } from '@/components/ContactModal'
@@ -12,15 +11,6 @@ import type { Media } from '@/payload-types'
 
 import './globals.css'
 import styles from './layout.module.css'
-
-// One family, two axes. Width carries the display voice so the page never
-// needs a second typeface to create contrast.
-const archivo = Archivo({
-  subsets: ['latin'],
-  axes: ['wdth'],
-  display: 'swap',
-  variable: '--font-archivo',
-})
 
 export async function generateMetadata(): Promise<Metadata> {
   const [home, identity] = await Promise.all([getHomepage(), getIdentity()])
@@ -57,8 +47,13 @@ export default async function FrontendLayout({ children }: { children: React.Rea
   const [theme, contact] = await Promise.all([getTheme(), getContact()])
 
   return (
-    <html lang="en" className={archivo.variable}>
+    <html lang="en">
       <head>
+        {/* Neue Haas Grotesk, served from Cam's Adobe Fonts kit (licensed for
+            campagano.com). Text and Display cuts: see --font-text and
+            --font-display in globals.css. */}
+        <link rel="preconnect" href="https://use.typekit.net" crossOrigin="anonymous" />
+        <link rel="stylesheet" href="https://use.typekit.net/wxs8ixt.css" />
         <style
           // Brand colours are content, not code — they come from /admin.
           dangerouslySetInnerHTML={{ __html: themeToCss(theme) }}

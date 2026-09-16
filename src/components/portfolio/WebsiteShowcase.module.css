@@ -90,13 +90,13 @@
 
 .title {
   font-size: var(--text-body);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 500;
+  letter-spacing: var(--tracking-title);
 }
 
 .visit {
   font-size: var(--text-label);
-  font-weight: 550;
+  font-weight: 500;
   color: var(--brand);
   flex: none;
 }

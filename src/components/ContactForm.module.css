@@ -67,7 +67,7 @@
   background: var(--on-brand);
   color: var(--brand);
   font-size: var(--text-sm);
-  font-weight: 600;
+  font-weight: 500;
   padding: 0.875rem 1.5rem;
   min-height: 2.75rem;
   border-radius: var(--radius);
@@ -125,5 +125,5 @@
 
 .statusErr {
   color: var(--on-brand);
-  font-weight: 550;
+  font-weight: 500;
 }

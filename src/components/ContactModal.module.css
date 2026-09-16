@@ -73,7 +73,6 @@
 
 .heading {
   font-size: var(--text-h3);
-  font-stretch: 92%;
   max-width: 20ch;
   padding-right: var(--space-2xl);
 }

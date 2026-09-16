@@ -22,7 +22,7 @@
 .quote {
   font-size: var(--text-lead);
   line-height: 1.5;
-  letter-spacing: -0.011em;
+  letter-spacing: var(--tracking-title);
   text-wrap: pretty;
 }
 
@@ -37,7 +37,7 @@
 
 .name {
   color: var(--ink);
-  font-weight: 550;
+  font-weight: 500;
 }
 
 .sep {

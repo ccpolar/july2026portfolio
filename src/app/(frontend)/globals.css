@@ -64,7 +64,20 @@
   --max: 88rem;
 
   /* — type — */
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Neue Haas Grotesk throughout, in its two optical cuts: Text is drawn for
+     reading sizes, Display for headings, where its tighter fit and finer
+     detail pay off. Helvetica is the fallback while the kit loads — the same
+     lineage, so nothing jumps. */
+  --font-text: 'neue-haas-grotesk-text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-display: 'neue-haas-grotesk-display', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-sans: var(--font-text);
+
+  /* One tracking scale for the whole site. Every heading and title uses one
+     of these three steps, so no section's type can sit tighter than another's. */
+  --tracking-display: -0.015em;
+  --tracking-heading: -0.01em;
+  --tracking-title: -0.005em;
+
   --text-display: clamp(2.75rem, 7.2vw, 5.5rem);
   --text-h2: clamp(1.875rem, 3.6vw, 2.875rem);
   --text-h3: clamp(1.25rem, 1.8vw, 1.5rem);
@@ -137,10 +150,21 @@ img {
 h1,
 h2,
 h3 {
+  font-family: var(--font-display);
   text-wrap: balance;
   line-height: 1.05;
-  font-weight: 600;
-  letter-spacing: -0.03em;
+  letter-spacing: var(--tracking-heading);
+}
+
+/* Page and section headings are Bold, the same weight as the hero; titles
+   inside a section step down to Medium so the hierarchy reads at a glance. */
+h1,
+h2 {
+  font-weight: 700;
+}
+
+h3 {
+  font-weight: 500;
 }
 
 p {
