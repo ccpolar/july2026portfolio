@@ -61,7 +61,7 @@ export const Homepage: GlobalConfig = {
               relationTo: 'media',
               admin: {
                 description:
-                  'Optional. Sits to the right of the headline on wide screens, and below it on narrower ones.',
+                  'Optional. Sits centred below the buttons.',
               },
             },
             {
@@ -79,6 +79,28 @@ export const Homepage: GlobalConfig = {
                     clientProps: { unit: '%' },
                   },
                 },
+              },
+            },
+          ],
+        },
+        {
+          label: 'Trusted by',
+          description: 'The logo strip under the hero. The logos themselves live under Content → Client logos; the strip hides itself until at least one is added.',
+          fields: [
+            {
+              name: 'trustedHeading',
+              type: 'text',
+              maxLength: 80,
+              defaultValue: 'Trusted by these businesses, and counting.',
+            },
+            {
+              name: 'trustedMoreLabel',
+              type: 'text',
+              maxLength: 24,
+              defaultValue: '+ More',
+              admin: {
+                description:
+                  'The pill under the logos — e.g. “50+ More”. Leave blank to hide it.',
               },
             },
           ],

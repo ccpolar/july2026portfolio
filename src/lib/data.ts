@@ -45,6 +45,17 @@ export const getTestimonials = cache(async () => {
   return docs
 })
 
+export const getClients = cache(async () => {
+  const payload = await client()
+  const { docs } = await payload.find({
+    collection: 'clients',
+    sort: 'order',
+    depth: 1,
+    limit: 60,
+  })
+  return docs
+})
+
 export const getIdentity = cache(async () => {
   const payload = await client()
   return payload.findGlobal({ slug: 'identity', depth: 1 })

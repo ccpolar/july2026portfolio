@@ -1,0 +1,98 @@
+.section {
+  padding-bottom: var(--section);
+  text-align: center;
+}
+
+/* A quiet line, not a section title — the logos are the statement. */
+.heading {
+  font-size: var(--text-body);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  text-wrap: balance;
+  margin-bottom: clamp(var(--space-lg), 4vw, var(--space-xl));
+}
+
+/* Flex rather than grid so a short last row centres itself instead of
+   hanging off the left edge, whatever number of logos is uploaded. */
+.logos {
+  --columns: 2;
+  --gap: var(--space-2xs);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--gap);
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 36rem) {
+  .logos {
+    --columns: 3;
+  }
+}
+
+@media (min-width: 60rem) {
+  .logos {
+    --columns: 6;
+  }
+}
+
+.cell {
+  flex: 0 0 calc((100% - (var(--columns) - 1) * var(--gap)) / var(--columns));
+  height: clamp(4.25rem, 7vw, 5.25rem);
+  display: grid;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  transition:
+    background-color var(--dur) var(--ease-out-quart),
+    border-color var(--dur) var(--ease-out-quart);
+}
+
+/* Size comes from the width/height attributes (balanced by area in
+   TrustedBy.tsx). max-width only guards a narrow phone cell. */
+.logo {
+  height: auto;
+  max-width: 78%;
+  object-fit: contain;
+  opacity: 0.4;
+  filter: grayscale(1);
+  transition:
+    opacity var(--dur) var(--ease-out-quart),
+    filter var(--dur) var(--ease-out-quart);
+}
+
+.cell:hover {
+  background: var(--raised);
+  border-color: var(--edge);
+}
+
+.cell:hover .logo {
+  opacity: 1;
+  filter: none;
+}
+
+/* No hover on touch screens, so nothing would ever lift the fade — sit them
+   a little stronger there so the names still register. */
+@media (hover: none) {
+  .logo {
+    opacity: 0.6;
+  }
+}
+
+.more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  margin-top: var(--space-md);
+  padding: 0.625rem 1.25rem;
+  background: var(--raised);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--ink);
+}

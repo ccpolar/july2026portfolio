@@ -8,6 +8,7 @@ import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
+import { Clients } from './collections/Clients'
 import { Media } from './collections/Media'
 import { Moodboard } from './collections/Moodboard'
 import { Advertising } from './collections/portfolio/Advertising'
@@ -58,6 +59,7 @@ export default buildConfig({
     Moodboard,
     Posts,
     Testimonials,
+    Clients,
     Media,
     Subscribers,
     Users,

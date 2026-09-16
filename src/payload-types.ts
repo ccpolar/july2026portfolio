@@ -75,6 +75,7 @@ export interface Config {
     moodboard: Moodboard;
     posts: Post;
     testimonials: Testimonial;
+    clients: Client;
     media: Media;
     subscribers: Subscriber;
     users: User;
@@ -93,6 +94,7 @@ export interface Config {
     moodboard: MoodboardSelect<false> | MoodboardSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    clients: ClientsSelect<false> | ClientsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -474,6 +476,29 @@ export interface Testimonial {
   createdAt: string;
 }
 /**
+ * The logos in the “Trusted by” strip under the homepage hero. They sit faded until hovered, so single-colour logos on a transparent background look most consistent.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients".
+ */
+export interface Client {
+  id: number;
+  /**
+   * The business’s name. Read aloud by screen readers in place of the logo.
+   */
+  name: string;
+  /**
+   * SVG or a transparent PNG, cropped close to the artwork — any empty margin around the logo makes it render smaller than its neighbours.
+   */
+  logo: number | Media;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * People who asked to hear about new work. Export or delete any time.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -567,6 +592,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'testimonials';
         value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'clients';
+        value: number | Client;
       } | null)
     | ({
         relationTo: 'media';
@@ -744,6 +773,17 @@ export interface TestimonialsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "clients_select".
+ */
+export interface ClientsSelect<T extends boolean = true> {
+  name?: T;
+  logo?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
@@ -889,13 +929,18 @@ export interface Homepage {
   available?: boolean | null;
   availabilityLabel?: string | null;
   /**
-   * Optional. Sits to the right of the headline on wide screens, and below it on narrower ones.
+   * Optional. Sits centred below the buttons.
    */
   heroImage?: (number | null) | Media;
   /**
    * How much of the hero’s width the photo takes up, on wide screens.
    */
   heroImageSize?: number | null;
+  trustedHeading?: string | null;
+  /**
+   * The pill under the logos — e.g. “50+ More”. Leave blank to hide it.
+   */
+  trustedMoreLabel?: string | null;
   workHeading: string;
   /**
    * Optional. Leave blank to let the work start immediately.
@@ -1043,6 +1088,8 @@ export interface HomepageSelect<T extends boolean = true> {
   availabilityLabel?: T;
   heroImage?: T;
   heroImageSize?: T;
+  trustedHeading?: T;
+  trustedMoreLabel?: T;
   workHeading?: T;
   workIntro?: T;
   approachHeading?: T;
