@@ -203,13 +203,9 @@
     grid-row: 1;
   }
 
-  /* Heading row above the lead image: name on the left, the sentence about it
-     on the right, both reading left-to-right off their own edge. */
+  /* Details above the lead image read as one column down the left edge: name,
+     facts, then the sentence about it and the cue. */
   .row:first-child .meta {
-    flex-direction: row;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: var(--space-2xl);
     padding-block: 0;
   }
 
