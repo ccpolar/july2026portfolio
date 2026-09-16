@@ -29,7 +29,7 @@ export default async function BlogPage() {
   return (
     <>
       <SiteHeader {...chrome} />
-      <main>
+      <main id="main">
         <div className={`shell ${styles.head}`}>
           <h1 className={styles.heading}>{home.blogHeading ?? 'Blog'}</h1>
           {home.blogIntro ? <p className={styles.intro}>{home.blogIntro}</p> : null}

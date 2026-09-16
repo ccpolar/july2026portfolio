@@ -22,7 +22,7 @@ export const Projects: CollectionConfig = {
     defaultColumns: ['title', 'client', 'year', 'featured'],
     group: 'Content',
     description:
-      'Each project is one row on the homepage’s Recent Work. Drag to reorder — the order here is the order visitors see. Use “Add to portfolio” on a project to also show it in a portfolio category.',
+      'Each project is one row on the Recent Work page (/work). Drag to reorder — the order here is the order visitors see. Use “Add to portfolio” on a project to also show it in a portfolio category.',
   },
   defaultSort: 'order',
   hooks: {
@@ -97,7 +97,7 @@ export const Projects: CollectionConfig = {
       maxLength: 220,
       admin: {
         description:
-          'One sentence on what this project was. Shown on the homepage row — keep it short; the image does the talking.',
+          'One sentence on what this project was. Shown on its Recent Work row — keep it short; the image does the talking.',
       },
     },
     {
@@ -180,7 +180,7 @@ export const Projects: CollectionConfig = {
           defaultValue: true,
           admin: {
             width: '50%',
-            description: 'Show this project on the homepage.',
+            description: 'Show this project on the Recent Work page.',
           },
         },
         {

@@ -70,8 +70,8 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         {/* Public site only — /admin keeps its normal right-click. */}
         <NoImageDownloads />
         <div className={styles.content}>
-          <a className="skip-link" href="#work">
-            Skip to the work
+          <a className="skip-link" href="#main">
+            Skip to content
           </a>
           {children}
         </div>

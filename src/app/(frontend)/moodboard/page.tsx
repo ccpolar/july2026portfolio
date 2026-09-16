@@ -22,7 +22,7 @@ export default async function MoodboardPage() {
   return (
     <>
       <SiteHeader {...chrome} />
-      <main>
+      <main id="main">
         <div className={`shell ${styles.head}`}>
           <h1 className={styles.heading}>Moodboard</h1>
           <p className={styles.intro}>

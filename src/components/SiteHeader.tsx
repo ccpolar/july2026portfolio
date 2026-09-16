@@ -34,6 +34,8 @@ const MailIcon = () => (
 export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
   const pathname = usePathname()
   const onPortfolio = pathname === '/portfolio'
+  // A project page is part of Recent Work, so it keeps that segment lit.
+  const onRecentWork = pathname === '/work' || pathname.startsWith('/work/')
 
   return (
     <header className={styles.header} style={{ viewTransitionName: 'site-header' }}>
@@ -49,7 +51,11 @@ export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
         </a>
 
         <div className={styles.links}>
-          <a className={styles.link} href="/#work">
+          <a
+            className={styles.link}
+            href="/work"
+            aria-current={onRecentWork ? 'page' : undefined}
+          >
             Recent Work
           </a>
           <a

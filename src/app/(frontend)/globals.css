@@ -101,8 +101,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  /* Clears the sticky nav, so "Recent Work" lands on the section heading
-     rather than tucked beneath the floating pieces. */
+  /* Clears the sticky nav, so any in-page anchor lands on its heading rather
+     than tucked beneath the floating pieces. */
   scroll-padding-top: 5rem;
 }
 

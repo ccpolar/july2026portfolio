@@ -10,6 +10,9 @@ import styles from './WorkSection.module.css'
 type Props = {
   home: Homepage
   projects: Project[]
+  /** Rendered as its own page (/work): the heading becomes the page's h1 and
+   * the section takes the page-top rhythm instead of mid-page spacing. */
+  standalone?: boolean
 }
 
 const Facts = ({ project }: { project: Project }) => {
@@ -33,17 +36,27 @@ const Facts = ({ project }: { project: Project }) => {
   )
 }
 
-export const WorkSection = ({ home, projects }: Props) => {
-  if (!projects.length) return null
+export const WorkSection = ({ home, projects, standalone = false }: Props) => {
+  if (!projects.length && !standalone) return null
+
+  const Heading = standalone ? 'h1' : 'h2'
 
   return (
-    <section className={`shell ${styles.section}`} id="work" aria-labelledby="work-heading">
+    <section
+      className={`shell ${styles.section} ${standalone ? styles.page : ''}`}
+      id="work"
+      aria-labelledby="work-heading"
+    >
       <div className={styles.head}>
-        <h2 className={styles.heading} id="work-heading">
+        <Heading className={styles.heading} id="work-heading">
           {home.workHeading}
-        </h2>
+        </Heading>
         {home.workIntro ? <p className={styles.intro}>{home.workIntro}</p> : null}
       </div>
+
+      {!projects.length ? (
+        <p className={styles.intro}>Nothing published here yet — check back soon.</p>
+      ) : null}
 
       <div className={styles.rows}>
         {projects.map((project, i) => (

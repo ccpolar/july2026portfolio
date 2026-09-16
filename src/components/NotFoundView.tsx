@@ -14,7 +14,7 @@ import styles from './NotFoundView.module.css'
 export const NotFoundView = ({ chrome }: { chrome: ChromeProps }) => (
   <>
     <SiteHeader {...chrome} />
-    <main className={`shell ${styles.wrap}`}>
+    <main id="main" className={`shell ${styles.wrap}`}>
       <p className={styles.marker}>
         <span className={styles.code}>404</span>
         <span className={styles.rule} aria-hidden="true" />
@@ -32,7 +32,7 @@ export const NotFoundView = ({ chrome }: { chrome: ChromeProps }) => (
       </p>
 
       <div className={styles.actions}>
-        <ButtonLink href="/#work" withArrow>
+        <ButtonLink href="/work" withArrow>
           See the work
         </ButtonLink>
         <ButtonLink href={`mailto:${chrome.email}?subject=Broken link`} variant="secondary">

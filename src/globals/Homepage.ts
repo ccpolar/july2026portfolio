@@ -106,7 +106,8 @@ export const Homepage: GlobalConfig = {
           ],
         },
         {
-          label: 'Work',
+          label: 'Recent Work page',
+          description: 'The heading and intro at the top of /work. The projects themselves live under Content → Recent Work.',
           fields: [
             {
               name: 'workHeading',

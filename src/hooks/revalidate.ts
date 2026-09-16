@@ -26,7 +26,7 @@ const flush = (req: PayloadRequest, paths: string[]) => {
 }
 
 const projectPaths = (doc: { slug?: string | null }) => [
-  '/',
+  '/work',
   ...(doc?.slug ? [`/work/${doc.slug}`] : []),
 ]
 
@@ -94,7 +94,7 @@ export const revalidateMoodboardDelete: CollectionAfterDeleteHook = ({ doc, req 
 
 // Theme and site copy touch every page, so the whole tree goes.
 export const revalidateEverything: GlobalAfterChangeHook = ({ doc, req }) => {
-  flush(req, ['/', '/blog'])
+  flush(req, ['/', '/work', '/blog'])
   for (const dynamic of ['/work/[slug]', '/blog/[slug]']) {
     try {
       revalidatePath(dynamic, 'page')

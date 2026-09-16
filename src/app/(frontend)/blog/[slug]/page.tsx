@@ -81,7 +81,7 @@ export default async function PostPage({ params }: Params) {
   return (
     <>
       <SiteHeader {...chrome} />
-      <main>
+      <main id="main">
         <div className={`shell ${styles.header}`}>
           <a className={styles.back} href="/blog">
             <BackArrow />

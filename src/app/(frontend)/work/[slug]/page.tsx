@@ -96,9 +96,9 @@ export default async function ProjectPage({ params }: Params) {
   return (
     <>
       <SiteHeader {...chrome} />
-      <main>
+      <main id="main">
         <div className={`shell ${styles.header}`}>
-          <a className={styles.back} href="/#work">
+          <a className={styles.back} href="/work">
             <Arrow className={styles.backArrow} back />
             All work
           </a>

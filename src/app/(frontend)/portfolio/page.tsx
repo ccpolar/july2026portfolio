@@ -65,7 +65,7 @@ export default async function PortfolioPage() {
   return (
     <>
       <SiteHeader {...chrome} />
-      <main>
+      <main id="main">
         <div className={`shell ${styles.head}`}>
           <h1 className={styles.heading}>Portfolio</h1>
           <p className={styles.intro}>
