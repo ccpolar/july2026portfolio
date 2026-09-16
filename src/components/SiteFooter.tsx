@@ -3,6 +3,18 @@ import { getContact } from '@/lib/data'
 import { NewsletterForm } from './NewsletterForm'
 import styles from './SiteFooter.module.css'
 
+const Arrow = () => (
+  <svg className={styles.arrow} width="13" height="13" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+    <path
+      d="M3 7h8M7.5 3.5 11 7l-3.5 3.5"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
 /**
  * The close of every page: a quiet way to stay in touch for anyone not ready
  * to reach out (bottom left), and where else to find Cam (bottom right).
@@ -25,6 +37,10 @@ export const SiteFooter = async ({ siteName }: { siteName: string }) => {
         ) : null}
 
         <div className={styles.meta}>
+          <a className={styles.moodboard} href="/moodboard">
+            Moodboard
+            <Arrow />
+          </a>
           {socials.length ? (
             <ul className={styles.socials}>
               {socials.map((s) => (

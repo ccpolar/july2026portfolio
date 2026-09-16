@@ -34,7 +34,46 @@
   margin-bottom: var(--space-3xs);
 }
 
-/* — Socials and legal line — */
+/* — Moodboard, socials and legal line — */
+
+/* The one way into the moodboard now that it isn't in the nav: a lifted,
+   rounded piece in the same material as the nav tiles, so it reads as a
+   destination rather than another text link. */
+.moodboard {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  padding-inline: 1.125rem;
+  background: var(--raised);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.moodboard:hover {
+  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
+}
+
+.moodboard:active {
+  transform: scale(0.97);
+  transition-duration: 60ms;
+}
+
+.arrow {
+  transition: transform var(--dur) var(--ease-out-expo);
+}
+
+.moodboard:hover .arrow {
+  transform: translateX(3px);
+}
+
 .meta {
   display: grid;
   gap: var(--space-sm);
