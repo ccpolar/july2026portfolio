@@ -61,23 +61,6 @@ export const WorkSection = ({ home, projects, standalone = false }: Props) => {
       <div className={styles.rows}>
         {projects.map((project, i) => (
           <a className={styles.row} key={project.id} href={`/work/${project.slug}`}>
-            <div
-              className={styles.frame}
-              // Pairs with the same photograph on the project page so it moves
-              // between the two instead of being redrawn.
-              style={{ viewTransitionName: projectTransitionName(project.slug) }}
-            >
-              <MediaImage
-                className={styles.image}
-                media={project.cover}
-                priority={i === 0}
-                sizes={
-                  i === 0
-                    ? '(min-width: 52rem) 88rem, 100vw'
-                    : '(min-width: 52rem) 50rem, 100vw'
-                }
-              />
-            </div>
             <div className={styles.meta}>
               <div>
                 <h3 className={styles.title}>{project.title}</h3>
@@ -105,6 +88,23 @@ export const WorkSection = ({ home, projects, standalone = false }: Props) => {
                   </svg>
                 </span>
               </div>
+            </div>
+            <div
+              className={styles.frame}
+              // Pairs with the same photograph on the project page so it moves
+              // between the two instead of being redrawn.
+              style={{ viewTransitionName: projectTransitionName(project.slug) }}
+            >
+              <MediaImage
+                className={styles.image}
+                media={project.cover}
+                priority={i === 0}
+                sizes={
+                  i === 0
+                    ? '(min-width: 52rem) 88rem, 100vw'
+                    : '(min-width: 52rem) 50rem, 100vw'
+                }
+              />
             </div>
           </a>
         ))}

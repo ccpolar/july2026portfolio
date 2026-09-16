@@ -194,16 +194,16 @@
 
   .row:first-child .frame {
     grid-column: 1;
-    grid-row: 1;
+    grid-row: 2;
     aspect-ratio: 16 / 9;
   }
 
   .row:first-child .meta {
     grid-column: 1;
-    grid-row: 2;
+    grid-row: 1;
   }
 
-  /* Caption row under the lead image: name on the left, the sentence about it
+  /* Heading row above the lead image: name on the left, the sentence about it
      on the right, both reading left-to-right off their own edge. */
   .row:first-child .meta {
     flex-direction: row;
