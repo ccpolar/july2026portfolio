@@ -1,0 +1,91 @@
+.section {
+  padding-bottom: var(--section);
+}
+
+/* Two panels in a row read as one chapter of the page, so the space between
+   them is closer to the gap between their cards than to a section break. */
+.section:has(+ .section) {
+  padding-bottom: clamp(var(--space-lg), 4vw, var(--space-xl));
+}
+
+/* — The panel — an inversion of whatever theme is set: the page's ink becomes
+   the surface and its background becomes the text, so contrast holds for any
+   colours chosen in /admin. The custom properties are shared with everything
+   inside, so each section's own card content uses the same palette. — */
+.panel {
+  --on: var(--bg);
+  --on-muted: color-mix(in oklch, var(--bg) 68%, var(--ink));
+  --card: color-mix(in oklch, var(--ink), var(--bg) 6%);
+  --card-edge: color-mix(in oklch, var(--bg) 9%, transparent);
+
+  background: var(--ink);
+  color: var(--on);
+  border-radius: clamp(1.25rem, 2.5vw, 1.75rem);
+  padding: clamp(3rem, 7vw, 5.5rem) clamp(0.75rem, 3vw, 2.5rem);
+}
+
+.head {
+  text-align: center;
+  margin: 0 auto clamp(var(--space-xl), 5vw, var(--space-2xl));
+  max-width: 44rem;
+}
+
+.heading {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.1;
+}
+
+.intro {
+  color: var(--on-muted);
+  font-size: var(--text-body);
+  line-height: 1.6;
+  max-width: 46ch;
+  margin: var(--space-sm) auto 0;
+}
+
+/* — Cards — */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+  max-width: 68rem;
+  margin: 0 auto;
+}
+
+@media (min-width: 40rem) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .lone {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 64rem) {
+  .grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .card,
+  .lone {
+    grid-column: span var(--span, 2);
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: var(--card);
+  border: 1px solid var(--card-edge);
+  border-radius: var(--radius-control);
+  transition: border-color var(--dur) var(--ease-out-quart);
+}
+
+.card:hover {
+  border-color: color-mix(in oklch, var(--bg) 18%, transparent);
+}
