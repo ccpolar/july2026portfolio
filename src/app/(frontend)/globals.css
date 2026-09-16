@@ -26,6 +26,8 @@
      by the theme: white on a dark brand, near-black on a light one, so any
      picked hex stays readable. Defaults to white for the shipped olive. */
   --on-brand: oklch(1 0 0);
+  /* Text on the signal colour; the theme picks white or ink by contrast. */
+  --on-signal: oklch(1 0 0);
 
   /* — neutrals — every one is overridden per-request from the Payload theme;
        these are the fallbacks if the theme fails to load. — */
@@ -180,10 +182,12 @@ button {
   color: inherit;
 }
 
+/* No border-radius here: setting one would square off every rounded control
+   (nav tiles, pills, fields) the moment it takes keyboard focus. The outline
+   already follows each element's own shape. */
 :focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 3px;
-  border-radius: 1px;
 }
 
 ::selection {

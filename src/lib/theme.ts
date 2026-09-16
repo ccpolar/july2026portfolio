@@ -117,6 +117,11 @@ export const themeToCss = (theme: Partial<Theme> | null | undefined): string => 
   const onBrand =
     contrast(background, brandHex) >= contrast(text, brandHex) ? background : text
 
+  // Text sitting on the signal colour (the intake form's Continue button and
+  // selected answers): white or the site's own text, whichever reads better.
+  const onSignal =
+    contrast('#ffffff', signalHex) >= contrast(text, signalHex) ? '#ffffff' : text
+
   // A raised surface is lighter than the page on either theme, but by very
   // different amounts: a light page lifts most of the way to white, while a
   // dark one only nudges up — lifting a dark page to near-white would put
@@ -134,6 +139,7 @@ export const themeToCss = (theme: Partial<Theme> | null | undefined): string => 
     `--brand-l:${round(brand.l)};--brand-c:${round(brand.c)};--brand-h:${round(brand.h, 2)};` +
     `--signal-l:${round(signal.l)};--signal-c:${round(signal.c)};--signal-h:${round(signal.h, 2)};` +
     `--on-brand:${onBrand};` +
+    `--on-signal:${onSignal};` +
     `--radius:${RADIUS[t.radius ?? 'sharp'] ?? RADIUS.sharp};` +
     `}`
   )

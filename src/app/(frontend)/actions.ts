@@ -8,11 +8,6 @@ export type SubscribeState = {
   message: string
 }
 
-export type ContactState = {
-  status: 'idle' | 'ok' | 'error'
-  message: string
-}
-
 // Deliberately loose: the goal is to catch typos, not to police valid addresses.
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
@@ -85,40 +80,66 @@ export async function subscribe(
   }
 }
 
-export async function submitContact(
-  _prev: ContactState,
-  formData: FormData,
-): Promise<ContactState> {
-  // Hidden field real visitors never see or fill; a bot that fills every
-  // field trips it. Formspree does the same thing under the field name
-  // `_gotcha` — pretend success without sending anything.
-  if (String(formData.get('_gotcha') ?? '').trim()) {
-    return { status: 'ok', message: 'Thanks — I’ll get back to you soon.' }
+export type IntakeAnswers = {
+  name: string
+  email: string
+  company: string
+  website: string
+  services: string[]
+  budget: string
+  timeline: string
+  details: string
+  /** Honeypot — hidden from people, filled by bots. */
+  _gotcha?: string
+}
+
+export type IntakeResult = { status: 'ok' } | { status: 'error'; message: string }
+
+/**
+ * The multi-step "Start a project" intake. Every step is validated in the
+ * browser, but the request can be replayed without the UI, so the same rules
+ * are enforced again here before anything reaches Formspree.
+ */
+export async function submitIntake(answers: IntakeAnswers): Promise<IntakeResult> {
+  if (String(answers._gotcha ?? '').trim()) return { status: 'ok' }
+
+  const clean = (value: unknown, max = 2000) => String(value ?? '').trim().slice(0, max)
+  const name = clean(answers.name, 120)
+  const email = clean(answers.email, 200).toLowerCase()
+  const company = clean(answers.company, 160)
+  const website = clean(answers.website, 300)
+  const services = Array.isArray(answers.services)
+    ? answers.services.map((s) => clean(s, 80)).filter(Boolean)
+    : []
+  const budget = clean(answers.budget, 40)
+  const timeline = clean(answers.timeline, 40)
+  const details = clean(answers.details, 5000)
+
+  if (!name || !company || !services.length || !budget || !timeline || !details) {
+    return { status: 'error', message: 'A step is missing an answer — go back and check.' }
   }
-
-  const name = String(formData.get('name') ?? '').trim()
-  const email = String(formData.get('email') ?? '')
-    .trim()
-    .toLowerCase()
-  const message = String(formData.get('message') ?? '').trim()
-
-  if (!name || !email || !message) {
-    return { status: 'error', message: 'Fill in your name, email, and a message.' }
-  }
-
   if (!EMAIL.test(email)) {
-    return { status: 'error', message: 'That address looks incomplete — check it and try again.' }
+    return { status: 'error', message: 'That email looks incomplete — go back and check it.' }
   }
 
   const endpoint = process.env.FORMSPREE_CONTACT_ENDPOINT
-  if (!endpoint) {
-    return { status: 'error', message: GENERIC_ERROR }
-  }
+  if (!endpoint) return { status: 'error', message: GENERIC_ERROR }
 
   try {
-    await postToFormspree(endpoint, { name, email, message })
-    return { status: 'ok', message: 'Thanks — I’ll get back to you soon.' }
+    await postToFormspree(endpoint, {
+      name,
+      email,
+      company,
+      website: website || '—',
+      services: services.join(', '),
+      budget,
+      timeline,
+      details,
+      _subject: `New project: ${company}`,
+      _replyto: email,
+    })
+    return { status: 'ok' }
   } catch {
-    return { status: 'error', message: GENERIC_ERROR }
+    return { status: 'error', message: 'That didn’t go through — nothing you did. Your answers are still here.' }
   }
 }

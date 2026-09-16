@@ -5,7 +5,7 @@ import { ContactModal } from '@/components/ContactModal'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { NoImageDownloads } from '@/components/NoImageDownloads'
 import { SiteBackground } from '@/components/SiteBackground'
-import { getContact, getHomepage, getIdentity, getTheme } from '@/lib/data'
+import { getHomepage, getIdentity, getServices, getTheme } from '@/lib/data'
 import { themeToCss } from '@/lib/theme'
 import type { Media } from '@/payload-types'
 
@@ -44,7 +44,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
-  const [theme, contact] = await Promise.all([getTheme(), getContact()])
+  const [theme, services] = await Promise.all([getTheme(), getServices()])
+  // The intake's "How can I help?" options are the services shown on the
+  // homepage, so the two never disagree. The names Cam set up are the
+  // fallback until any service is live.
+  const liveServices = services.filter((s) => s.description?.trim()).map((s) => s.title)
+  const intakeServices = liveServices.length
+    ? liveServices
+    : ['Branding', 'Brand Kit OS', 'UI Design', 'Merchandise', 'Advertising']
 
   return (
     <html lang="en">
@@ -73,7 +80,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         {/* One dialog for the whole site — the header's "Get in touch" and
             the hero's "Start a project" both open it by id rather than each
             holding their own copy. */}
-        <ContactModal heading={contact.heading} />
+        <ContactModal services={intakeServices} />
       </body>
     </html>
   )
