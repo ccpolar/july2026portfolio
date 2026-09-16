@@ -4,10 +4,10 @@ import type React from 'react'
 
 import { openContactModal } from '@/lib/contactModal'
 
-import { Button } from './Button'
+import { Button, type Variant } from './Button'
 
 type Props = {
-  variant?: 'primary' | 'secondary'
+  variant?: Variant
   withArrow?: boolean
   children: React.ReactNode
 }

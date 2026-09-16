@@ -1,3 +1,6 @@
+/* No bar: the header is a transparent strip that only positions the three
+   floating pieces. Each piece carries its own lifted surface, so content
+   scrolling underneath stays visible around them. */
 .header {
   position: sticky;
   top: 0;
@@ -6,92 +9,128 @@
      rewrites custom-idents, so a name declared in this file would arrive as
      `SiteHeader-module__hash__site-header` and the rules in globals.css that
      target it would silently never match. */
-  background: color-mix(in oklch, var(--bg) 88%, transparent);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--line);
+  padding: var(--space-sm) var(--space-sm) 0;
 }
 
-.inner {
+.bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-md);
-  padding-block: var(--space-md);
+  justify-content: center;
+  gap: var(--space-2xs);
 }
 
-.wordmark {
+/* — Shared lifted surface — */
+.tile,
+.links {
+  height: 2.75rem;
+  background: var(--raised);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+}
+
+/* — The two square tiles: mark on the left, mail on the right — */
+.tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 2.75rem;
+  padding: 0;
+  color: var(--ink);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.tile:hover {
+  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
+}
+
+.tile:active {
+  transform: scale(0.96);
+  transition-duration: 60ms;
+}
+
+/* The logo sits small and centred, fitted inside the tile whatever its
+   proportions. Width is the binding edge for a wide mark, so the side padding
+   is kept tight to give it every pixel the square allows; a square mark still
+   gets breathing room from the taller top and bottom inset. */
+.logo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem 0.3125rem;
+  object-fit: contain;
+}
+
+.initial {
   font-size: var(--text-body);
   font-weight: 700;
   font-stretch: 88%;
   letter-spacing: -0.02em;
-  text-decoration: none;
+  line-height: 1;
+}
+
+/* — The wide piece: the ways into the work — */
+.links {
   display: inline-flex;
   align-items: center;
-  transition: opacity var(--dur-fast) var(--ease-out-quart);
-}
-
-.wordmark:hover {
-  opacity: 0.7;
-}
-
-/* Height comes inline from the admin's logo-height setting. */
-.logo {
-  display: block;
-  width: auto;
-  max-width: 14rem;
-  object-fit: contain;
-}
-
-.nav {
-  display: flex;
-  align-items: baseline;
-  gap: clamp(var(--space-sm), 2.5vw, var(--space-lg));
+  gap: 2px;
+  padding: 0.25rem;
 }
 
 .link {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding-inline: 0.875rem;
+  border-radius: calc(var(--radius-control) - 0.25rem);
   font-size: var(--text-sm);
-  color: var(--muted);
+  font-weight: 500;
+  color: var(--ink);
   text-decoration: none;
-  padding-block: var(--space-3xs);
-  transition: color var(--dur-fast) var(--ease-out-quart);
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    color var(--dur-fast) var(--ease-out-quart);
 }
 
 .link:hover {
-  color: var(--ink);
+  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
 }
 
-.mail {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  font-size: var(--text-sm);
-  font-weight: 550;
-  color: var(--ink);
-  text-decoration: none;
-  position: relative;
+/* The page you're on is a pressed-in segment of the same piece, not an
+   underline — it reads as a position within the control. */
+.link[aria-current='page'] {
+  background: var(--ink);
+  color: var(--bg);
 }
 
-.mail::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 1px;
-  background: var(--brand);
-  transform: scaleX(1);
-  transform-origin: left;
-  transition: transform var(--dur) var(--ease-out-expo);
+.tile:focus-visible,
+.link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
-.mail:hover::after {
-  transform: scaleX(0);
-  transform-origin: right;
+/* A narrow phone still fits all three pieces on one line; the links just
+   tighten their padding rather than wrap or hide. */
+@media (max-width: 24rem) {
+  .link {
+    padding-inline: 0.625rem;
+  }
 }
 
-@media (max-width: 34rem) {
-  .navOnly {
-    display: none;
+/* The smallest phones (~320px) need the whole cluster inside the gutter, not
+   just on one line: closer pieces and a step down in link size. */
+@media (max-width: 22rem) {
+  .bar {
+    gap: 0.25rem;
+  }
+
+  .link {
+    padding-inline: 0.5rem;
+    font-size: var(--text-label);
   }
 }

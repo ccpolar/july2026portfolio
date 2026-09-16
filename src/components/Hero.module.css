@@ -1,40 +1,29 @@
 .hero {
-  padding-block: clamp(3.5rem, 9vw, 7rem) var(--section);
+  padding-block: clamp(4.5rem, 13vh, 9rem) var(--section);
 }
 
-/* Each element animates from its own offset, and the resting state below is
-   the visible one — if the animation never runs (reduced motion, a headless
-   render, a background tab) the hero still reads correctly. */
-.marker,
-.title,
-.aside {
-  animation: rise var(--dur-slow) var(--ease-out-expo) backwards;
-}
-
-.marker {
-  animation-delay: 40ms;
-}
-.title {
-  animation-delay: 120ms;
-}
-.aside {
-  animation-delay: 240ms;
-}
-
-@keyframes rise {
-  from {
-    opacity: 0;
-    transform: translateY(0.6rem);
-  }
-}
-
-.marker {
+.column {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--space-2xs);
-  font-size: var(--text-sm);
-  color: var(--muted);
-  margin-bottom: clamp(var(--space-lg), 5vw, var(--space-2xl));
+  text-align: center;
+}
+
+/* — Availability — a live claim, so it sits in its own lifted pill and its
+   dot keeps pulsing. The site's one bright note. — */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.5rem 0.875rem 0.5rem 0.75rem;
+  background: var(--raised);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+  font-size: var(--text-label);
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.2;
+  margin-bottom: clamp(var(--space-md), 3vw, var(--space-lg));
 }
 
 .dot {
@@ -46,7 +35,6 @@
   position: relative;
 }
 
-/* The one bright note on the page. It pulses because it is a live claim. */
 .dot::after {
   content: '';
   position: absolute;
@@ -68,78 +56,90 @@
   }
 }
 
+/* — The promise — */
 .title {
-  font-size: var(--text-display);
-  font-weight: 620;
-  font-stretch: 88%;
-  letter-spacing: -0.035em;
-  line-height: 0.98;
-  max-width: 18ch;
-}
-
-.aside {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-lg);
-  margin-top: clamp(var(--space-xl), 6vw, var(--space-3xl));
+  font-size: clamp(2.625rem, 6.6vw, 5.25rem);
+  font-weight: 700;
+  font-stretch: 96%;
+  letter-spacing: -0.028em;
+  word-spacing: 0.02em;
+  line-height: 1.02;
+  max-width: 15ch;
+  text-wrap: balance;
 }
 
 .intro {
   font-size: var(--text-lead);
   color: var(--muted);
-  max-width: 52ch;
   line-height: 1.55;
+  max-width: 48ch;
+  text-wrap: pretty;
+  margin-top: clamp(var(--space-md), 2.4vw, var(--space-lg));
 }
 
 .actions {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-md);
+  justify-content: center;
+  gap: var(--space-2xs);
+  margin-top: clamp(var(--space-lg), 4vw, var(--space-xl));
 }
 
-/* Below the headline the fold reads as one wide band: the sentence anchored
-   left, the call to action pushed out to the right margin so it lines up with
-   the nav above it. Without that the button floats in the middle of the page
-   with nothing to sit against. */
-@media (min-width: 60rem) {
-  .aside {
-    grid-template-columns: minmax(0, 34rem) auto;
-    justify-content: space-between;
-    align-items: end;
-    gap: var(--space-2xl);
-  }
-
-  .actions {
-    justify-content: flex-end;
-  }
-}
-
-/* Only present at all when a hero photo is set — the text stacks with the
-   photo below it until there's room for them side by side. */
-.grid {
-  display: grid;
-  gap: clamp(var(--space-xl), 6vw, var(--space-3xl));
-}
-
-@media (min-width: 64rem) {
-  .grid {
-    grid-template-columns: 1fr var(--hero-image-size, 40%);
-    align-items: center;
-  }
-}
-
+/* — Optional photo, below the call to action, sized from /admin — */
 .imageFrame {
+  width: min(100%, max(var(--hero-image-size, 40%), 20rem));
+  margin: clamp(var(--space-2xl), 7vw, var(--space-3xl)) auto 0;
   overflow: hidden;
   border-radius: var(--radius);
   background: var(--surface);
-  aspect-ratio: 4 / 5;
-  animation: rise var(--dur-slow) var(--ease-out-expo) backwards;
-  animation-delay: 160ms;
 }
 
 .image {
+  display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
+  height: auto;
+}
+
+/* — Load sequence. The resting state is the visible one: if the animation
+   never runs (a background tab, a headless render, reduced motion) the hero
+   still reads correctly. The headline comes in out of a slight blur, which
+   reads as focusing rather than sliding, and is the one piece given more
+   time than the rest. — */
+.badge,
+.intro,
+.actions,
+.imageFrame {
+  animation: rise var(--dur-slow) var(--ease-out-expo) backwards;
+}
+
+.title {
+  animation: focus 900ms var(--ease-out-expo) backwards;
+  animation-delay: 90ms;
+}
+
+.intro {
+  animation-delay: 260ms;
+}
+
+.actions {
+  animation-delay: 360ms;
+}
+
+.imageFrame {
+  animation-delay: 460ms;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+}
+
+@keyframes focus {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(0.9rem);
+  }
 }

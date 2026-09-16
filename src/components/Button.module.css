@@ -49,6 +49,37 @@
   background: var(--brand-wash);
 }
 
+/* The rounded pair. Ink on the page's own background is the one contrast
+   pairing every theme is built to guarantee, so the fill never depends on
+   whatever the brand colour happens to be. */
+.solid,
+.soft {
+  border-radius: var(--radius-control);
+  padding: 0.9375rem 1.5rem;
+  min-height: 3.25rem;
+}
+
+.solid {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.solid:hover {
+  background: color-mix(in oklch, var(--ink), var(--bg) 18%);
+  border-color: color-mix(in oklch, var(--ink), var(--bg) 18%);
+}
+
+.soft {
+  background: var(--raised);
+  color: var(--ink);
+  border-color: var(--edge);
+}
+
+.soft:hover {
+  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
+}
+
 .arrow {
   transition: transform var(--dur) var(--ease-out-expo);
 }

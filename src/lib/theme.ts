@@ -117,6 +117,12 @@ export const themeToCss = (theme: Partial<Theme> | null | undefined): string => 
   const onBrand =
     contrast(background, brandHex) >= contrast(text, brandHex) ? background : text
 
+  // A raised surface is lighter than the page on either theme, but by very
+  // different amounts: a light page lifts most of the way to white, while a
+  // dark one only nudges up — lifting a dark page to near-white would put
+  // light text on a light chip.
+  const raisedLift = relLuminance(background) > 0.18 ? 70 : 8
+
   return (
     `:root{` +
     `--bg:${background};` +
@@ -124,6 +130,7 @@ export const themeToCss = (theme: Partial<Theme> | null | undefined): string => 
     `--muted:${mutedText};` +
     `--surface:${surface};` +
     `--line:${border};` +
+    `--raised:color-mix(in oklch, ${background}, white ${raisedLift}%);` +
     `--brand-l:${round(brand.l)};--brand-c:${round(brand.c)};--brand-h:${round(brand.h, 2)};` +
     `--signal-l:${round(signal.l)};--signal-c:${round(signal.c)};--signal-h:${round(signal.h, 2)};` +
     `--on-brand:${onBrand};` +

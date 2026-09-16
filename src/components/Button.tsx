@@ -21,9 +21,16 @@ const Arrow = () => (
   </svg>
 )
 
+/**
+ * primary / secondary follow the theme's brand and signal colours.
+ * solid / soft are the rounded pair the homepage hero uses: an ink fill that
+ * holds contrast on any theme, and a lifted surface beside it.
+ */
+export type Variant = 'primary' | 'secondary' | 'solid' | 'soft'
+
 type LinkProps = {
   href: string
-  variant?: 'primary' | 'secondary'
+  variant?: Variant
   children: React.ReactNode
   withArrow?: boolean
 }
@@ -44,7 +51,7 @@ export const ButtonLink = ({ href, variant = 'primary', children, withArrow }: L
 }
 
 type ButtonProps = {
-  variant?: 'primary' | 'secondary'
+  variant?: Variant
   children: React.ReactNode
   withArrow?: boolean
   onClick?: () => void

@@ -37,6 +37,16 @@
   /* Derived from the border and text, so it stays a stronger version of the
      divider whatever colours the theme sets those to. */
   --line-strong: color-mix(in oklch, var(--line), var(--ink) 25%);
+  /* A surface lifted off the page — the nav tiles, the availability pill, the
+     secondary CTA. Can't be --surface, which a theme may set equal to --bg.
+     The theme overrides this with a lift matched to the background's
+     lightness (see theme.ts); this is the fallback for a light page. */
+  --raised: color-mix(in oklch, var(--bg) 30%, white);
+  --edge: color-mix(in oklch, var(--ink) 8%, transparent);
+
+  /* Controls get their own rounding, independent of the theme's --radius
+     (which governs image frames and stays sharp by default). */
+  --radius-control: 0.875rem;
 
   /* — 4pt spacing scale — */
   --space-3xs: 0.25rem;
@@ -91,6 +101,9 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  /* Clears the sticky nav, so "Recent Work" lands on the section heading
+     rather than tucked beneath the floating pieces. */
+  scroll-padding-top: 5rem;
 }
 
 body {
