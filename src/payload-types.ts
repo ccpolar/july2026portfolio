@@ -75,6 +75,7 @@ export interface Config {
     moodboard: Moodboard;
     posts: Post;
     testimonials: Testimonial;
+    services: Service;
     clients: Client;
     media: Media;
     subscribers: Subscriber;
@@ -94,6 +95,7 @@ export interface Config {
     moodboard: MoodboardSelect<false> | MoodboardSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
     clients: ClientsSelect<false> | ClientsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
@@ -148,7 +150,7 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Each project is one row on the homepage’s Recent Work. Drag to reorder — the order here is the order visitors see. Use “Add to portfolio” on a project to also show it in a portfolio category.
+ * Each project is one row on the Recent Work page (/work). Drag to reorder — the order here is the order visitors see. Use “Add to portfolio” on a project to also show it in a portfolio category.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects".
@@ -175,7 +177,7 @@ export interface Project {
       }[]
     | null;
   /**
-   * One sentence on what this project was. Shown on the homepage row — keep it short; the image does the talking.
+   * One sentence on what this project was. Shown on its Recent Work row — keep it short; the image does the talking.
    */
   summary: string;
   /**
@@ -222,7 +224,7 @@ export interface Project {
       }[]
     | null;
   /**
-   * Show this project on the homepage.
+   * Show this project on the Recent Work page.
    */
   featured?: boolean | null;
   /**
@@ -476,6 +478,38 @@ export interface Testimonial {
   createdAt: string;
 }
 /**
+ * The cards in the homepage Services section. A service stays hidden until it has a description, so you can set one up before it goes live.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  title: string;
+  /**
+   * An image or GIF for the top of the card. GIFs keep their animation. A landscape shape around 16:9 fits best.
+   */
+  image?: (number | null) | Media;
+  /**
+   * Illustrations usually want “whole image”; photos usually look better filled.
+   */
+  imageFit?: ('fit' | 'fill') | null;
+  /**
+   * Two or three sentences on what the client gets.
+   */
+  description?: string | null;
+  /**
+   * Written exactly as it should read — e.g. “$1,500 – $4,000”, “From $800”, or “Custom quote”. Leave blank to hide.
+   */
+  price?: string | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * The logos in the “Trusted by” strip under the homepage hero. They sit faded until hovered, so single-colour logos on a transparent background look most consistent.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -592,6 +626,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'testimonials';
         value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'services';
+        value: number | Service;
       } | null)
     | ({
         relationTo: 'clients';
@@ -773,6 +811,20 @@ export interface TestimonialsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  imageFit?: T;
+  description?: T;
+  price?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "clients_select".
  */
 export interface ClientsSelect<T extends boolean = true> {
@@ -946,18 +998,11 @@ export interface Homepage {
    * Optional. Leave blank to let the work start immediately.
    */
   workIntro?: string | null;
-  approachHeading: string;
-  approachBody: string;
+  servicesHeading?: string | null;
   /**
-   * The things that make you easy to work with. Three is the sweet spot.
+   * Optional. One line under the heading.
    */
-  approachPoints?:
-    | {
-        title: string;
-        detail: string;
-        id?: string | null;
-      }[]
-    | null;
+  servicesIntro?: string | null;
   blogHeading: string;
   /**
    * Optional. A line under the heading on the blog page.
@@ -1020,7 +1065,7 @@ export interface Theme {
    */
   mutedText: string;
   /**
-   * Tinted panels: the approach band and image frames. Usually a hair off the background.
+   * Tinted panels, such as image frames. Usually a hair off the background.
    */
   surface: string;
   /**
@@ -1092,15 +1137,8 @@ export interface HomepageSelect<T extends boolean = true> {
   trustedMoreLabel?: T;
   workHeading?: T;
   workIntro?: T;
-  approachHeading?: T;
-  approachBody?: T;
-  approachPoints?:
-    | T
-    | {
-        title?: T;
-        detail?: T;
-        id?: T;
-      };
+  servicesHeading?: T;
+  servicesIntro?: T;
   blogHeading?: T;
   blogIntro?: T;
   metaDescription?: T;

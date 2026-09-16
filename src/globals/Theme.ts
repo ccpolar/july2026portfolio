@@ -76,7 +76,7 @@ export const Theme: GlobalConfig = {
           'surface',
           'Surface',
           '#f6f6f2',
-          'Tinted panels: the approach band and image frames. Usually a hair off the background.',
+          'Tinted panels, such as image frames. Usually a hair off the background.',
         ),
         colorField('border', 'Border', '#deded9', 'Hairlines and dividers.'),
         {

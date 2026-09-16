@@ -342,26 +342,7 @@ const run = async () => {
       availabilityLabel: 'Available for new work',
       workHeading: 'Selected work',
       // Left blank on purpose: the work is the argument, so it starts immediately.
-      approachHeading: 'How this goes',
-      approachBody:
-        'Hiring someone is a risk. The point of everything below is to make that risk small and boring, so the only thing left to think about is the work.',
-      approachPoints: [
-        {
-          title: 'You always know where it stands',
-          detail:
-            'A scope agreed before anything starts, work shown while it is still rough, and a note every week. No silence, no invoice you did not see coming.',
-        },
-        {
-          title: 'One direction, argued for',
-          detail:
-            'You will not get twelve options to referee. You get the one I think is right and the reasoning behind it — then we pull it apart together.',
-        },
-        {
-          title: 'It ships, and it keeps working',
-          detail:
-            'I design and build, so nothing is lost in a handover. What you get runs on every screen, and every word and image on it is yours to change.',
-        },
-      ],
+      servicesHeading: 'Services',
       blogHeading: 'Blog',
       metaDescription:
         'Freelance designer working with founders and small studios on brand identity and web. Considered work, shown early, built to last.',

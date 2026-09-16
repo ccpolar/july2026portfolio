@@ -125,34 +125,20 @@ export const Homepage: GlobalConfig = {
           ],
         },
         {
-          label: 'Approach',
+          label: 'Services',
+          description: 'The heading above the service cards. The services themselves live under Content → Services.',
           fields: [
             {
-              name: 'approachHeading',
+              name: 'servicesHeading',
               type: 'text',
-              required: true,
-              defaultValue: 'How this goes',
               maxLength: 60,
+              defaultValue: 'Services',
             },
             {
-              name: 'approachBody',
+              name: 'servicesIntro',
               type: 'textarea',
-              required: true,
-              maxLength: 400,
-            },
-            {
-              name: 'approachPoints',
-              type: 'array',
-              maxRows: 4,
-              labels: { singular: 'Point', plural: 'Points' },
-              admin: {
-                description:
-                  'The things that make you easy to work with. Three is the sweet spot.',
-              },
-              fields: [
-                { name: 'title', type: 'text', required: true, maxLength: 48 },
-                { name: 'detail', type: 'textarea', required: true, maxLength: 180 },
-              ],
+              maxLength: 200,
+              admin: { description: 'Optional. One line under the heading.' },
             },
           ],
         },

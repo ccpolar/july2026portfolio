@@ -45,6 +45,17 @@ export const getTestimonials = cache(async () => {
   return docs
 })
 
+export const getServices = cache(async () => {
+  const payload = await client()
+  const { docs } = await payload.find({
+    collection: 'services',
+    sort: 'order',
+    depth: 1,
+    limit: 24,
+  })
+  return docs
+})
+
 export const getClients = cache(async () => {
   const payload = await client()
   const { docs } = await payload.find({
