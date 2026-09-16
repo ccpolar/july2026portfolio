@@ -2,10 +2,12 @@ import type { Metadata } from 'next'
 import React from 'react'
 
 import { ContactModal } from '@/components/ContactModal'
+import { type IntroImage, IntroOverlay } from '@/components/IntroOverlay'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { NoImageDownloads } from '@/components/NoImageDownloads'
 import { SiteBackground } from '@/components/SiteBackground'
-import { getHomepage, getIdentity, getServices, getTheme } from '@/lib/data'
+import { getHomepage, getIdentity, getLoadingScreen, getServices, getTheme } from '@/lib/data'
+import { INTRO_BOOT_SCRIPT } from '@/lib/intro'
 import { themeToCss } from '@/lib/theme'
 import type { Media } from '@/payload-types'
 
@@ -44,7 +46,40 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function FrontendLayout({ children }: { children: React.ReactNode }) {
-  const [theme, services] = await Promise.all([getTheme(), getServices()])
+  const [theme, services, loadingScreen, identity] = await Promise.all([
+    getTheme(),
+    getServices(),
+    getLoadingScreen(),
+    getIdentity(),
+  ])
+
+  // The loading screen only exists once it's switched on and has images.
+  const introImages: IntroImage[] = loadingScreen?.enabled === false
+    ? []
+    : (loadingScreen?.images ?? []).flatMap(({ image }) => {
+        const media = image && typeof image === 'object' ? (image as Media) : null
+        if (!media?.url) return []
+        return [
+          {
+            small: media.sizes?.wide?.url ?? media.url,
+            large: media.sizes?.full?.url ?? media.sizes?.wide?.url ?? media.url,
+          },
+        ]
+      })
+  const logoMedia = identity?.logo && typeof identity.logo === 'object' ? (identity.logo as Media) : null
+  // A large, sharp logo; older JPEG variants would paint a box behind a
+  // transparent mark, so those fall back to the original file.
+  const introLogo = logoMedia?.url
+    ? {
+        src:
+          logoMedia.sizes?.wide?.url && logoMedia.sizes.wide.mimeType !== 'image/jpeg'
+            ? logoMedia.sizes.wide.url
+            : logoMedia.url,
+        width: logoMedia.width ?? undefined,
+        height: logoMedia.height ?? undefined,
+      }
+    : null
+  const siteName = identity?.siteName || 'Cam'
   // The intake's "How can I help?" options are the services shown on the
   // homepage, so the two never disagree. The names Cam set up are the
   // fallback until any service is live.
@@ -54,8 +89,11 @@ export default async function FrontendLayout({ children }: { children: React.Rea
     : ['Branding', 'Brand Kit OS', 'UI Design', 'Merchandise', 'Advertising']
 
   return (
-    <html lang="en">
+    // suppressHydrationWarning: the intro script may add data-intro to <html>
+    // before React hydrates.
+    <html lang="en" suppressHydrationWarning>
       <head>
+        {introImages.length ? <script dangerouslySetInnerHTML={{ __html: INTRO_BOOT_SCRIPT }} /> : null}
         {/* Neue Haas Grotesk, served from Cam's Adobe Fonts kit (licensed for
             campagano.com). Text and Display cuts: see --font-text and
             --font-display in globals.css. */}
@@ -71,7 +109,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         <LivePreviewTheme initialData={theme} />
         {/* Public site only — /admin keeps its normal right-click. */}
         <NoImageDownloads />
-        <div className={styles.content}>
+        <div className={styles.content} data-site-content>
           <a className="skip-link" href="#main">
             Skip to content
           </a>
@@ -81,6 +119,9 @@ export default async function FrontendLayout({ children }: { children: React.Rea
             the hero's "Start a project" both open it by id rather than each
             holding their own copy. */}
         <ContactModal services={intakeServices} />
+        {introImages.length ? (
+          <IntroOverlay images={introImages} logo={introLogo} siteName={siteName} />
+        ) : null}
       </body>
     </html>
   )

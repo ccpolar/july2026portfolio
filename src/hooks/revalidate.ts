@@ -95,6 +95,14 @@ export const revalidateMoodboardDelete: CollectionAfterDeleteHook = ({ doc, req 
 // Theme and site copy touch every page, so the whole tree goes.
 export const revalidateEverything: GlobalAfterChangeHook = ({ doc, req }) => {
   flush(req, ['/', '/work', '/blog'])
+  // Theme, branding, the footer and the loading screen render on every page,
+  // including ones not listed above (/portfolio, /moodboard): refreshing the
+  // root layout takes all of them.
+  try {
+    revalidatePath('/', 'layout')
+  } catch {
+    req.payload.logger.debug('Skipped revalidating the root layout (no request scope)')
+  }
   for (const dynamic of ['/work/[slug]', '/blog/[slug]']) {
     try {
       revalidatePath(dynamic, 'page')

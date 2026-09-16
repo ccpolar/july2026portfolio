@@ -1,0 +1,158 @@
+/* Hidden unless the <head> script chose to play this visit (html[data-intro])
+   or the component has taken over (.active), so it's on screen from the very
+   first paint and stays through its own fade after the page is released. */
+.overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-intro);
+  overflow: hidden;
+  /* Solid underneath, so the page never shows through while images decode. */
+  background: #000;
+}
+
+:global(html[data-intro='run']) .overlay,
+.active {
+  display: block;
+}
+
+/* — Frames — stacked in order; each switches on at its half-second mark and
+   stays on beneath the next. A hard cut with no blending, and because a frame
+   never switches off, two can never both be hidden for a frame of black. — */
+.frames {
+  position: absolute;
+  inset: 0;
+}
+
+.frames img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: var(--i);
+  visibility: hidden;
+}
+
+.running .frames img {
+  animation: frame-on 1ms linear forwards;
+  animation-delay: calc(var(--i) * 500ms);
+}
+
+@keyframes frame-on {
+  to {
+    visibility: visible;
+  }
+}
+
+/* Takes the edge off the flashing without hiding the photographs. */
+.shade {
+  position: absolute;
+  inset: 0;
+  z-index: 11;
+  background: rgb(0 0 0 / 0.5);
+}
+
+/* — Logo — */
+.mark {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+}
+
+.logo,
+.name {
+  transform: scale(0.9);
+}
+
+.logo {
+  display: block;
+  width: clamp(11rem, 34vw, 24rem);
+  height: auto;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  color: #fff;
+}
+
+/* One slow, steady grow across the whole sequence — not per image. */
+.running .logo,
+.running .name {
+  animation: logo-grow var(--run) linear forwards;
+}
+
+@keyframes logo-grow {
+  from {
+    transform: scale(0.9);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+/* — Exit — images, shade and logo leave together. — */
+.running {
+  animation: intro-out 650ms var(--ease-out-quart) var(--run) forwards;
+}
+
+/* Its own keyframes, not intro-out: an animation keeps its identity by name,
+   so reusing intro-out mid-sequence would only retime the already-running
+   animation — which, being long past 350ms, would end instantly with no fade. */
+.skipping {
+  animation: intro-skip 350ms var(--ease-out-quart) forwards;
+}
+
+.leaving,
+.skipping {
+  pointer-events: none;
+}
+
+@keyframes intro-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes intro-skip {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* — Skip — */
+.skip {
+  position: absolute;
+  right: clamp(1rem, 3vw, 1.75rem);
+  bottom: clamp(1rem, 3vw, 1.75rem);
+  z-index: 13;
+  height: 2.25rem;
+  padding-inline: 0.875rem;
+  background: rgb(255 255 255 / 0.12);
+  border: 1px solid rgb(255 255 255 / 0.24);
+  border-radius: 999px;
+  color: #fff;
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.skip:hover {
+  background: rgb(255 255 255 / 0.22);
+}
+
+.skip:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}

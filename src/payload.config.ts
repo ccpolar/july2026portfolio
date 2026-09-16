@@ -24,6 +24,7 @@ import { Users } from './collections/Users'
 import { Contact } from './globals/Contact'
 import { Homepage } from './globals/Homepage'
 import { Identity } from './globals/Identity'
+import { LoadingScreen } from './globals/LoadingScreen'
 import { Theme } from './globals/Theme'
 
 const filename = fileURLToPath(import.meta.url)
@@ -66,7 +67,7 @@ export default buildConfig({
     Subscribers,
     Users,
   ],
-  globals: [Homepage, Contact, Theme, Identity],
+  globals: [Homepage, Contact, Theme, Identity, LoadingScreen],
   editor: lexicalEditor(),
   db: isPostgres
     ? postgresAdapter({

@@ -101,6 +101,7 @@
   --z-sticky: 100;
   --z-header: 200;
   --z-overlay: 300;
+  --z-intro: 400;
 }
 
 *,
@@ -111,6 +112,17 @@
 
 * {
   margin: 0;
+}
+
+/* While the loading screen plays: the page underneath can't scroll, and its
+   own entrance animations wait, so they run as the overlay fades away instead
+   of finishing unseen behind it. */
+html[data-intro='run'] {
+  overflow: hidden;
+}
+
+html[data-intro='run'] [data-site-content] * {
+  animation-play-state: paused !important;
 }
 
 html {

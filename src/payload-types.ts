@@ -114,12 +114,14 @@ export interface Config {
     contact: Contact;
     theme: Theme;
     identity: Identity;
+    'loading-screen': LoadingScreen;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     theme: ThemeSelect<false> | ThemeSelect<true>;
     identity: IdentitySelect<false> | IdentitySelect<true>;
+    'loading-screen': LoadingScreenSelect<false> | LoadingScreenSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1123,6 +1125,27 @@ export interface Identity {
   createdAt?: string | null;
 }
 /**
+ * The intro that plays over the first page someone opens in a visit: your images flash by under a dark layer while your logo grows, then it fades to the site. It plays once per visit, never for people who have reduced motion turned on, and it hides itself until at least one image is added.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "loading-screen".
+ */
+export interface LoadingScreen {
+  id: number;
+  enabled?: boolean | null;
+  /**
+   * Up to 10, each on screen for half a second in this order — drag to reorder. Landscape photos at least 2000px wide look sharpest; they are shown filling the screen and cropped to fit.
+   */
+  images?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -1200,6 +1223,22 @@ export interface IdentitySelect<T extends boolean = true> {
   logoHeight?: T;
   favicon?: T;
   browserTitle?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "loading-screen_select".
+ */
+export interface LoadingScreenSelect<T extends boolean = true> {
+  enabled?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
