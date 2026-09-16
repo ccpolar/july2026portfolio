@@ -1,5 +1,10 @@
+/* Top: enough air under the floating nav for the badge to start a new idea,
+   no more. Bottom: the logo strip continues the hero's argument (who trusts
+   this person), so it follows at a hero-internal distance rather than a full
+   section break. When the strip is hidden, Recent Work brings its own top
+   padding, so this never leaves the next section cramped. */
 .hero {
-  padding-block: clamp(4.5rem, 13vh, 9rem) var(--section);
+  padding-block: clamp(3.5rem, 9vh, 6.5rem) clamp(3.5rem, 6vw, 5.5rem);
 }
 
 .column {
