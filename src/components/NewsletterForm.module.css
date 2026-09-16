@@ -1,0 +1,99 @@
+/* The compact footer signup: one field and one button on a single line, in the
+   same lifted, rounded material as the nav pieces. */
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs);
+  max-width: 26rem;
+}
+
+.input {
+  flex: 1 1 11rem;
+  min-width: 0;
+  height: 2.75rem;
+  padding-inline: 0.875rem;
+  background: var(--raised);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-sm);
+  transition: border-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.input::placeholder {
+  /* Placeholders carry the same contrast duty as body text. */
+  color: var(--muted);
+}
+
+.input:hover {
+  border-color: color-mix(in oklch, var(--ink) 22%, transparent);
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.submit {
+  flex: none;
+  height: 2.75rem;
+  padding-inline: 1.125rem;
+  background: var(--ink);
+  border: 1px solid var(--ink);
+  border-radius: var(--radius-control);
+  color: var(--bg);
+  font: inherit;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease-out-quart),
+    opacity var(--dur) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.submit:hover:not(:disabled) {
+  background: color-mix(in oklch, var(--ink), var(--bg) 18%);
+}
+
+.submit:active:not(:disabled) {
+  transform: scale(0.97);
+  transition-duration: 60ms;
+}
+
+.submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* While the address is in flight the button breathes, and stops the moment
+   there is an answer — a still pending state reads as a dropped click. */
+.submit[data-pending='true'] {
+  animation: submit-pulse 1.4s var(--ease-out-quart) infinite;
+}
+
+@keyframes submit-pulse {
+  50% {
+    opacity: 0.72;
+  }
+}
+
+.status {
+  flex-basis: 100%;
+  font-size: var(--text-label);
+  color: var(--ink);
+  /* Visible at rest: if the entrance never runs, the answer is still there. */
+  animation: status-in 280ms var(--ease-out-expo) backwards;
+}
+
+.statusErr {
+  font-weight: 500;
+}
+
+@keyframes status-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}

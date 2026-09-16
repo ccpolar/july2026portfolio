@@ -1,4 +1,3 @@
-import { ContactSection } from '@/components/ContactSection'
 import { Hero } from '@/components/Hero'
 import { Services } from '@/components/Services'
 import { SiteFooter } from '@/components/SiteFooter'
@@ -32,7 +31,6 @@ export default async function HomePage() {
         <TrustedBy home={home} clients={clients} />
         <Services home={home} services={services} />
         <Testimonials testimonials={testimonials} />
-        <ContactSection contact={contact} />
       </main>
       <SiteFooter siteName={chrome.siteName} />
     </>

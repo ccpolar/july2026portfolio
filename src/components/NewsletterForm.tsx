@@ -4,7 +4,7 @@ import { useActionState } from 'react'
 
 import { type SubscribeState, subscribe } from '@/app/(frontend)/actions'
 
-import styles from './ContactSection.module.css'
+import styles from './NewsletterForm.module.css'
 
 const initial: SubscribeState = { status: 'idle', message: '' }
 
@@ -35,7 +35,7 @@ export const NewsletterForm = () => {
           // Remount on a new message so the entrance re-fires; without this
           // React reuses the node and a changed answer appears silently.
           key={state.message}
-          className={`${styles.status} ${state.status === 'ok' ? styles.statusOk : styles.statusErr}`}
+          className={`${styles.status} ${state.status === 'ok' ? '' : styles.statusErr}`}
           id="newsletter-status"
           role="status"
           aria-live="polite"
