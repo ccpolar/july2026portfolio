@@ -11,31 +11,37 @@
 
 /* The same height in every card, so a row's descriptions start on one line
    however the images are proportioned. */
+/* The dot grid is the image area's own backdrop, not an empty state: it shows
+   around an image displayed whole, and through a transparent one, so a card
+   keeps its texture once artwork is added. An image set to fill the area
+   covers it, which is the point of that setting. */
 .media {
   height: clamp(10rem, 15vw, 12.5rem);
   display: grid;
   place-items: center;
   overflow: hidden;
   border-radius: calc(var(--radius-control) - 0.25rem);
-}
-
-.image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.fill {
-  object-fit: cover;
-}
-
-.empty {
   background-image: radial-gradient(
     color-mix(in oklch, var(--bg) 14%, transparent) 1px,
     transparent 1.5px
   );
   background-size: 1rem 1rem;
   background-position: center;
+}
+
+/* Shown whole, artwork sits inset so the dot grid frames it rather than being
+   covered edge to edge by anything roughly the area's own proportions. */
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 7% 9%;
+}
+
+/* Filling the area is the opposite instruction: full bleed, dots covered. */
+.fill {
+  object-fit: cover;
+  padding: 0;
 }
 
 .description {

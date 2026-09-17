@@ -33,8 +33,8 @@ export const Services = ({ home, services }: Props) => {
           <article key={service.id} {...panelCard(i, visible.length)}>
             <h3 className={styles.title}>{service.title}</h3>
 
-            {/* The area is always present so a row's descriptions stay level while
-                images are still being added; empty, it's a faint dot grid. */}
+            {/* The area is always present so a row's descriptions stay level
+                while images are still being added. */}
             {media ? (
               <div className={styles.media}>
                 {/* GIFs stay animated: Payload keeps every frame when it
@@ -46,7 +46,7 @@ export const Services = ({ home, services }: Props) => {
                 />
               </div>
             ) : (
-              <div className={`${styles.media} ${styles.empty}`} aria-hidden="true" />
+              <div className={styles.media} aria-hidden="true" />
             )}
 
             <p className={styles.description}>{service.description}</p>
