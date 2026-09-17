@@ -12,7 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const chrome = await getChrome()
   return {
     title: `Snippets — ${chrome.siteName}`,
-    description: 'Screengrabs from work in progress — pieces of projects as they come together.',
+    description:
+      'Random snapshots of projects, works in progress, a glimpse into the processes.',
   }
 }
 
@@ -26,8 +27,7 @@ export default async function SnippetsPage() {
         <div className={`shell ${styles.head}`}>
           <h1 className={styles.heading}>Snippets</h1>
           <p className={styles.intro}>
-            Screengrabs from work in progress — pieces of projects as they come together. Click any
-            one to see it full size.
+            Random snapshots of projects, works in progress, a glimpse into the processes.
           </p>
         </div>
 
