@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import React from 'react'
+import { Analytics } from '@vercel/analytics/next'
 
 import { ContactModal } from '@/components/ContactModal'
 import { type IntroImage, IntroOverlay } from '@/components/IntroOverlay'
@@ -137,6 +138,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
             overlay={introOverlay}
           />
         ) : null}
+        <Analytics />
       </body>
     </html>
   )
