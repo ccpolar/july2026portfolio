@@ -103,20 +103,23 @@ between environments.)
 
 ## Notes
 
-- **Schema sync only runs outside production** (`push: true` in the Postgres
-  config, but Payload disables `push` whenever `NODE_ENV=production` — which
-  Vercel always sets). `migrate:import` created the schema as a side effect of
-  running from your own machine. If you later add or change a field on a
-  collection/global, Vercel's build will **not** update the live table — sync
-  it yourself first, from your machine, pointed at production:
-  ```powershell
-  $env:DATABASE_URI="postgres://...prod..."
-  $env:PAYLOAD_SECRET="...same secret..."
-  npm run migrate:sync-schema
-  ```
-  Then redeploy. This only alters the schema, not your data. For stricter
-  control later (real up/down migration files, reviewed before running),
-  switch to Payload's formal migration workflow.
+- **Schema changes apply themselves on deploy.** Payload creates tables and
+  columns automatically, but only outside production (the check is hard-coded
+  in the adapter, and its interactive prompts couldn't run in a build anyway),
+  so `scripts/ensure-schema.cjs` runs first in `npm run build` instead. On
+  Vercel it uses the `DATABASE_URI` already in the build environment — nothing
+  to copy, nothing to run by hand. Off Postgres it does nothing, so local
+  development is unaffected.
+
+  It is additive only: `CREATE TABLE IF NOT EXISTS` / `ADD COLUMN IF NOT
+  EXISTS`, all in one transaction. It can't drop or rewrite anything, and
+  re-running it on every build does nothing.
+
+  **When you add a field or collection**, append its statements to the
+  `STATEMENTS` list in that file and deploy — don't edit or delete the ones
+  already there, since they're what brings an older database up to date.
+  `npm run migrate:sync-schema` is still there for syncing by hand from your
+  own machine, but it shouldn't be needed.
 - **Custom domain**: add it under Vercel → Settings → Domains, then update
   `NEXT_PUBLIC_SERVER_URL` to match and redeploy.
 - **Backups**: your snapshot lives in `backups/`. Re-run `npm run migrate:export`

@@ -17,6 +17,7 @@ import { Merchandise } from './collections/portfolio/Merchandise'
 import { Websites } from './collections/portfolio/Websites'
 import { Posts } from './collections/Posts'
 import { Services } from './collections/Services'
+import { Snippets } from './collections/Snippets'
 import { Projects } from './collections/Projects'
 import { Subscribers } from './collections/Subscribers'
 import { Testimonials } from './collections/Testimonials'
@@ -59,6 +60,7 @@ export default buildConfig({
     Advertising,
     Websites,
     Moodboard,
+    Snippets,
     Posts,
     Testimonials,
     Services,

@@ -88,6 +88,17 @@ export const getMoodboard = cache(async () => {
   return docs
 })
 
+export const getSnippets = cache(async () => {
+  const payload = await client()
+  const { docs } = await payload.find({
+    collection: 'snippets',
+    sort: 'order',
+    depth: 1,
+    limit: 100,
+  })
+  return docs
+})
+
 // The four portfolio categories. Each is its own collection, sorted by the
 // admin's manual order, images resolved (depth 1) so the page can render them.
 /**

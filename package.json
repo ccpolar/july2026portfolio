@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "node scripts/ensure-schema.cjs && next build",
     "start": "next start",
     "seed": "payload run src/seed/index.ts",
     "migrate:export": "payload run src/migrate/export.ts",

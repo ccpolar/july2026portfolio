@@ -37,10 +37,16 @@ export const SiteFooter = async ({ siteName }: { siteName: string }) => {
         ) : null}
 
         <div className={styles.meta}>
-          <a className={styles.moodboard} href="/moodboard">
-            Moodboard
-            <Arrow />
-          </a>
+          <div className={styles.links}>
+            <a className={styles.pageLink} href="/moodboard">
+              Moodboard
+              <Arrow />
+            </a>
+            <a className={styles.pageLink} href="/snippets">
+              Snippets
+              <Arrow />
+            </a>
+          </div>
           {socials.length ? (
             <ul className={styles.socials}>
               {socials.map((s) => (

@@ -1,0 +1,104 @@
+/* Two across on a phone, three on a desktop — asked for explicitly, so the
+   column count is fixed at each size rather than left to auto-fill. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--space-md), 3vw, var(--space-xl));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 64rem) {
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.item {
+  min-width: 0;
+}
+
+.figure {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2xs);
+}
+
+/* A screengrab is a widescreen thing: every thumbnail holds 16:9 so the grid
+   keeps its rows however the source files were cropped. */
+.thumb {
+  display: block;
+  width: 100%;
+  padding: 0;
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+  cursor: zoom-in;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out-expo);
+}
+
+.thumb:hover .image,
+.thumb:focus-visible .image {
+  transform: scale(1.03);
+}
+
+/* The note sits in a bubble rather than as loose text, so a line or two of
+   aside reads as a remark about the image above it. Sized to its content and
+   left-aligned under the frame, with a small tail pointing back up at it. */
+.bubble {
+  position: relative;
+  margin-top: 0.4375rem;
+  max-width: 34ch;
+  padding: 0.5rem 0.75rem;
+  background: var(--raised);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+  color: var(--muted);
+  font-size: var(--text-label);
+  line-height: 1.5;
+}
+
+/* Two stacked squares, the top one offset by the border width, make a tail
+   with an outline on its two exposed sides and no seam where it meets the
+   bubble. */
+.bubble::before,
+.bubble::after {
+  content: '';
+  position: absolute;
+  left: 1.125rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  transform: rotate(45deg);
+}
+
+.bubble::before {
+  top: -0.3125rem;
+  background: var(--edge);
+}
+
+.bubble::after {
+  top: -0.25rem;
+  background: var(--raised);
+}
+
+/* Bubbles get cramped in a two-column phone layout; the frame stays the
+   anchor and the note runs its full width underneath. */
+@media (max-width: 40rem) {
+  .bubble {
+    max-width: none;
+    align-self: stretch;
+    font-size: var(--text-label);
+    padding: 0.4375rem 0.625rem;
+  }
+}

@@ -73,6 +73,7 @@ export interface Config {
     advertising: Advertising;
     websites: Website;
     moodboard: Moodboard;
+    snippets: Snippet;
     posts: Post;
     testimonials: Testimonial;
     services: Service;
@@ -93,6 +94,7 @@ export interface Config {
     advertising: AdvertisingSelect<false> | AdvertisingSelect<true>;
     websites: WebsitesSelect<false> | WebsitesSelect<true>;
     moodboard: MoodboardSelect<false> | MoodboardSelect<true>;
+    snippets: SnippetsSelect<false> | SnippetsSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
@@ -404,6 +406,33 @@ export interface Moodboard {
   createdAt: string;
 }
 /**
+ * Screengrabs of work in progress, shown on the Snippets page. Each one is a 16:9 thumbnail visitors can click to enlarge, with a short note underneath.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "snippets".
+ */
+export interface Snippet {
+  id: number;
+  /**
+   * For your own reference, and read aloud by screen readers.
+   */
+  title: string;
+  /**
+   * The screengrab. Thumbnails are 16:9, so a widescreen crop fills the frame — anything else is centred and cropped to fit. The full image is what opens when it’s clicked.
+   */
+  image: number | Media;
+  /**
+   * A sentence or two shown in the bubble under the image. Leave blank for none.
+   */
+  note?: string | null;
+  /**
+   * Lower numbers appear first.
+   */
+  order?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Posts on the blog page. The Blog link only appears in the site header once at least one post is published.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -622,6 +651,10 @@ export interface PayloadLockedDocument {
         value: number | Moodboard;
       } | null)
     | ({
+        relationTo: 'snippets';
+        value: number | Snippet;
+      } | null)
+    | ({
         relationTo: 'posts';
         value: number | Post;
       } | null)
@@ -778,6 +811,18 @@ export interface MoodboardSelect<T extends boolean = true> {
   title?: T;
   image?: T;
   blockSize?: T;
+  order?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "snippets_select".
+ */
+export interface SnippetsSelect<T extends boolean = true> {
+  title?: T;
+  image?: T;
+  note?: T;
   order?: T;
   updatedAt?: T;
   createdAt?: T;

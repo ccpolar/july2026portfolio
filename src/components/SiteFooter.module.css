@@ -36,10 +36,17 @@
 
 /* — Moodboard, socials and legal line — */
 
-/* The one way into the moodboard now that it isn't in the nav: a lifted,
-   rounded piece in the same material as the nav tiles, so it reads as a
-   destination rather than another text link. */
-.moodboard {
+/* The pages that aren't in the nav: lifted, rounded pieces in the same
+   material as the nav tiles, so they read as destinations rather than more
+   text links. They sit side by side and wrap together on a narrow screen. */
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2xs);
+}
+
+.pageLink {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
@@ -57,11 +64,11 @@
     transform var(--dur-fast) var(--ease-out-quart);
 }
 
-.moodboard:hover {
+.pageLink:hover {
   background: color-mix(in oklch, var(--raised), var(--ink) 6%);
 }
 
-.moodboard:active {
+.pageLink:active {
   transform: scale(0.97);
   transition-duration: 60ms;
 }
@@ -70,7 +77,7 @@
   transition: transform var(--dur) var(--ease-out-expo);
 }
 
-.moodboard:hover .arrow {
+.pageLink:hover .arrow {
   transform: translateX(3px);
 }
 
@@ -117,6 +124,10 @@
 /* Stacked on a phone, the newsletter leads and the rest follows it,
    left-aligned so both read down the same edge. */
 @media (max-width: 40rem) {
+  .links {
+    justify-content: flex-start;
+  }
+
   .meta {
     justify-items: start;
     margin-left: 0;
