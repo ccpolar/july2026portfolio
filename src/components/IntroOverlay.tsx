@@ -10,10 +10,11 @@ type Props = {
   images: IntroImage[]
   logo: { src: string; width?: number; height?: number } | null
   siteName: string
+  /** Each image's time on screen, from the admin. */
+  frameMs: number
+  /** The tint over the images: a hex colour and 0–1 opacity, from the admin. */
+  overlay: { color: string; opacity: number }
 }
-
-/** Each image's time on screen. */
-const FRAME_MS = 500
 /** If the images aren't decoded by now, skip the intro rather than hold a
  * visitor on a black screen. */
 const PRELOAD_CAP_MS = 3000
@@ -28,7 +29,7 @@ const releasePage = () => {
   document.querySelector('[data-site-content]')?.removeAttribute('inert')
 }
 
-export const IntroOverlay = ({ images, logo, siteName }: Props) => {
+export const IntroOverlay = ({ images, logo, siteName, frameMs, overlay }: Props) => {
   const [phase, setPhase] = useState<Phase>('idle')
   const [count, setCount] = useState(0)
   const framesRef = useRef<HTMLDivElement>(null)
@@ -122,12 +123,21 @@ export const IntroOverlay = ({ images, logo, siteName }: Props) => {
   return (
     <div
       className={className}
-      style={{ '--run': `${Math.max(count, 1) * FRAME_MS}ms` } as CSSProperties}
+      style={
+        {
+          '--frame': `${frameMs}ms`,
+          '--run': `${Math.max(count, 1) * frameMs}ms`,
+        } as CSSProperties
+      }
       onAnimationStart={onAnimationStart}
       onAnimationEnd={onAnimationEnd}
     >
       <div className={styles.frames} ref={framesRef} aria-hidden="true" />
-      <div className={styles.shade} aria-hidden="true" />
+      <div
+        className={styles.shade}
+        style={{ background: overlay.color, opacity: overlay.opacity }}
+        aria-hidden="true"
+      />
       <div className={styles.mark}>
         {logo ? (
           // Loads only when the overlay is actually shown (lazy + display:none

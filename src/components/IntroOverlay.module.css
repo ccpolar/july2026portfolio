@@ -36,7 +36,7 @@
 
 .running .frames img {
   animation: frame-on 1ms linear forwards;
-  animation-delay: calc(var(--i) * 500ms);
+  animation-delay: calc(var(--i) * var(--frame, 500ms));
 }
 
 @keyframes frame-on {
@@ -45,12 +45,14 @@
   }
 }
 
-/* Takes the edge off the flashing without hiding the photographs. */
+/* Takes the edge off the flashing without hiding the photographs. Colour and
+   strength are set from the admin (inline); this is the fallback. */
 .shade {
   position: absolute;
   inset: 0;
   z-index: 11;
-  background: rgb(0 0 0 / 0.5);
+  background: #000;
+  opacity: 0.5;
 }
 
 /* — Logo — */

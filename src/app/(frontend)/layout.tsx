@@ -80,6 +80,15 @@ export default async function FrontendLayout({ children }: { children: React.Rea
       }
     : null
   const siteName = identity?.siteName || 'Cam'
+  // Admin values, clamped to the ranges the fields allow so a bad value can
+  // never stall the sequence or hide the images completely.
+  const clamp = (value: unknown, min: number, max: number, fallback: number) =>
+    typeof value === 'number' && Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : fallback
+  const introFrameMs = clamp(loadingScreen?.frameDuration, 150, 1500, 500)
+  const introOverlay = {
+    color: /^#[0-9a-fA-F]{6}$/.test(loadingScreen?.overlayColor ?? '') ? loadingScreen!.overlayColor! : '#000000',
+    opacity: clamp(loadingScreen?.overlayOpacity, 0, 90, 50) / 100,
+  }
   // The intake's "How can I help?" options are the services shown on the
   // homepage, so the two never disagree. The names Cam set up are the
   // fallback until any service is live.
@@ -120,7 +129,13 @@ export default async function FrontendLayout({ children }: { children: React.Rea
             holding their own copy. */}
         <ContactModal services={intakeServices} />
         {introImages.length ? (
-          <IntroOverlay images={introImages} logo={introLogo} siteName={siteName} />
+          <IntroOverlay
+            images={introImages}
+            logo={introLogo}
+            siteName={siteName}
+            frameMs={introFrameMs}
+            overlay={introOverlay}
+          />
         ) : null}
       </body>
     </html>

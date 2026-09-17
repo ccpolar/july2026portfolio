@@ -1134,6 +1134,18 @@ export interface LoadingScreen {
   id: number;
   enabled?: boolean | null;
   /**
+   * How long each image stays on screen, in milliseconds (1000 = one second). Lower is faster. The logo grows across the whole run, so it slows or speeds up to match.
+   */
+  frameDuration?: number | null;
+  /**
+   * The tint laid over the images, under the logo.
+   */
+  overlayColor?: string | null;
+  /**
+   * How strongly the tint covers the images. 0 shows them untouched.
+   */
+  overlayOpacity?: number | null;
+  /**
    * Up to 10, each on screen for half a second in this order — drag to reorder. Landscape photos at least 2000px wide look sharpest; they are shown filling the screen and cropped to fit.
    */
   images?:
@@ -1233,6 +1245,9 @@ export interface IdentitySelect<T extends boolean = true> {
  */
 export interface LoadingScreenSelect<T extends boolean = true> {
   enabled?: T;
+  frameDuration?: T;
+  overlayColor?: T;
+  overlayOpacity?: T;
   images?:
     | T
     | {
