@@ -13,6 +13,7 @@
    colours chosen in /admin. The custom properties are shared with everything
    inside, so each section's own card content uses the same palette. — */
 .panel {
+  --panel-pad: clamp(0.75rem, 3vw, 2.5rem);
   --on: var(--bg);
   --on-muted: color-mix(in oklch, var(--bg) 68%, var(--ink));
   --card: color-mix(in oklch, var(--ink), var(--bg) 6%);
@@ -21,7 +22,7 @@
   background: var(--ink);
   color: var(--on);
   border-radius: clamp(1.25rem, 2.5vw, 1.75rem);
-  padding: clamp(3rem, 7vw, 5.5rem) clamp(0.75rem, 3vw, 2.5rem);
+  padding: clamp(3rem, 7vw, 5.5rem) var(--panel-pad);
 }
 
 .head {
@@ -88,4 +89,88 @@
 
 .card:hover {
   border-color: color-mix(in oklch, var(--bg) 18%, transparent);
+}
+
+/* — Phones: a swipeable row instead of a tall stack — */
+
+/* One card at a time, each most of the panel's width so the next one peeks
+   in from the right and says "there's more". The row runs out to the panel's
+   own edges, so a card slides fully out of view rather than being clipped
+   short of them. Plain CSS scroll-snap: any swipe, trackpad or shift-wheel
+   works, and it works before the JavaScript does. */
+@media (max-width: 39.99rem) {
+  .grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 84%;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--panel-pad);
+    margin-inline: calc(-1 * var(--panel-pad));
+    padding-inline: var(--panel-pad);
+    scrollbar-width: none;
+    /* The layout drops pointer events on content so the background can see
+       the cursor. A touch swipe has to land on the scroller itself, so it
+       takes them back — without this the row can't be swiped on a phone. */
+    pointer-events: auto;
+  }
+
+  .grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .card {
+    scroll-snap-align: start;
+  }
+}
+
+/* Where you are in the row, and a way to jump. Phones only: from tablet up
+   every card is already in view. */
+.dots {
+  display: none;
+}
+
+@media (max-width: 39.99rem) {
+  .dots {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-sm);
+  }
+}
+
+/* A 24px target around a 6px dot; the current card's dot stretches into a
+   short bar, so position reads at a glance without counting. */
+.dot {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.dot::before {
+  content: '';
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 999px;
+  background: var(--on);
+  opacity: 0.3;
+  transition:
+    width var(--dur) var(--ease-out-quart),
+    opacity var(--dur) var(--ease-out-quart);
+}
+
+.dot[aria-current='true']::before {
+  width: 1.125rem;
+  opacity: 1;
+}
+
+.dot:focus-visible {
+  outline: 2px solid var(--on);
+  outline-offset: -2px;
+  border-radius: 999px;
 }

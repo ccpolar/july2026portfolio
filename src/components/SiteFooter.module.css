@@ -229,7 +229,8 @@
   text-decoration-thickness: 1px;
 }
 
-/* — Tablet and phone: content, then the scene, then legal on a meadow strip — */
+/* — Tablet and phone: content, then the scene, with the legal line laid over
+   the scene's ground as on desktop — */
 @media (max-width: 960px) {
   .footer {
     display: flex;
@@ -250,9 +251,16 @@
     padding-top: 48px;
   }
 
+  /* Services, Pages and Socials always side by side, sharing the width
+     equally rather than at the design's fixed desktop widths. */
   .columns {
-    flex-wrap: wrap;
-    row-gap: 32px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+
+  .column:nth-child(n) {
+    width: auto;
   }
 
   /* In flow instead of behind the content. The scene's sky is empty, so it
@@ -266,29 +274,70 @@
     margin-top: 24px;
   }
 
+  /* On the scene's ground, pinned to the footer's bottom edge, which is the
+     scene's bottom edge here. */
   .legal {
-    order: 3;
-    position: static;
     max-width: none;
     margin-inline: 0;
-    padding-block: 14px 22px;
-    background: var(--footer-meadow);
+    bottom: 12px;
   }
-
-  .copyright { overflow-wrap: anywhere; }
-}
-
-@media (max-width: 560px) {
-  .column:nth-child(n) { width: 50%; }
-
-  .legal {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .legalLinks { gap: 24px; }
 
   .copyright,
-  .link { font-size: 14px; }
+  .legalLinks .link {
+    font-size: 13px;
+    line-height: 16px;
+    letter-spacing: 0.01em;
+  }
+}
+
+/* Phones: everything a step smaller so three columns fit across. */
+@media (max-width: 560px) {
+  .inner {
+    gap: 32px;
+    padding-top: 40px;
+  }
+
+  .columns {
+    column-gap: 12px;
+  }
+
+  .column {
+    gap: 12px;
+  }
+
+  .heading {
+    font-size: 15px;
+    line-height: 20px;
+  }
+
+  .list {
+    gap: 9px;
+    font-size: 13px;
+    line-height: 17px;
+  }
+
+  .link {
+    font-size: 13px;
+    line-height: 17px;
+    letter-spacing: 0.01em;
+  }
+
+  /* The ground is shallow at this size, so the line sits low and small. With
+     Terms / Privacy links as well, they take the line above. */
+  .legal {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 4px;
+    bottom: 8px;
+  }
+
+  .legalLinks {
+    gap: 16px;
+  }
+
+  .copyright,
+  .legalLinks .link {
+    font-size: 11.5px;
+    line-height: 14px;
+  }
 }

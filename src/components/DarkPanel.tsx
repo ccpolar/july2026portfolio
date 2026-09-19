@@ -1,6 +1,7 @@
-import type { CSSProperties, ReactNode } from 'react'
+import { Children, type CSSProperties, type ReactNode } from 'react'
 
 import styles from './DarkPanel.module.css'
+import { SwipeRow } from './SwipeRow'
 
 type PanelProps = {
   id: string
@@ -13,6 +14,9 @@ type PanelProps = {
  * The black panel shared by the homepage's card sections (Services,
  * Testimonials). One component, so every panel is the same width, colour and
  * heading treatment by construction rather than by keeping copies in sync.
+ *
+ * On a phone the cards run in a swipeable row rather than a tall stack, with
+ * dots underneath; from tablet up they're the grid.
  */
 export const DarkPanel = ({ id, heading, intro, children }: PanelProps) => (
   <section className={`shell ${styles.section}`} id={id} aria-labelledby={`${id}-heading`}>
@@ -23,7 +27,15 @@ export const DarkPanel = ({ id, heading, intro, children }: PanelProps) => (
         </h2>
         {intro ? <p className={styles.intro}>{intro}</p> : null}
       </div>
-      <div className={styles.grid}>{children}</div>
+      <SwipeRow
+        className={styles.grid}
+        count={Children.count(children)}
+        label={heading}
+        dotsClassName={styles.dots}
+        dotClassName={styles.dot}
+      >
+        {children}
+      </SwipeRow>
     </div>
   </section>
 )
