@@ -37,7 +37,7 @@
   overflow: hidden;
   min-height: var(--art-h);
   padding-bottom: calc(var(--below-peak) + 24px);
-  background: var(--footer-sky);
+  /* No fill of its own: the site's background runs on behind the scene. */
   color: var(--footer-ink);
   font-family: var(--font-text);
   /* Name set inline in SiteFooter.tsx — see the note in SiteHeader.module.css. */
@@ -49,10 +49,6 @@
   height: var(--art-h);
   z-index: -1;
   pointer-events: none;
-  /* Fades over most of the empty sky above the peak, never into the peak. */
-  --fade: calc((var(--art-h) - var(--below-peak)) * 0.6);
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--fade));
-  mask-image: linear-gradient(to bottom, transparent, #000 var(--fade));
 }
 
 /* The layout hands pointer events back to every svg on the page; the scene is
@@ -259,8 +255,8 @@
     row-gap: 32px;
   }
 
-  /* In flow instead of behind the content; the sky is the footer's own
-     background, so the scene blends up into it with no seam. */
+  /* In flow instead of behind the content. The scene's sky is empty, so it
+     rises out of the site's background with no seam. */
   .art {
     order: 2;
     position: relative;
@@ -268,10 +264,6 @@
     z-index: 0;
     height: clamp(300px, 70vw, 560px);
     margin-top: 24px;
-    /* The grain lives inside the art; fade its top edge so it doesn't stop
-       in a hard line. */
-    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%);
-    mask-image: linear-gradient(to bottom, transparent, #000 18%);
   }
 
   .legal {
