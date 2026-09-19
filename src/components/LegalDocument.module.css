@@ -1,0 +1,70 @@
+/* Set like a blog post, since that's the site's other long-read page, but
+   tuned for what legal text is made of: numbered sections, lists and links
+   rather than images and pull quotes. */
+.header {
+  padding-block: clamp(3rem, 7vw, 5rem) clamp(1.5rem, 3vw, 2rem);
+}
+
+.title {
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+}
+
+.body {
+  padding-bottom: var(--section);
+}
+
+.prose {
+  max-width: 68ch;
+  font-size: var(--text-body);
+  line-height: 1.7;
+}
+
+/* Spacing between blocks is written as "a block after a block" rather than
+   ".prose > * + *": Payload's RichText wraps the document in a container of
+   its own, so the blocks aren't the prose element's children. */
+.prose :is(p, ul, ol, blockquote, h2, h3) + :is(p, ul, ol, blockquote) {
+  margin-top: var(--space-sm);
+}
+
+.prose * + h2 {
+  margin-top: var(--space-xl);
+}
+
+.prose * + h3 {
+  margin-top: var(--space-lg);
+}
+
+/* A heading's own text sits close under it. Same specificity as the block
+   rule above, and later, so it wins. */
+.prose :is(h2, h3) + :is(p, ul, ol, blockquote) {
+  margin-top: var(--space-2xs);
+}
+
+.prose h2 {
+  font-size: var(--text-h3);
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.25;
+}
+
+.prose h3 {
+  font-size: var(--text-body);
+  font-weight: 500;
+}
+
+.prose ul,
+.prose ol {
+  padding-left: 1.25em;
+}
+
+.prose li + li {
+  margin-top: var(--space-2xs);
+}
+
+.prose a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

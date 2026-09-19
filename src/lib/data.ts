@@ -72,6 +72,11 @@ export const getLoadingScreen = cache(async () => {
   return payload.findGlobal({ slug: 'loading-screen', depth: 1 })
 })
 
+export const getLegal = cache(async () => {
+  const payload = await client()
+  return payload.findGlobal({ slug: 'legal', depth: 0 })
+})
+
 export const getIdentity = cache(async () => {
   const payload = await client()
   return payload.findGlobal({ slug: 'identity', depth: 1 })

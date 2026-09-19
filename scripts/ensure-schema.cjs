@@ -52,6 +52,19 @@ const STATEMENTS = [
    EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
   `CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_snippets_id_idx"
      ON "payload_locked_documents_rels" ("snippets_id")`,
+
+  // Legal pages — Terms of Service and Privacy Policy, one global.
+  `CREATE TABLE IF NOT EXISTS "legal" (
+     "id" serial PRIMARY KEY NOT NULL,
+     "terms" jsonb,
+     "privacy" jsonb,
+     "updated_at" timestamp(3) with time zone,
+     "created_at" timestamp(3) with time zone
+   )`,
+
+  // Footer tagline, on the Contact global.
+  `ALTER TABLE "contact" ADD COLUMN IF NOT EXISTS "footer_tagline" varchar
+     DEFAULT 'Here to help founders reach their creative goals and fulfill their visual dreams.'`,
 ]
 
 const main = async () => {

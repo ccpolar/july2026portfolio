@@ -117,6 +117,7 @@ export interface Config {
     theme: Theme;
     identity: Identity;
     'loading-screen': LoadingScreen;
+    legal: Legal;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
@@ -124,6 +125,7 @@ export interface Config {
     theme: ThemeSelect<false> | ThemeSelect<true>;
     identity: IdentitySelect<false> | IdentitySelect<true>;
     'loading-screen': LoadingScreenSelect<false> | LoadingScreenSelect<true>;
+    legal: LegalSelect<false> | LegalSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1077,6 +1079,10 @@ export interface Contact {
    * Optional scheduling link (Cal.com, Calendly). Shown next to the email.
    */
   bookingUrl?: string | null;
+  /**
+   * The line under your name in the footer, on every page.
+   */
+  footerTagline?: string | null;
   newsletter?: {
     enabled?: boolean | null;
     blurb?: string | null;
@@ -1203,6 +1209,53 @@ export interface LoadingScreen {
   createdAt?: string | null;
 }
 /**
+ * Your Terms of Service and Privacy Policy. Each page, and its link in the footer, appears once it has text — leave one empty and it stays hidden.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal".
+ */
+export interface Legal {
+  id: number;
+  /**
+   * Shown at /terms.
+   */
+  terms?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Shown at /privacy.
+   */
+  privacy?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -1235,6 +1288,7 @@ export interface ContactSelect<T extends boolean = true> {
   blurb?: T;
   email?: T;
   bookingUrl?: T;
+  footerTagline?: T;
   newsletter?:
     | T
     | {
@@ -1299,6 +1353,17 @@ export interface LoadingScreenSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "legal_select".
+ */
+export interface LegalSelect<T extends boolean = true> {
+  terms?: T;
+  privacy?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

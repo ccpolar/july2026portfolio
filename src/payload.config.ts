@@ -25,6 +25,7 @@ import { Users } from './collections/Users'
 import { Contact } from './globals/Contact'
 import { Homepage } from './globals/Homepage'
 import { Identity } from './globals/Identity'
+import { Legal } from './globals/Legal'
 import { LoadingScreen } from './globals/LoadingScreen'
 import { Theme } from './globals/Theme'
 
@@ -69,7 +70,7 @@ export default buildConfig({
     Subscribers,
     Users,
   ],
-  globals: [Homepage, Contact, Theme, Identity, LoadingScreen],
+  globals: [Homepage, Contact, Theme, Identity, LoadingScreen, Legal],
   editor: lexicalEditor(),
   db: isPostgres
     ? postgresAdapter({

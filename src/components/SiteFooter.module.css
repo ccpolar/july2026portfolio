@@ -1,139 +1,302 @@
+/*
+ * Mountain footer — a linocut Rocky Mountain scene in the site palette.
+ * Design source: Paper, "Cameron Pagano - Mountains Footer (Site Palette)", 1440 × 846.
+ *
+ * Every colour derives from the theme variables (--bg, --ink, --signal,
+ * --raised), so the scene follows whatever is set in /admin. The five greys
+ * are ink mixed into the silver ground:
+ *   meadow 15% · foothill 30% · rock 45% · rock-shade 65% · pine 85%
+ * Change the look through those, never by editing MountainIllustration's paths.
+ */
+
 .footer {
-  padding-block: var(--space-xl) var(--space-lg);
-  border-top: 1px solid var(--line);
+  --footer-sky: var(--bg);
+  --footer-ink: var(--ink);
+  --footer-signal: var(--signal);
+  --footer-raised: var(--raised);
+  --footer-meadow: color-mix(in oklch, var(--footer-ink) 15%, var(--footer-sky));
+  --footer-foothill: color-mix(in oklch, var(--footer-ink) 30%, var(--footer-sky));
+  --footer-rock: color-mix(in oklch, var(--footer-ink) 45%, var(--footer-sky));
+  --footer-rock-shade: color-mix(in oklch, var(--footer-ink) 65%, var(--footer-sky));
+  --footer-pine: color-mix(in oklch, var(--footer-ink) 85%, var(--footer-sky));
+
+  /* The scene's height follows the 1440 × 846 design ratio, clamped so a wide
+     screen doesn't grow the footer past the peaks. */
+  --art-h: clamp(420px, 58.75vw, 1100px);
+
+  /* How much of the scene sits below its tallest peak (y 250 of 846). The
+     scene scales with the screen but the text doesn't, so the text has to be
+     kept above this line rather than placed where it sat in the 1440 design:
+     at 1024 it would otherwise land on the mountains. The scene is scaled by
+     its height up to 1872px wide, and by the width beyond, where the art-h
+     clamp stops growing and the sky starts cropping. */
+  --below-peak: max(calc(var(--art-h) * 0.7045), 41.39vw);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: var(--art-h);
+  padding-bottom: calc(var(--below-peak) + 24px);
+  background: var(--footer-sky);
+  color: var(--footer-ink);
+  font-family: var(--font-text);
   /* Name set inline in SiteFooter.tsx — see the note in SiteHeader.module.css. */
 }
 
-/* Newsletter anchored bottom left, everything else pushed to the bottom
-   right, both sitting on the same baseline row on wide screens. */
+.art {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--art-h);
+  z-index: -1;
+  pointer-events: none;
+  /* Fades over most of the empty sky above the peak, never into the peak. */
+  --fade: calc((var(--art-h) - var(--below-peak)) * 0.6);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--fade));
+  mask-image: linear-gradient(to bottom, transparent, #000 var(--fade));
+}
+
+/* The layout hands pointer events back to every svg on the page; the scene is
+   decoration and should never be the thing under the cursor. */
+.footer .illustration {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* — Illustration colours (classes emitted by MountainIllustration) — */
+.footer :global(.mf-sky) { fill: var(--footer-sky); }
+.footer :global(.mf-raised) { fill: var(--footer-raised); }
+.footer :global(.mf-raised-stroke) { stroke: var(--footer-raised); }
+.footer :global(.mf-rock) { fill: var(--footer-rock); }
+.footer :global(.mf-rock-shade) { fill: var(--footer-rock-shade); }
+.footer :global(.mf-pine) { fill: var(--footer-pine); }
+.footer :global(.mf-signal) { fill: var(--footer-signal); }
+.footer :global(.mf-foothill) { fill: var(--footer-foothill); }
+.footer :global(.mf-meadow) { fill: var(--footer-meadow); }
+.footer :global(.mf-ink) { fill: var(--footer-ink); }
+
+/* — Content — */
 .inner {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding: 62px var(--gutter) 0;
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
   justify-content: space-between;
-  gap: var(--space-xl) var(--space-2xl);
+  align-items: flex-start;
+  gap: 48px;
 }
 
-/* — Newsletter — */
-.newsletter {
-  display: grid;
-  gap: var(--space-2xs);
-  flex: 0 1 26rem;
-}
-
-.title {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--ink);
-}
-
-.blurb {
-  font-size: var(--text-label);
-  color: var(--muted);
-  max-width: 40ch;
-  margin-bottom: var(--space-3xs);
-}
-
-/* — Moodboard, socials and legal line — */
-
-/* The pages that aren't in the nav: lifted, rounded pieces in the same
-   material as the nav tiles, so they read as destinations rather than more
-   text links. They sit side by side and wrap together on a narrow screen. */
-.links {
+.brand {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--space-2xs);
+  flex-direction: column;
+  gap: 20px;
+  max-width: 480px;
 }
 
-.pageLink {
+.wordmark {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  height: 2.75rem;
-  padding-inline: 1.125rem;
-  background: var(--raised);
-  border: 1px solid var(--edge);
-  border-radius: var(--radius-control);
-  color: var(--ink);
-  font-size: var(--text-sm);
-  font-weight: 500;
+  align-self: flex-start;
+  gap: 18px;
+  color: inherit;
   text-decoration: none;
-  transition:
-    background-color var(--dur-fast) var(--ease-out-quart),
-    transform var(--dur-fast) var(--ease-out-quart);
 }
 
-.pageLink:hover {
-  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
-}
-
-.pageLink:active {
-  transform: scale(0.97);
-  transition-duration: 60ms;
-}
-
-.arrow {
-  transition: transform var(--dur) var(--ease-out-expo);
-}
-
-.pageLink:hover .arrow {
-  transform: translateX(3px);
-}
-
-.meta {
-  display: grid;
-  gap: var(--space-sm);
-  justify-items: end;
-  margin-left: auto;
-}
-
-.socials {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--space-2xs) var(--space-md);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.social {
-  font-size: var(--text-sm);
-  color: var(--muted);
-  text-decoration: none;
-  transition: color var(--dur-fast) var(--ease-out-quart);
-}
-
-.social:hover {
-  color: var(--ink);
-}
-
-.legal {
-  display: flex;
-  gap: var(--space-sm);
-  font-size: var(--text-label);
-  color: var(--muted);
+.mark {
+  width: 97px;
+  height: 28px;
+  flex-shrink: 0;
 }
 
 .name {
-  font-weight: 500;
-  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 30px;
+  line-height: 34px;
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
 }
 
-/* Stacked on a phone, the newsletter leads and the rest follows it,
-   left-aligned so both read down the same edge. */
-@media (max-width: 40rem) {
-  .links {
-    justify-content: flex-start;
+.tagline {
+  max-width: 470px;
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+
+/* The newsletter keeps its own compact form; this only sets its prompt in
+   the tagline's voice, a step quieter. */
+.newsletter {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+  max-width: 26rem;
+}
+
+.newsletterNote {
+  font-size: var(--text-label);
+  line-height: 1.45;
+  color: color-mix(in oklch, var(--footer-ink) 72%, var(--footer-sky));
+}
+
+.columns {
+  display: flex;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.column:nth-child(1) { width: 185px; }
+.column:nth-child(2) { width: 186px; }
+.column:nth-child(3) { width: 130px; }
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 19px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+}
+
+/* Line height on the list, not just the link: each item's line box is sized
+   by the li's own font, which would otherwise be the body's taller one and
+   open the rows up past the design's 33px rhythm. */
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 15.5px;
+  line-height: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  font-size: 15.5px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-underline-offset: 3px;
+}
+
+.link:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.link:focus-visible,
+.wordmark:focus-visible {
+  outline: 2px solid var(--footer-signal);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Legal row sits on the meadow at the bottom of the scene. */
+.legal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+}
+
+.copyright {
+  font-size: 15.5px;
+  line-height: 20px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.legalLinks {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: 50px;
+}
+
+.legalLinks .link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+/* — Tablet and phone: content, then the scene, then legal on a meadow strip — */
+@media (max-width: 960px) {
+  .footer {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-bottom: 0;
   }
 
-  .meta {
-    justify-items: start;
-    margin-left: 0;
+  /* Full width: in a column flexbox, the auto inline margins that centre the
+     content on desktop would otherwise shrink it to fit and float it
+     mid-screen, off the page's left edge. */
+  .inner {
+    order: 1;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 40px;
+    padding-top: 48px;
   }
 
-  .socials {
-    justify-content: flex-start;
+  .columns {
+    flex-wrap: wrap;
+    row-gap: 32px;
   }
+
+  /* In flow instead of behind the content; the sky is the footer's own
+     background, so the scene blends up into it with no seam. */
+  .art {
+    order: 2;
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    height: clamp(300px, 70vw, 560px);
+    margin-top: 24px;
+    /* The grain lives inside the art; fade its top edge so it doesn't stop
+       in a hard line. */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, #000 18%);
+    mask-image: linear-gradient(to bottom, transparent, #000 18%);
+  }
+
+  .legal {
+    order: 3;
+    position: static;
+    max-width: none;
+    margin-inline: 0;
+    padding-block: 14px 22px;
+    background: var(--footer-meadow);
+  }
+
+  .copyright { overflow-wrap: anywhere; }
+}
+
+@media (max-width: 560px) {
+  .column:nth-child(n) { width: 50%; }
+
+  .legal {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .legalLinks { gap: 24px; }
+
+  .copyright,
+  .link { font-size: 14px; }
 }

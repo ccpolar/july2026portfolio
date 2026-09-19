@@ -58,6 +58,14 @@ export const Contact: GlobalConfig = {
       ],
     },
     {
+      name: 'footerTagline',
+      type: 'textarea',
+      label: 'Footer tagline',
+      maxLength: 140,
+      defaultValue: 'Here to help founders reach their creative goals and fulfill their visual dreams.',
+      admin: { description: 'The line under your name in the footer, on every page.' },
+    },
+    {
       name: 'newsletter',
       type: 'group',
       label: 'Newsletter — the fallback for visitors not ready to reach out',
