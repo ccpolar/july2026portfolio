@@ -11,7 +11,7 @@ export const Services: CollectionConfig = {
     defaultColumns: ['title', 'price', 'order'],
     group: 'Content',
     description:
-      'The cards in the homepage Services section. A service stays hidden until it has a description, so you can set one up before it goes live.',
+      'The cards in the homepage Services section. Untick “Show on the site” to work on one without it appearing.',
   },
   defaultSort: 'order',
   hooks: {
@@ -20,6 +20,15 @@ export const Services: CollectionConfig = {
   },
   fields: [
     { name: 'title', type: 'text', required: true, maxLength: 40 },
+    {
+      name: 'published',
+      type: 'checkbox',
+      label: 'Show on the site',
+      defaultValue: true,
+      admin: {
+        description: 'On by default. Untick to keep a service out of the Services section and the footer.',
+      },
+    },
     {
       type: 'row',
       fields: [
@@ -52,7 +61,7 @@ export const Services: CollectionConfig = {
       name: 'description',
       type: 'textarea',
       maxLength: 320,
-      admin: { description: 'Two or three sentences on what the client gets.' },
+      admin: { description: 'Two or three sentences on what the client gets. Optional — a card without one shows its title and price.' },
     },
     {
       name: 'price',

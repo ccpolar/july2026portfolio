@@ -84,7 +84,9 @@
   display: inline-flex;
   align-items: center;
   height: 100%;
-  padding-inline: 0.875rem;
+  /* Sets the space between the two links: this padding on each, either side
+     of the 2px gap. */
+  padding-inline: 0.625rem;
   border-radius: calc(var(--radius-control) - 0.25rem);
   font-size: var(--text-sm);
   font-weight: 500;

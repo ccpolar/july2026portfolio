@@ -46,7 +46,7 @@
 
 .description {
   flex: 1;
-  font-size: var(--text-sm);
+  font-size: var(--text-body);
   line-height: 1.6;
   color: var(--on-muted);
   max-width: 62ch;
@@ -55,6 +55,7 @@
 /* Pricing closes each card on its own line, set apart by a hairline, so the
    figure is findable at a glance without competing with the description. */
 .price {
+  margin-top: auto;
   display: flex;
   align-items: baseline;
   justify-content: space-between;

@@ -62,6 +62,10 @@ const STATEMENTS = [
      "created_at" timestamp(3) with time zone
    )`,
 
+  // Services: "Show on the site". Existing rows take the default, so every
+  // service that was already there stays visible.
+  `ALTER TABLE "services" ADD COLUMN IF NOT EXISTS "published" boolean DEFAULT true`,
+
   // Footer tagline, on the Contact global.
   `ALTER TABLE "contact" ADD COLUMN IF NOT EXISTS "footer_tagline" varchar
      DEFAULT 'Here to help founders reach their creative goals and fulfill their visual dreams.'`,

@@ -45,10 +45,9 @@ export const SiteFooter = async ({ siteName }: { siteName: string }) => {
   const columns: { heading: string; links: FooterLink[] }[] = [
     {
       heading: 'Services',
-      // The same rule as the homepage: a service shows once it has a
-      // description, so the two lists never disagree.
+      // The same switch as the homepage, so the two lists never disagree.
       links: services
-        .filter((service) => service.description?.trim())
+        .filter((service) => service.published !== false)
         .map((service) => ({ label: service.title, href: '/#services' })),
     },
     {

@@ -63,7 +63,7 @@
 
 /* — The promise — */
 .title {
-  font-size: clamp(2.625rem, 6.6vw, 5.25rem);
+  font-size: var(--text-display);
   font-weight: 700;
   letter-spacing: var(--tracking-display);
   line-height: 1.02;

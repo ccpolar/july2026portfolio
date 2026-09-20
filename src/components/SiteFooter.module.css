@@ -107,16 +107,18 @@
 
 .name {
   font-family: var(--font-display);
-  font-size: 30px;
-  line-height: 34px;
+  /* Off the text scale on purpose: the wordmark is set to the height of the
+     mark beside it, not to the running text. */
+  font-size: 1.875rem;
+  line-height: 1.15;
   font-weight: 700;
   letter-spacing: var(--tracking-display);
 }
 
 .tagline {
   max-width: 470px;
-  font-size: 16px;
-  line-height: 22px;
+  font-size: var(--text-body);
+  line-height: 1.45;
   font-weight: 400;
   letter-spacing: 0.005em;
 }
@@ -152,8 +154,8 @@
 
 .heading {
   font-family: var(--font-display);
-  font-size: 19px;
-  line-height: 24px;
+  font-size: var(--text-body);
+  line-height: 1.3;
   font-weight: 700;
   letter-spacing: var(--tracking-heading);
 }
@@ -165,8 +167,8 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  font-size: 15.5px;
-  line-height: 20px;
+  font-size: var(--text-sm);
+  line-height: 1.35;
   display: flex;
   flex-direction: column;
   gap: 13px;
@@ -175,8 +177,8 @@
 .link {
   color: inherit;
   text-decoration: none;
-  font-size: 15.5px;
-  line-height: 20px;
+  font-size: var(--text-sm);
+  line-height: 1.35;
   font-weight: 400;
   letter-spacing: 0.02em;
   text-underline-offset: 3px;
@@ -210,8 +212,8 @@
 }
 
 .copyright {
-  font-size: 15.5px;
-  line-height: 20px;
+  font-size: var(--text-sm);
+  line-height: 1.35;
   font-weight: 400;
   letter-spacing: 0.02em;
 }
@@ -284,8 +286,7 @@
 
   .copyright,
   .legalLinks .link {
-    font-size: 13px;
-    line-height: 16px;
+    font-size: var(--text-label);
     letter-spacing: 0.01em;
   }
 }
@@ -306,19 +307,18 @@
   }
 
   .heading {
-    font-size: 15px;
-    line-height: 20px;
+    font-size: var(--text-sm);
   }
 
   .list {
     gap: 9px;
-    font-size: 13px;
-    line-height: 17px;
+    font-size: var(--text-label);
+    line-height: 1.3;
   }
 
   .link {
-    font-size: 13px;
-    line-height: 17px;
+    font-size: var(--text-label);
+    line-height: 1.3;
     letter-spacing: 0.01em;
   }
 
@@ -337,7 +337,6 @@
 
   .copyright,
   .legalLinks .link {
-    font-size: 11.5px;
-    line-height: 14px;
+    font-size: var(--text-label);
   }
 }

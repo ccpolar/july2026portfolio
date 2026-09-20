@@ -15,9 +15,9 @@ const isMedia = (value: unknown): value is Media =>
 /** What Cam offers: a card per service, each with an image or GIF, a
  * description and a pricing range. */
 export const Services = ({ home, services }: Props) => {
-  // A service goes live once it has a description; until then it can be set up
-  // in the admin without a half-finished card appearing on the site.
-  const visible = services.filter((service) => service.description?.trim())
+  // Visibility is the admin's switch, not a guess from the content: a service
+  // with nothing written yet still belongs on the site if it's ticked.
+  const visible = services.filter((service) => service.published !== false)
   if (!visible.length) return null
 
   return (
@@ -49,7 +49,9 @@ export const Services = ({ home, services }: Props) => {
               <div className={styles.media} aria-hidden="true" />
             )}
 
-            <p className={styles.description}>{service.description}</p>
+            {service.description?.trim() ? (
+              <p className={styles.description}>{service.description}</p>
+            ) : null}
 
             {service.price?.trim() ? (
               <p className={styles.price}>

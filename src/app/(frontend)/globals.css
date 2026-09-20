@@ -80,7 +80,8 @@
   --tracking-heading: -0.01em;
   --tracking-title: -0.005em;
 
-  --text-display: clamp(2.75rem, 7.2vw, 5.5rem);
+  --text-display: clamp(2.625rem, 6.6vw, 5.25rem);
+  --text-h1: clamp(2.25rem, 5.5vw, 4rem);
   --text-h2: clamp(1.875rem, 3.6vw, 2.875rem);
   --text-h3: clamp(1.25rem, 1.8vw, 1.5rem);
   --text-lead: clamp(1.0625rem, 1.5vw, 1.25rem);

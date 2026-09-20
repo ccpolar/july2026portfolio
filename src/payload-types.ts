@@ -511,7 +511,7 @@ export interface Testimonial {
   createdAt: string;
 }
 /**
- * The cards in the homepage Services section. A service stays hidden until it has a description, so you can set one up before it goes live.
+ * The cards in the homepage Services section. Untick “Show on the site” to work on one without it appearing.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services".
@@ -519,6 +519,10 @@ export interface Testimonial {
 export interface Service {
   id: number;
   title: string;
+  /**
+   * On by default. Untick to keep a service out of the Services section and the footer.
+   */
+  published?: boolean | null;
   /**
    * An image or GIF for the top of the card. GIFs keep their animation. A landscape shape around 16:9 fits best.
    */
@@ -528,7 +532,7 @@ export interface Service {
    */
   imageFit?: ('fit' | 'fill') | null;
   /**
-   * Two or three sentences on what the client gets.
+   * Two or three sentences on what the client gets. Optional — a card without one shows its title and price.
    */
   description?: string | null;
   /**
@@ -864,6 +868,7 @@ export interface TestimonialsSelect<T extends boolean = true> {
  */
 export interface ServicesSelect<T extends boolean = true> {
   title?: T;
+  published?: T;
   image?: T;
   imageFit?: T;
   description?: T;
