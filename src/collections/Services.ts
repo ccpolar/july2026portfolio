@@ -30,32 +30,13 @@ export const Services: CollectionConfig = {
       },
     },
     {
-      type: 'row',
-      fields: [
-        {
-          name: 'image',
-          type: 'upload',
-          relationTo: 'media',
-          admin: {
-            width: '60%',
-            description:
-              'An image or GIF for the top of the card. GIFs keep their animation. A landscape shape around 16:9 fits best.',
-          },
-        },
-        {
-          name: 'imageFit',
-          type: 'select',
-          defaultValue: 'fit',
-          options: [
-            { label: 'Show the whole image', value: 'fit' },
-            { label: 'Fill the area (crops edges)', value: 'fill' },
-          ],
-          admin: {
-            width: '40%',
-            description: 'Illustrations usually want “whole image”; photos usually look better filled.',
-          },
-        },
-      ],
+      name: 'image',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description:
+          'An image or GIF for the top of the card. Any shape works — it’s scaled to sit whole inside the card’s dotted area, never cropped, with the dots showing around it. GIFs keep their animation, and a PNG keeps its transparency.',
+      },
     },
     {
       name: 'description',

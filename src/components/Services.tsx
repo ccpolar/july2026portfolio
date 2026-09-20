@@ -40,7 +40,7 @@ export const Services = ({ home, services }: Props) => {
                 {/* GIFs stay animated: Payload keeps every frame when it
                     converts and resizes an animated upload. */}
                 <MediaImage
-                  className={`${styles.image} ${service.imageFit === 'fill' ? styles.fill : ''}`}
+                  className={styles.image}
                   media={media}
                   sizes="(min-width: 64rem) 30rem, (min-width: 40rem) 50vw, 100vw"
                 />

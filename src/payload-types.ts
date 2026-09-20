@@ -524,13 +524,9 @@ export interface Service {
    */
   published?: boolean | null;
   /**
-   * An image or GIF for the top of the card. GIFs keep their animation. A landscape shape around 16:9 fits best.
+   * An image or GIF for the top of the card. Any shape works — it’s scaled to sit whole inside the card’s dotted area, never cropped, with the dots showing around it. GIFs keep their animation, and a PNG keeps its transparency.
    */
   image?: (number | null) | Media;
-  /**
-   * Illustrations usually want “whole image”; photos usually look better filled.
-   */
-  imageFit?: ('fit' | 'fill') | null;
   /**
    * Two or three sentences on what the client gets. Optional — a card without one shows its title and price.
    */
@@ -870,7 +866,6 @@ export interface ServicesSelect<T extends boolean = true> {
   title?: T;
   published?: T;
   image?: T;
-  imageFit?: T;
   description?: T;
   price?: T;
   order?: T;

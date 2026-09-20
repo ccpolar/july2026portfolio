@@ -12,12 +12,17 @@
 /* The same height in every card, so a row's descriptions start on one line
    however the images are proportioned. */
 /* The dot grid is the image area's own backdrop, not an empty state: it shows
-   around an image displayed whole, and through a transparent one, so a card
-   keeps its texture once artwork is added. An image set to fill the area
-   covers it, which is the point of that setting. */
+   around every image and through a transparent one, so a card keeps its
+   texture once artwork is added. */
 .media {
   height: clamp(10rem, 15vw, 12.5rem);
   display: grid;
+  /* A cell that can't be pushed open by what's in it. A plain auto track keeps
+     an automatic minimum, so a large upload sized the row to its own
+     proportions and the artwork was then measured against itself instead of
+     the card — which is how an image ended up taller than the area and
+     cropped by it. */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   place-items: center;
   overflow: hidden;
   border-radius: calc(var(--radius-control) - 0.25rem);
@@ -29,19 +34,19 @@
   background-position: center;
 }
 
-/* Shown whole, artwork sits inset so the dot grid frames it rather than being
-   covered edge to edge by anything roughly the area's own proportions. */
+/* Always whole, never cropped, and inset from the edges so the dot grid
+   frames it: whatever shape is uploaded — a wide screenshot, a square mark, a
+   tall poster — it's scaled down to fit and centred, with the dots showing
+   around it. */
 .image {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 7% 9%;
-}
-
-/* Filling the area is the opposite instruction: full bleed, dots covered. */
-.fill {
-  object-fit: cover;
-  padding: 0;
+  /* A fixed inset, not a percentage: percentage padding resolves against the
+     width on all four sides, so on a wide, short area the top and bottom gaps
+     came out far larger than intended and the artwork sat smaller than it
+     needed to. */
+  padding: 1rem 1.25rem;
 }
 
 .description {
