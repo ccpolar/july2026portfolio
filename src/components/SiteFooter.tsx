@@ -115,19 +115,23 @@ export const SiteFooter = async ({ siteName }: { siteName: string }) => {
         </nav>
       </div>
 
+      {/* Its own element rather than part of the legal line: on a phone it
+          moves up into the text, where it can be read, while the copyright
+          stays on the scene's ground. */}
+      {legalLinks.length ? (
+        <ul className={styles.legalLinks}>
+          {legalLinks.map((link) => (
+            <li key={link.href}>
+              <Link {...link} />
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
       <div className={styles.legal}>
         <p className={styles.copyright}>
           © {new Date().getFullYear()} Polar Creative Group. All rights reserved.
         </p>
-        {legalLinks.length ? (
-          <ul className={styles.legalLinks}>
-            {legalLinks.map((link) => (
-              <li key={link.href}>
-                <Link {...link} />
-              </li>
-            ))}
-          </ul>
-        ) : null}
       </div>
     </footer>
   )

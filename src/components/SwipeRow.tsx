@@ -39,18 +39,29 @@ export const SwipeRow = ({ children, count, label, className, dotsClassName, dot
     setActive(nearest)
   }, [])
 
+  // Only once the row has come to rest: mid-swipe there is no card to be on,
+  // and marking whichever is nearest makes the dots flicker between states.
+  // 'scrollend' is exact where it exists; the timer is the fallback.
   useEffect(() => {
     const row = rowRef.current
     if (!row) return
-    let frame = 0
+    measure()
+
+    const settled = () => measure()
+    const hasScrollEnd = 'onscrollend' in window
+    let timer = 0
     const onScroll = () => {
-      cancelAnimationFrame(frame)
-      frame = requestAnimationFrame(measure)
+      if (hasScrollEnd) return
+      clearTimeout(timer)
+      timer = window.setTimeout(settled, 120)
     }
+
+    if (hasScrollEnd) row.addEventListener('scrollend', settled)
     row.addEventListener('scroll', onScroll, { passive: true })
     return () => {
+      row.removeEventListener('scrollend', settled)
       row.removeEventListener('scroll', onScroll)
-      cancelAnimationFrame(frame)
+      clearTimeout(timer)
     }
   }, [measure])
 

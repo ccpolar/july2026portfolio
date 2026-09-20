@@ -159,9 +159,6 @@
   border-radius: 999px;
   background: var(--on);
   opacity: 0.3;
-  transition:
-    width var(--dur) var(--ease-out-quart),
-    opacity var(--dur) var(--ease-out-quart);
 }
 
 .dot[aria-current='true']::before {

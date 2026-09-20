@@ -7,6 +7,21 @@
   padding-block: clamp(3.5rem, 9vh, 6.5rem) clamp(3.5rem, 6vw, 5.5rem);
 }
 
+/* On a phone the hero fills the first screen, so the logo strip under it
+   starts below the fold rather than showing a slice of itself on load.
+   100svh is the screen with the browser's bars showing — the state the page
+   loads in — less the sticky header above the hero (1rem padding + a 2.75rem
+   tile), and a little more so nothing of the strip's top edge shows. */
+@media (max-width: 39.99rem) {
+  .hero {
+    min-height: calc(100vh - 3.75rem + 0.75rem);
+    min-height: calc(100svh - 3.75rem + 0.75rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
 .column {
   display: flex;
   flex-direction: column;

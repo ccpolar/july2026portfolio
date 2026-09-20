@@ -196,8 +196,10 @@
   border-radius: 2px;
 }
 
-/* Legal row sits on the meadow at the bottom of the scene. */
-.legal {
+/* Legal line sits on the meadow at the bottom of the scene: the copyright
+   from the left, the page links from the right, on one baseline. */
+.legal,
+.legalLinks {
   position: absolute;
   left: 0;
   right: 0;
@@ -206,7 +208,6 @@
   margin-inline: auto;
   padding-inline: var(--gutter);
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 24px;
 }
@@ -220,10 +221,16 @@
 
 .legalLinks {
   margin: 0;
-  padding: 0;
   list-style: none;
-  display: flex;
+  justify-content: flex-end;
   gap: 50px;
+  /* Only the links themselves take the pointer; the rest of the row is the
+     scene underneath. */
+  pointer-events: none;
+}
+
+.legalLinks li {
+  pointer-events: auto;
 }
 
 .legalLinks .link {
@@ -268,12 +275,26 @@
   /* In flow instead of behind the content. The scene's sky is empty, so it
      rises out of the site's background with no seam. */
   .art {
-    order: 2;
+    order: 3;
     position: relative;
     inset: auto;
     z-index: 0;
     height: clamp(300px, 70vw, 560px);
     margin-top: 24px;
+  }
+
+  /* The links join the footer's text, after the columns and before the
+     scene. Over the ground they fell on the busiest part of the picture and
+     couldn't be read. */
+  .legalLinks {
+    order: 2;
+    position: static;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: var(--gutter);
+    margin-top: 20px;
+    justify-content: flex-start;
+    gap: 24px;
   }
 
   /* On the scene's ground, pinned to the footer's bottom edge, which is the
@@ -322,12 +343,8 @@
     letter-spacing: 0.01em;
   }
 
-  /* The ground is shallow at this size, so the line sits low and small. With
-     Terms / Privacy links as well, they take the line above. */
+  /* The ground is shallow at this size, so the line sits low and small. */
   .legal {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    gap: 4px;
     bottom: 8px;
   }
 
