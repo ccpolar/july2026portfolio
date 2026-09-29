@@ -1,6 +1,8 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(16rem, 100%), 1fr));
+  /* Wider columns than the portrait grid needed: a 16:9 frame at the old
+     width would have been a letterbox strip. Three across on a desktop. */
+  grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
   gap: clamp(var(--space-md), 3vw, var(--space-xl));
 }
 
@@ -20,8 +22,9 @@
   overflow: hidden;
   background: var(--surface);
   cursor: pointer;
-  /* Portrait 4:5 thumbnails. */
-  aspect-ratio: 4 / 5;
+  /* Widescreen, the shape a campaign is usually laid out in: a 1920×1080
+     upload fills it exactly, with nothing cropped away. */
+  aspect-ratio: 16 / 9;
 }
 
 .image {

@@ -53,7 +53,7 @@ export const AdvertisingGallery = ({ items }: { items: Advertising[] }) => {
             <MediaImage
               className={styles.image}
               media={item.image}
-              sizes="(min-width: 64rem) 22rem, (min-width: 40rem) 40vw, 100vw"
+              sizes="(min-width: 64rem) 26rem, (min-width: 40rem) 45vw, 100vw"
             />
           )
 
