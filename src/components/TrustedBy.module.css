@@ -76,6 +76,23 @@
   filter: none;
 }
 
+/* Client logos are drawn dark, for a light page. On the dark page they'd sink
+   into it, so at rest they're flipped: the same grey wall, in reverse. Hovering
+   lays a light plate under the logo and drops the filter, so the mark shows in
+   its own colours on the background it was drawn for. */
+:global(html[data-theme='dark']) .logo {
+  filter: grayscale(1) invert(1);
+}
+
+:global(html[data-theme='dark']) .cell:hover {
+  background: #ededed;
+  border-color: rgb(255 255 255 / 0.16);
+}
+
+:global(html[data-theme='dark']) .cell:hover .logo {
+  filter: none;
+}
+
 /* No hover on touch screens, so nothing would ever lift the fade — sit them
    a little stronger there so the names still register. */
 @media (hover: none) {
