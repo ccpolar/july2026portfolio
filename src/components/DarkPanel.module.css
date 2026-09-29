@@ -8,18 +8,20 @@
   padding-bottom: clamp(var(--space-lg), 4vw, var(--space-xl));
 }
 
-/* — The panel — an inversion of whatever theme is set: the page's ink becomes
-   the surface and its background becomes the text, so contrast holds for any
-   colours chosen in /admin. The custom properties are shared with everything
-   inside, so each section's own card content uses the same palette. — */
+/* — The panel — a near-black ground with its cards a clear step above it.
+   Both greys are neutral and fixed, from the reference Cam chose: mixing the
+   page's own colours produced a warm tint and a step too slight to read as
+   separate cards. Text still comes from the theme, so it follows whatever is
+   set in /admin. — */
 .panel {
   --panel-pad: clamp(0.75rem, 3vw, 2.5rem);
   --on: var(--bg);
   --on-muted: color-mix(in oklch, var(--bg) 68%, var(--ink));
-  --card: color-mix(in oklch, var(--ink), var(--bg) 6%);
-  --card-edge: color-mix(in oklch, var(--bg) 9%, transparent);
+  --panel-ground: #131313;
+  --card: #282828;
+  --card-edge: rgb(255 255 255 / 0.09);
 
-  background: var(--ink);
+  background: var(--panel-ground);
   color: var(--on);
   border-radius: clamp(1.25rem, 2.5vw, 1.75rem);
   padding: clamp(3rem, 7vw, 5.5rem) var(--panel-pad);
@@ -88,7 +90,7 @@
 }
 
 .card:hover {
-  border-color: color-mix(in oklch, var(--bg) 18%, transparent);
+  border-color: rgb(255 255 255 / 0.2);
 }
 
 /* — Phones: a swipeable row instead of a tall stack — */
