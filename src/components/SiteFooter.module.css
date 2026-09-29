@@ -60,10 +60,36 @@
   pointer-events: none;
 }
 
+/* At night the scene is not the day scene inverted: the sky darkens, the
+   mountains stay mid-grey so they read against it, the pines go darkest, and
+   the snow and clouds keep their light. Deriving these the usual way — ink
+   mixed into the sky — would swap the trees and the snow, because in dark
+   mode the ink is the near-white one. */
+:global(html[data-theme='dark']) .footer {
+  --footer-meadow: #1a1a1a;
+  --footer-foothill: #2b2b2b;
+  --footer-rock: #3c3c3c;
+  --footer-rock-shade: #2e2e2e;
+  --footer-pine: #0b0b0b;
+  --footer-raised: #d6d6d6;
+  /* The trail is drawn in the snow's colour. At night that put the legal
+     line — light text, lying on the ground — across bright white tracks, so
+     the ground's marks dim while the snow and clouds keep their light. */
+  --footer-raised-stroke: #4a4a4a;
+  --footer-ground-mark: #3a3a3a;
+}
+
+/* The same reasoning as the trail, for the tracks worn into the meadow:
+   they're painted in the snow's colour too, and only the ones down here sit
+   under text. Scoped to the meadow layer so the snow keeps its own. */
+:global(html[data-theme='dark']) .footer :global([data-layer='meadow'] .mf-raised) {
+  fill: var(--footer-ground-mark);
+}
+
 /* — Illustration colours (classes emitted by MountainIllustration) — */
 .footer :global(.mf-sky) { fill: var(--footer-sky); }
 .footer :global(.mf-raised) { fill: var(--footer-raised); }
-.footer :global(.mf-raised-stroke) { stroke: var(--footer-raised); }
+.footer :global(.mf-raised-stroke) { stroke: var(--footer-raised-stroke, var(--footer-raised)); }
 .footer :global(.mf-rock) { fill: var(--footer-rock); }
 .footer :global(.mf-rock-shade) { fill: var(--footer-rock-shade); }
 .footer :global(.mf-pine) { fill: var(--footer-pine); }

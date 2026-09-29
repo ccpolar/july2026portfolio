@@ -1,0 +1,52 @@
+/* The same lifted tile as the header's mark and mail pieces — it's a third
+   control in that row, not a different kind of thing. Sizing and surface come
+   from SiteHeader's .tile; this adds only what's particular to a switch. */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: var(--raised);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.toggle:hover {
+  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
+}
+
+.toggle:active {
+  transform: scale(0.94);
+  transition-duration: 60ms;
+}
+
+/* The icon turns over as the palette changes, so the switch reads as one
+   control changing state rather than two buttons swapping places. */
+.icon {
+  display: inline-flex;
+  opacity: 0;
+  transform: rotate(-35deg);
+  transition:
+    opacity var(--dur) var(--ease-out-quart),
+    transform var(--dur) var(--ease-out-expo);
+}
+
+.toggle[data-ready='true'] .icon {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    transition: none;
+    transform: none;
+  }
+}

@@ -26,10 +26,7 @@
   place-items: center;
   overflow: hidden;
   border-radius: calc(var(--radius-control) - 0.25rem);
-  background-image: radial-gradient(
-    color-mix(in oklch, var(--bg) 14%, transparent) 1px,
-    transparent 1.5px
-  );
+  background-image: radial-gradient(rgb(255 255 255 / 0.12) 1px, transparent 1.5px);
   background-size: 1rem 1rem;
   background-position: center;
 }

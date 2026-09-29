@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation'
 import { openContactModal } from '@/lib/contactModal'
 
 import styles from './SiteHeader.module.css'
+import { ThemeToggle } from './ThemeToggle'
 
 type Props = {
   siteName: string
@@ -84,6 +85,8 @@ export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
         >
           <MailIcon />
         </button>
+
+        <ThemeToggle />
       </nav>
     </header>
   )

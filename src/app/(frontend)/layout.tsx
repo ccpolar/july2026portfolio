@@ -8,6 +8,7 @@ import { NoImageDownloads } from '@/components/NoImageDownloads'
 import { SiteBackground } from '@/components/SiteBackground'
 import { getHomepage, getIdentity, getLoadingScreen, getServices, getTheme } from '@/lib/data'
 import { INTRO_BOOT_SCRIPT } from '@/lib/intro'
+import { THEME_BOOT_SCRIPT } from '@/lib/appearance'
 import { themeToCss } from '@/lib/theme'
 import type { Media } from '@/payload-types'
 
@@ -98,10 +99,13 @@ export default async function FrontendLayout({ children }: { children: React.Rea
     : ['Branding', 'Brand Kit OS', 'UI Design', 'Merchandise', 'Advertising']
 
   return (
-    // suppressHydrationWarning: the intro script may add data-intro to <html>
-    // before React hydrates.
+    // suppressHydrationWarning: the theme and intro scripts set data-theme and
+    // data-intro on <html> before React hydrates.
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Sets data-theme from the visitor's choice, or their device, before
+            anything is drawn. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
         {introImages.length ? <script dangerouslySetInnerHTML={{ __html: INTRO_BOOT_SCRIPT }} /> : null}
         {/* Neue Haas Grotesk, served from Cam's Adobe Fonts kit (licensed for
             campagano.com). Text and Display cuts: see --font-text and

@@ -27,6 +27,15 @@
   padding: clamp(3rem, 7vw, 5.5rem) var(--panel-pad);
 }
 
+/* In light mode the panel inverts the page, so its text is the page's own
+   background colour. In dark mode the page is already dark: the text is then
+   simply the page's text, and the panel is a step above the page rather than
+   an inversion of it. */
+:global(html[data-theme='dark']) .panel {
+  --on: var(--ink);
+  --on-muted: var(--muted);
+}
+
 .head {
   text-align: center;
   margin: 0 auto clamp(var(--space-xl), 5vw, var(--space-2xl));

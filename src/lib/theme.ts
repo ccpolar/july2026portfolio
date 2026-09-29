@@ -18,6 +18,29 @@ const DEFAULTS = {
   signalColor: '#bfc824',
 } as const
 
+/**
+ * The dark palette. The admin's colours describe the light site; rather than
+ * ask for a second set of seven, dark mode is a fixed neutral scale in the
+ * same spirit as the Services panels — a near-black page with each surface a
+ * small step above it. Brand and signal carry straight over, so the site keeps
+ * its accent in both modes.
+ */
+const DARK = {
+  background: '#0e0e0e',
+  text: '#ededed',
+  mutedText: '#9a9a9a',
+  surface: '#171717',
+  border: '#272727',
+  raised: '#1c1c1c',
+  gridLine: '#242424',
+} as const
+
+/** How light the brand has to be to read as text on the dark page. */
+const DARK_BRAND_MIN_L = 0.78
+
+/** The backdrop grid's hairline, too faint at page contrast to derive. */
+const LIGHT_GRID_LINE = '#cbcbcb'
+
 type Oklch = { l: number; c: number; h: number }
 
 const expandHex = (raw: string): string => {
@@ -128,6 +151,22 @@ export const themeToCss = (theme: Partial<Theme> | null | undefined): string => 
   // light text on a light chip.
   const raisedLift = relLuminance(background) > 0.18 ? 70 : 8
 
+  // The brand reads as text as well as a fill — the "View project" cues, links
+  // in a post — and a deep brand colour disappears on a near-black page. In
+  // dark mode it keeps its hue and intensity but is lifted to a lightness that
+  // carries on the dark ground, if it isn't already there.
+  const darkBrandL = Math.max(brand.l, DARK_BRAND_MIN_L)
+  // Lifted that far, the brand is a light fill, so text on it is the dark
+  // neutral; a brand already light enough keeps the usual contrast pick.
+  const darkOnBrand =
+    darkBrandL >= 0.6
+      ? DARK.background
+      : contrast(DARK.background, brandHex) >= contrast(DARK.text, brandHex)
+        ? DARK.background
+        : DARK.text
+  const darkOnSignal =
+    contrast('#ffffff', signalHex) >= contrast(DARK.text, signalHex) ? '#ffffff' : DARK.text
+
   return (
     `:root{` +
     `--bg:${background};` +
@@ -140,7 +179,23 @@ export const themeToCss = (theme: Partial<Theme> | null | undefined): string => 
     `--signal-l:${round(signal.l)};--signal-c:${round(signal.c)};--signal-h:${round(signal.h, 2)};` +
     `--on-brand:${onBrand};` +
     `--on-signal:${onSignal};` +
+    `--grid-line:${LIGHT_GRID_LINE};` +
     `--radius:${RADIUS[t.radius ?? 'sharp'] ?? RADIUS.sharp};` +
+    `}` +
+    // Dark mode. The toggle in the header sets data-theme on <html>; the
+    // inline boot script sets it before first paint, so there's no flash.
+    `:root[data-theme='dark']{` +
+    `--bg:${DARK.background};` +
+    `--ink:${DARK.text};` +
+    `--muted:${DARK.mutedText};` +
+    `--surface:${DARK.surface};` +
+    `--line:${DARK.border};` +
+    `--raised:${DARK.raised};` +
+    `--brand-l:${round(darkBrandL)};` +
+    `--on-brand:${darkOnBrand};` +
+    `--on-signal:${darkOnSignal};` +
+    `--grid-line:${DARK.gridLine};` +
+    `color-scheme:dark;` +
     `}`
   )
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
+import { THEME_CHANGE_EVENT } from '@/lib/appearance'
 import { resolveCssColor } from '@/lib/resolveColor'
 
 import { ShapeGrid } from './ShapeGrid'
@@ -17,19 +18,28 @@ import styles from './SiteBackground.module.css'
  * Renders nothing until those colours resolve (a single effect, essentially
  * instant) rather than flash a hardcoded colour first.
  */
-// Fixed per design direction, not theme-derived like the hover fill below.
-const BORDER_COLOR = '#cbcbcb'
-
 export const SiteBackground = () => {
-  const [hoverColor, setHoverColor] = useState<string | null>(null)
+  const [colors, setColors] = useState<{ border: string; hover: string } | null>(null)
 
+  // The canvas paints with resolved colours rather than CSS, so it has to be
+  // told when the palette changes — the toggle announces it on <html>.
   useEffect(() => {
-    // --signal is the one token the theme explicitly says can be "as vivid
-    // as you like", which is exactly right for a rare, momentary hover fill.
-    setHoverColor(resolveCssColor('var(--signal)'))
+    const read = () =>
+      setColors({
+        // The hairline is its own token: at page contrast it's too faint to
+        // derive, and it differs between the light and dark palettes.
+        border: resolveCssColor('var(--grid-line)'),
+        // --signal is the one token the theme explicitly says can be "as vivid
+        // as you like", which is exactly right for a rare, momentary hover fill.
+        hover: resolveCssColor('var(--signal)'),
+      })
+    read()
+    const root = document.documentElement
+    root.addEventListener(THEME_CHANGE_EVENT, read)
+    return () => root.removeEventListener(THEME_CHANGE_EVENT, read)
   }, [])
 
-  if (!hoverColor) return null
+  if (!colors) return null
 
   return (
     <div className={styles.wrap} aria-hidden="true">
@@ -39,8 +49,8 @@ export const SiteBackground = () => {
         squareSize={25}
         shape="square"
         hoverTrailAmount={0}
-        borderColor={BORDER_COLOR}
-        hoverFillColor={hoverColor}
+        borderColor={colors.border}
+        hoverFillColor={colors.hover}
       />
     </div>
   )
