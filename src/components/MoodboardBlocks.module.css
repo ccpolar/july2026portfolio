@@ -10,7 +10,7 @@
 .block {
   margin: 0;
   overflow: hidden;
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   background: var(--surface);
   border: 1px solid var(--line);
   display: flex;

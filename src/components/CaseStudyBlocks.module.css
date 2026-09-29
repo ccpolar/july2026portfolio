@@ -15,7 +15,7 @@
 .image {
   width: 100%;
   height: auto;
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   background: var(--surface);
 }
 
@@ -73,7 +73,7 @@
   padding: 0;
   border: 0;
   background: var(--surface);
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   overflow: hidden;
   cursor: zoom-in;
 }
@@ -108,7 +108,7 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   border: 1px solid var(--line);
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   background: var(--surface);
   /* The frame is the thing being scrolled, so it takes the pointer back from
      the layout, which drops it so the backdrop can see the cursor. */
@@ -167,14 +167,14 @@
   display: block;
   width: 100%;
   height: auto;
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   background: var(--surface);
 }
 
 .videoFrame {
   position: relative;
   aspect-ratio: 16 / 9;
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   overflow: hidden;
   background: var(--surface);
 }

@@ -56,7 +56,7 @@
   object-fit: contain;
   justify-self: center;
   align-self: center;
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   animation: fade var(--dur) var(--ease-out-quart);
   pointer-events: auto;
 }

@@ -69,7 +69,7 @@
 
 .thumb {
   overflow: hidden;
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   background: var(--surface);
   aspect-ratio: 3 / 2;
 }

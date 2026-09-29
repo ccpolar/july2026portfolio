@@ -54,7 +54,7 @@
 
 .frame {
   overflow: hidden;
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   background: var(--surface);
   aspect-ratio: 16 / 9;
 }
@@ -96,7 +96,7 @@
 }
 
 .prose img {
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
 }
 
 .prose blockquote {

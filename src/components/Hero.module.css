@@ -108,7 +108,7 @@
   width: min(100%, max(var(--hero-image-size, 40%), 20rem));
   margin: clamp(var(--space-2xl), 7vw, var(--space-3xl)) auto 0;
   overflow: hidden;
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   background: var(--surface);
 }
 

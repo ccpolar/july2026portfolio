@@ -46,6 +46,11 @@
   --raised: color-mix(in oklch, var(--bg) 30%, white);
   --edge: color-mix(in oklch, var(--ink) 8%, transparent);
 
+  /* Every photograph, thumbnail and upload on the site. It follows the
+     theme's corner style but never goes fully square: a picture wants its
+     corners eased off the page even where a panel edge shouldn't be. */
+  --radius-media: max(var(--radius), 0.375rem);
+
   /* Controls get their own rounding, independent of the theme's --radius
      (which governs image frames and stays sharp by default). */
   --radius-control: 0.875rem;

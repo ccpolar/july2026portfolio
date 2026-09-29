@@ -55,7 +55,7 @@
 
 .frame {
   overflow: hidden;
-  border-radius: var(--radius);
+  border-radius: var(--radius-media);
   background: var(--surface);
 }
 
