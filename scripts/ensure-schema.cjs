@@ -83,6 +83,69 @@ const STATEMENTS = [
   `ALTER TABLE "homepage" ADD COLUMN IF NOT EXISTS "portfolio_intro" varchar
      DEFAULT 'Everything, sorted by what it is — branding, merchandise, advertising, and the web.'`,
 
+  // Case-study media that isn't an image: PDFs and video files, each its own
+  // library so the image collection's WebP conversion and alt-text rule don't
+  // apply to them.
+  `CREATE TABLE IF NOT EXISTS "documents" (
+     "id" serial PRIMARY KEY NOT NULL,
+     "label" varchar NOT NULL,
+     "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+     "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+     "url" varchar,
+     "thumbnail_u_r_l" varchar,
+     "filename" varchar,
+     "mime_type" varchar,
+     "filesize" numeric,
+     "width" numeric,
+     "height" numeric,
+     "focal_x" numeric,
+     "focal_y" numeric
+   )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS "documents_filename_idx" ON "documents" ("filename")`,
+  `CREATE INDEX IF NOT EXISTS "documents_updated_at_idx" ON "documents" ("updated_at")`,
+  `CREATE INDEX IF NOT EXISTS "documents_created_at_idx" ON "documents" ("created_at")`,
+
+  `CREATE TABLE IF NOT EXISTS "videos" (
+     "id" serial PRIMARY KEY NOT NULL,
+     "label" varchar NOT NULL,
+     "poster_id" integer,
+     "updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+     "created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+     "url" varchar,
+     "thumbnail_u_r_l" varchar,
+     "filename" varchar,
+     "mime_type" varchar,
+     "filesize" numeric,
+     "width" numeric,
+     "height" numeric,
+     "focal_x" numeric,
+     "focal_y" numeric
+   )`,
+  `DO $$ BEGIN
+     ALTER TABLE "videos" ADD CONSTRAINT "videos_poster_id_media_id_fk"
+       FOREIGN KEY ("poster_id") REFERENCES "media"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS "videos_filename_idx" ON "videos" ("filename")`,
+  `CREATE INDEX IF NOT EXISTS "videos_poster_idx" ON "videos" ("poster_id")`,
+  `CREATE INDEX IF NOT EXISTS "videos_updated_at_idx" ON "videos" ("updated_at")`,
+  `CREATE INDEX IF NOT EXISTS "videos_created_at_idx" ON "videos" ("created_at")`,
+
+  // Payload's document-locking table carries one column per collection.
+  `ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "documents_id" integer`,
+  `DO $$ BEGIN
+     ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_documents_fk"
+       FOREIGN KEY ("documents_id") REFERENCES "documents"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_documents_id_idx"
+     ON "payload_locked_documents_rels" ("documents_id")`,
+  `ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "videos_id" integer`,
+  `DO $$ BEGIN
+     ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_videos_fk"
+       FOREIGN KEY ("videos_id") REFERENCES "videos"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_videos_id_idx"
+     ON "payload_locked_documents_rels" ("videos_id")`,
+
   // Footer tagline, on the Contact global.
   `ALTER TABLE "contact" ADD COLUMN IF NOT EXISTS "footer_tagline" varchar
      DEFAULT 'Here to help founders reach their creative goals and fulfill their visual dreams.'`,

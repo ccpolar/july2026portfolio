@@ -9,6 +9,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Clients } from './collections/Clients'
+import { Documents } from './collections/Documents'
 import { Media } from './collections/Media'
 import { Moodboard } from './collections/Moodboard'
 import { Advertising } from './collections/portfolio/Advertising'
@@ -22,6 +23,7 @@ import { Projects } from './collections/Projects'
 import { Subscribers } from './collections/Subscribers'
 import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
+import { Videos } from './collections/Videos'
 import { Contact } from './globals/Contact'
 import { Homepage } from './globals/Homepage'
 import { Identity } from './globals/Identity'
@@ -67,6 +69,8 @@ export default buildConfig({
     Services,
     Clients,
     Media,
+    Documents,
+    Videos,
     Subscribers,
     Users,
   ],
@@ -85,7 +89,7 @@ export default buildConfig({
   plugins: [
     vercelBlobStorage({
       enabled: Boolean(blobToken),
-      collections: { media: true },
+      collections: { media: true, documents: true, videos: true },
       token: blobToken,
       // Upload straight from the browser to Blob storage instead of through the
       // serverless function. That's the only way past Vercel's hard 4.5 MB

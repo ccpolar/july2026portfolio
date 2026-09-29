@@ -23,6 +23,17 @@ export const Projects: CollectionConfig = {
     group: 'Content',
     description:
       'Each project is one row on the Recent Work page (/work). Drag to reorder — the order here is the order visitors see. Use “Add to portfolio” on a project to also show it in a portfolio category.',
+    // The page itself, beside the fields, updating as you type. Saving is
+    // still what puts a change live.
+    livePreview: {
+      url: ({ data }) =>
+        `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'}/work/${data?.slug || ''}`,
+      breakpoints: [
+        { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
+        { label: 'Tablet', name: 'tablet', width: 820, height: 1180 },
+        { label: 'Mobile', name: 'mobile', width: 390, height: 844 },
+      ],
+    },
   },
   defaultSort: 'order',
   hooks: {
