@@ -18,7 +18,7 @@
   --on: var(--bg);
   --on-muted: color-mix(in oklch, var(--bg) 68%, var(--ink));
   --panel-ground: #131313;
-  --card: #282828;
+  --card: #171717;
   --card-edge: rgb(255 255 255 / 0.09);
 
   background: var(--panel-ground);
