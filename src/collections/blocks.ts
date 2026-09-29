@@ -145,10 +145,11 @@ export const ScrollBlock: Block = {
       type: 'number',
       defaultValue: 560,
       min: 240,
-      max: 1000,
+      max: 2000,
       label: 'Window height',
       admin: {
-        description: 'How tall the window is on a desktop. Phones use a shorter one.',
+        description:
+          'How tall the window is on a desktop — drag as far as 2000px for a long email you want seen in one go. Past the height of the screen the page itself starts scrolling too, so somewhere near 700–900 usually reads best. Phones cap it at roughly half the screen either way.',
         components: {
           Field: {
             path: '/components/admin/RangeField#RangeField',

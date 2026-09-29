@@ -42,7 +42,8 @@ const ScrollWindow = ({ block }: { block: Extract<Block, { blockType: 'scrollBlo
   const href = isPdf ? doc?.url : (image?.url ?? null)
   if (!href) return null
 
-  const height = Math.min(1000, Math.max(240, block.height ?? 560))
+  // The same range the field allows, so a stray value can't stretch the page.
+  const height = Math.min(2000, Math.max(240, block.height ?? 560))
 
   return (
     <figure className={styles.block}>
