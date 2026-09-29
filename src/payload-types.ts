@@ -333,7 +333,7 @@ export interface Merchandise {
   createdAt: string;
 }
 /**
- * Advertising design, shown as a gallery grid on the portfolio page.
+ * Advertising design, shown as a gallery grid on the portfolio page. Link a piece to a Recent Work project and its thumbnail opens that project’s full case study; an unlinked piece opens full screen as an image.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "advertising".
@@ -345,6 +345,10 @@ export interface Advertising {
    * The ad or campaign image.
    */
   image: number | Media;
+  /**
+   * Optional. The Recent Work project this campaign belongs to — that’s where the case study itself is written. When set, clicking the thumbnail opens it. (Copying a project in from Recent Work sets this automatically.)
+   */
+  project?: (number | null) | Project;
   /**
    * Optional. A short line shown under the image.
    */
@@ -788,6 +792,7 @@ export interface MerchandiseSelect<T extends boolean = true> {
 export interface AdvertisingSelect<T extends boolean = true> {
   title?: T;
   image?: T;
+  project?: T;
   caption?: T;
   order?: T;
   updatedAt?: T;
@@ -1052,6 +1057,11 @@ export interface Homepage {
    * Optional. One line under the heading.
    */
   servicesIntro?: string | null;
+  portfolioHeading: string;
+  /**
+   * Optional. Leave blank to let the tabs start immediately.
+   */
+  portfolioIntro?: string | null;
   blogHeading: string;
   /**
    * Optional. A line under the heading on the blog page.
@@ -1272,6 +1282,8 @@ export interface HomepageSelect<T extends boolean = true> {
   workIntro?: T;
   servicesHeading?: T;
   servicesIntro?: T;
+  portfolioHeading?: T;
+  portfolioIntro?: T;
   blogHeading?: T;
   blogIntro?: T;
   metaDescription?: T;

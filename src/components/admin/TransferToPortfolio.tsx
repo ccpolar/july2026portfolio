@@ -10,12 +10,15 @@ type Category = {
   label: string
   // Which upload field the category stores its image in.
   imageField: 'image' | 'screenshot'
+  // Whether the category keeps a link back to the project, which is what
+  // makes a copied thumbnail open the case study.
+  linksProject?: boolean
 }
 
 const CATEGORIES: Category[] = [
-  { slug: 'branding', label: 'Branding', imageField: 'image' },
+  { slug: 'branding', label: 'Branding', imageField: 'image', linksProject: true },
   { slug: 'merchandise', label: 'Merchandise', imageField: 'image' },
-  { slug: 'advertising', label: 'Advertising', imageField: 'image' },
+  { slug: 'advertising', label: 'Advertising', imageField: 'image', linksProject: true },
   { slug: 'websites', label: 'Website', imageField: 'screenshot' },
 ]
 
@@ -55,9 +58,9 @@ export const TransferToPortfolio = () => {
         body: JSON.stringify({
           title: (title && title.trim()) || 'Untitled',
           [category.imageField]: coverId,
-          // Only branding carries a project link; setting it makes the copied
-          // thumbnail clickable straight through to this project's case study.
-          ...(category.slug === 'branding' && projectId ? { project: projectId } : {}),
+          // The categories that carry a project link: setting it makes the
+          // copied thumbnail open this project's case study.
+          ...(category.linksProject && projectId ? { project: projectId } : {}),
         }),
       })
       if (!res.ok) throw new Error(`HTTP ${res.status}`)

@@ -143,6 +143,28 @@ export const Homepage: GlobalConfig = {
           ],
         },
         {
+          label: 'Portfolio page',
+          description:
+            'The heading and the line under it at the top of /portfolio. The work itself lives under Portfolio.',
+          fields: [
+            {
+              name: 'portfolioHeading',
+              type: 'text',
+              required: true,
+              defaultValue: 'Portfolio',
+              maxLength: 60,
+            },
+            {
+              name: 'portfolioIntro',
+              type: 'textarea',
+              maxLength: 240,
+              defaultValue:
+                'Everything, sorted by what it is — branding, merchandise, advertising, and the web.',
+              admin: { description: 'Optional. Leave blank to let the tabs start immediately.' },
+            },
+          ],
+        },
+        {
           label: 'Blog page',
           description: 'The blog index at /blog. Posts themselves live under Content → Blog posts.',
           fields: [

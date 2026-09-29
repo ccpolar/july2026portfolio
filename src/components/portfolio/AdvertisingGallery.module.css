@@ -36,9 +36,43 @@
   transform: scale(1.03);
 }
 
+/* Title on the left, and — only where a click leads to a case study — the
+   cue on the right, the same pairing the branding rows use. */
 .caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2xs) var(--space-sm);
   font-size: var(--text-sm);
   color: var(--ink);
   font-weight: 500;
+}
+
+.title {
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+/* The whole thumbnail is the link; this repeats where it goes, so it's
+   skipped by the keyboard and by screen readers rather than read twice. */
+.cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex: none;
+  font-size: var(--text-label);
+  font-weight: 500;
+  color: var(--brand);
+  text-decoration: none;
+}
+
+.arrow {
+  transition: transform var(--dur) var(--ease-out-expo);
+}
+
+.item:hover .arrow,
+.thumb:focus-visible ~ .caption .arrow {
+  transform: translateX(4px);
 }
 

@@ -8,15 +8,17 @@ import { WebsiteShowcase } from '@/components/portfolio/WebsiteShowcase'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { getChrome } from '@/lib/chrome'
-import { getPortfolio } from '@/lib/data'
+import { getHomepage, getPortfolio } from '@/lib/data'
 
 import styles from './page.module.css'
 
 export async function generateMetadata(): Promise<Metadata> {
-  const chrome = await getChrome()
+  const [chrome, home] = await Promise.all([getChrome(), getHomepage()])
   return {
-    title: `Portfolio — ${chrome.siteName}`,
-    description: 'The full body of work — branding, merchandise, advertising, and website design.',
+    title: `${home.portfolioHeading?.trim() || 'Portfolio'} — ${chrome.siteName}`,
+    description:
+      home.portfolioIntro?.trim() ||
+      'The full body of work — branding, merchandise, advertising, and website design.',
   }
 }
 
@@ -25,7 +27,7 @@ const Empty = ({ label }: { label: string }) => (
 )
 
 export default async function PortfolioPage() {
-  const [chrome, portfolio] = await Promise.all([getChrome(), getPortfolio()])
+  const [chrome, portfolio, home] = await Promise.all([getChrome(), getPortfolio(), getHomepage()])
   const { branding, merchandise, advertising, websites } = portfolio
 
   // All four categories are always tabs; Branding is the default view. An empty
@@ -67,10 +69,10 @@ export default async function PortfolioPage() {
       <SiteHeader {...chrome} />
       <main id="main">
         <div className={`shell ${styles.head}`}>
-          <h1 className={styles.heading}>Portfolio</h1>
-          <p className={styles.intro}>
-            Everything, sorted by what it is — branding, merchandise, advertising, and the web.
-          </p>
+          <h1 className={styles.heading}>{home.portfolioHeading?.trim() || 'Portfolio'}</h1>
+          {home.portfolioIntro?.trim() ? (
+            <p className={styles.intro}>{home.portfolioIntro}</p>
+          ) : null}
         </div>
 
         <div className={`shell ${styles.body}`}>

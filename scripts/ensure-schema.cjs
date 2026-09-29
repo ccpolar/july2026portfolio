@@ -66,6 +66,23 @@ const STATEMENTS = [
   // service that was already there stays visible.
   `ALTER TABLE "services" ADD COLUMN IF NOT EXISTS "published" boolean DEFAULT true`,
 
+  // Advertising pieces can link to a Recent Work project, as branding does,
+  // so a campaign's thumbnail opens its case study.
+  `ALTER TABLE "advertising" ADD COLUMN IF NOT EXISTS "project_id" integer`,
+  `DO $ BEGIN
+     ALTER TABLE "advertising" ADD CONSTRAINT "advertising_project_id_projects_id_fk"
+       FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $`,
+  `CREATE INDEX IF NOT EXISTS "advertising_project_idx" ON "advertising" ("project_id")`,
+
+  // The portfolio page's heading and intro, editable on the Homepage global.
+  `ALTER TABLE "homepage" ADD COLUMN IF NOT EXISTS "portfolio_heading" varchar DEFAULT 'Portfolio'`,
+  // With the default, Postgres backfills the row that's already there, so
+  // the line the page shipped with survives and arrives in the admin ready to
+  // edit rather than the page quietly losing it.
+  `ALTER TABLE "homepage" ADD COLUMN IF NOT EXISTS "portfolio_intro" varchar
+     DEFAULT 'Everything, sorted by what it is — branding, merchandise, advertising, and the web.'`,
+
   // Footer tagline, on the Contact global.
   `ALTER TABLE "contact" ADD COLUMN IF NOT EXISTS "footer_tagline" varchar
      DEFAULT 'Here to help founders reach their creative goals and fulfill their visual dreams.'`,
