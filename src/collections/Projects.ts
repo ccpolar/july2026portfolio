@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { revalidateProject, revalidateProjectDelete } from '../hooks/revalidate'
 import { adminOrigin } from '../lib/previewUrl'
+import { caseStudyBlocks } from './blocks'
 
 const slugify = (value: string) =>
   value
@@ -130,6 +131,16 @@ export const Projects: CollectionConfig = {
       type: 'richText',
       admin: {
         description: 'Optional longer case study, shown on the project page.',
+      },
+    },
+    {
+      name: 'layout',
+      type: 'blocks',
+      label: 'Layout',
+      blocks: caseStudyBlocks,
+      admin: {
+        description:
+          'Build the case study out of pieces: images, grids, a scrolling window for a long email design or PDF, video, text, pull quotes. Drag to reorder. These appear after the write-up above and before the Gallery below, and the preview beside you updates as you go.',
       },
     },
     {

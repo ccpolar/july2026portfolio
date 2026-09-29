@@ -5,6 +5,7 @@ import { useLivePreview } from '@payloadcms/live-preview-react'
 import { useEffect, useState } from 'react'
 
 import type { Project } from '@/payload-types'
+import { CaseStudyBlocks } from '@/components/CaseStudyBlocks'
 import { MediaImage } from '@/components/MediaImage'
 import { ProjectGallery } from '@/components/ProjectGallery'
 import { projectTransitionName } from '@/lib/viewTransition'
@@ -90,6 +91,12 @@ const Story = ({ project, email }: Props) => {
           </p>
         )}
       </div>
+
+      {project.layout?.length ? (
+        <div className={`shell ${styles.body}`}>
+          <CaseStudyBlocks blocks={project.layout} />
+        </div>
+      ) : null}
 
       {project.gallery?.length ? (
         <div className={`shell ${styles.gallerySection}`}>

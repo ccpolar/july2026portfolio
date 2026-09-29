@@ -213,6 +213,135 @@ export interface Project {
     [k: string]: unknown;
   } | null;
   /**
+   * Build the case study out of pieces: images, grids, a scrolling window for a long email design or PDF, video, text, pull quotes. Drag to reorder. These appear after the write-up above and before the Gallery below, and the preview beside you updates as you go.
+   */
+  layout?:
+    | (
+        | {
+            image: number | Media;
+            width?: ('full' | 'inset' | 'half') | null;
+            /**
+             * Optional. A short line under it.
+             */
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'imageBlock';
+          }
+        | {
+            /**
+             * Narrower screens use fewer, down to one on a phone.
+             */
+            columns?: ('2' | '3' | '4') | null;
+            /**
+             * Set 0 to butt the pieces together with no seam.
+             */
+            gap?: number | null;
+            /**
+             * Natural leaves a mixed set looking ragged; a shape makes every tile match, cropping from the centre to fit.
+             */
+            shape?: ('natural' | 'square' | 'landscape' | 'wide' | 'portrait') | null;
+            /**
+             * Drag to reorder. Each one can be clicked to see it full screen.
+             */
+            items?:
+              | {
+                  image: number | Media;
+                  /**
+                   * Optional.
+                   */
+                  caption?: string | null;
+                  id?: string | null;
+                }[]
+              | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'gridBlock';
+          }
+        | {
+            /**
+             * A tall email design or one-sheet, shown in a window the visitor scrolls inside rather than down the whole page.
+             */
+            source?: ('image' | 'pdf') | null;
+            /**
+             * Export around 1400–1600px wide. Height can be as long as you like.
+             */
+            image?: (number | null) | Media;
+            /**
+             * From Content → PDFs.
+             */
+            document?: (number | null) | Document;
+            /**
+             * How tall the window is on a desktop. Phones use a shorter one.
+             */
+            height?: number | null;
+            /**
+             * Optional. A short line under it.
+             */
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'scrollBlock';
+          }
+        | {
+            source?: ('upload' | 'embed') | null;
+            /**
+             * From Content → Videos.
+             */
+            video?: (number | null) | Video;
+            /**
+             * Paste the page link — e.g. https://vimeo.com/123456789
+             */
+            url?: string | null;
+            /**
+             * Optional still shown before it plays.
+             */
+            poster?: (number | null) | Media;
+            /**
+             * For motion graphics: starts itself, no sound, no controls. Visitors who ask for reduced motion see the still instead.
+             */
+            loop?: boolean | null;
+            /**
+             * Optional. A short line under it.
+             */
+            caption?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'videoBlock';
+          }
+        | {
+            content?: {
+              root: {
+                type: string;
+                children: {
+                  type: any;
+                  version: number;
+                  [k: string]: unknown;
+                }[];
+                direction: ('ltr' | 'rtl') | null;
+                format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                indent: number;
+                version: number;
+              };
+              [k: string]: unknown;
+            } | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'textBlock';
+          }
+        | {
+            quote: string;
+            /**
+             * Optional. Who said it — e.g. “Ines Varga, Fold Coffee”.
+             */
+            attribution?: string | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'quoteBlock';
+          }
+      )[]
+    | null;
+  /**
    * The gap between the images below, in pixels. Set it to 0 when one artwork has been split across several files — the pieces then butt together with no seam.
    */
   galleryGap?: number | null;
@@ -291,6 +420,58 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * PDFs used inside case studies — email designs, decks, one-sheets. Add one to a case study with a Scroll window block.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "documents".
+ */
+export interface Document {
+  id: number;
+  /**
+   * What this is, for your own reference — e.g. “Mafia Capsule email”.
+   */
+  label: string;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * Video files used inside case studies. MP4 plays everywhere; keep motion graphics short, since the file is served as-is. Add one to a case study with a Video block.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos".
+ */
+export interface Video {
+  id: number;
+  /**
+   * What this is, for your own reference.
+   */
+  label: string;
+  /**
+   * Optional still shown before the video plays, and while it loads. Without one the first frame is used.
+   */
+  poster?: (number | null) | Media;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
 }
 /**
  * Branding pieces, shown as wide stacked thumbnails on the portfolio page. Link one to a Recent Work project and its thumbnail becomes clickable, opening that project’s full case study.
@@ -574,58 +755,6 @@ export interface Client {
   createdAt: string;
 }
 /**
- * PDFs used inside case studies — email designs, decks, one-sheets. Add one to a case study with a Scroll window block.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "documents".
- */
-export interface Document {
-  id: number;
-  /**
-   * What this is, for your own reference — e.g. “Mafia Capsule email”.
-   */
-  label: string;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
- * Video files used inside case studies. MP4 plays everywhere; keep motion graphics short, since the file is served as-is. Add one to a case study with a Video block.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "videos".
- */
-export interface Video {
-  id: number;
-  /**
-   * What this is, for your own reference.
-   */
-  label: string;
-  /**
-   * Optional still shown before the video plays, and while it loads. Without one the first frame is used.
-   */
-  poster?: (number | null) | Media;
-  updatedAt: string;
-  createdAt: string;
-  url?: string | null;
-  thumbnailURL?: string | null;
-  filename?: string | null;
-  mimeType?: string | null;
-  filesize?: number | null;
-  width?: number | null;
-  height?: number | null;
-  focalX?: number | null;
-  focalY?: number | null;
-}
-/**
  * People who asked to hear about new work. Export or delete any time.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -812,6 +941,73 @@ export interface ProjectsSelect<T extends boolean = true> {
   summary?: T;
   cover?: T;
   body?: T;
+  layout?:
+    | T
+    | {
+        imageBlock?:
+          | T
+          | {
+              image?: T;
+              width?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        gridBlock?:
+          | T
+          | {
+              columns?: T;
+              gap?: T;
+              shape?: T;
+              items?:
+                | T
+                | {
+                    image?: T;
+                    caption?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        scrollBlock?:
+          | T
+          | {
+              source?: T;
+              image?: T;
+              document?: T;
+              height?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        videoBlock?:
+          | T
+          | {
+              source?: T;
+              video?: T;
+              url?: T;
+              poster?: T;
+              loop?: T;
+              caption?: T;
+              id?: T;
+              blockName?: T;
+            };
+        textBlock?:
+          | T
+          | {
+              content?: T;
+              id?: T;
+              blockName?: T;
+            };
+        quoteBlock?:
+          | T
+          | {
+              quote?: T;
+              attribution?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
   galleryGap?: T;
   gallery?:
     | T

@@ -1,0 +1,233 @@
+/* The pieces a case study is built from. Each block sits in the page's own
+   column rhythm; only the ones that say otherwise break out of it. */
+.blocks {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--space-xl), 5vw, var(--space-3xl));
+  padding-block: clamp(var(--space-lg), 4vw, var(--space-2xl));
+}
+
+.block {
+  margin: 0;
+}
+
+/* — Single image — */
+.image {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.inset {
+  max-width: 60rem;
+  margin-inline: auto;
+}
+
+.half {
+  max-width: 44rem;
+}
+
+.caption {
+  margin-top: var(--space-2xs);
+  font-size: var(--text-label);
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* — Grid — the column count is what was chosen, but never more columns than
+   the screen can carry: four on a phone would be four thumbnails an inch
+   wide. — */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(var(--columns, 3), minmax(0, 1fr));
+  gap: var(--gap, 16px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 64rem) {
+  .grid {
+    grid-template-columns: repeat(min(var(--columns, 3), 2), minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 34rem) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.cell {
+  min-width: 0;
+}
+
+.cellFigure {
+  margin: 0;
+}
+
+.cellButton {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  cursor: zoom-in;
+}
+
+/* Given a shape, every tile takes it and the artwork fills from the centre,
+   so a mixed set reads as one grid instead of a ragged one. */
+.grid[data-shape='square'] .cellButton { aspect-ratio: 1; }
+.grid[data-shape='landscape'] .cellButton { aspect-ratio: 4 / 3; }
+.grid[data-shape='wide'] .cellButton { aspect-ratio: 16 / 9; }
+.grid[data-shape='portrait'] .cellButton { aspect-ratio: 4 / 5; }
+
+.grid:not([data-shape='natural']) .cellImage {
+  height: 100%;
+  object-fit: cover;
+}
+
+.cellImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform var(--dur-slow) var(--ease-out-expo);
+}
+
+.cellButton:hover .cellImage,
+.cellButton:focus-visible .cellImage {
+  transform: scale(1.02);
+}
+
+/* — Scroll window — a long piece shown in a frame you scroll inside. — */
+.scroll {
+  height: var(--window-height, 560px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  /* The frame is the thing being scrolled, so it takes the pointer back from
+     the layout, which drops it so the backdrop can see the cursor. */
+  pointer-events: auto;
+}
+
+.long {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.pdf {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.pdfFallback {
+  padding: var(--space-md);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.scrollFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2xs) var(--space-md);
+  margin-top: var(--space-2xs);
+}
+
+.scrollFoot .caption {
+  margin-top: 0;
+}
+
+.openFull {
+  flex: none;
+  font-size: var(--text-label);
+  font-weight: 500;
+  color: var(--brand);
+  text-underline-offset: 3px;
+}
+
+/* On a phone the window is shorter, and the piece is better opened full size
+   than scrolled inside a box that fills the screen. */
+@media (max-width: 40rem) {
+  .scroll {
+    height: min(var(--window-height, 560px), 58vh);
+  }
+}
+
+/* — Video — */
+.video {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.videoFrame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* A silent loop is decoration; someone who asks for reduced motion gets the
+   poster frame and a way to play it deliberately. */
+@media (prefers-reduced-motion: reduce) {
+  .video[data-loop='true'] {
+    animation: none;
+  }
+}
+
+/* — Text and quotes — */
+.text {
+  max-width: 68ch;
+  font-size: var(--text-body);
+  line-height: 1.7;
+}
+
+.text :global(p + p),
+.text :global(h2),
+.text :global(h3),
+.text :global(ul),
+.text :global(ol) {
+  margin-top: var(--space-md);
+}
+
+.quoteWrap {
+  max-width: 44rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.quote {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: var(--tracking-title);
+  text-wrap: balance;
+}
+
+.attribution {
+  margin-top: var(--space-sm);
+  font-size: var(--text-sm);
+  color: var(--muted);
+}

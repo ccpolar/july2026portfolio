@@ -146,6 +146,160 @@ const STATEMENTS = [
   `CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_videos_id_idx"
      ON "payload_locked_documents_rels" ("videos_id")`,
 
+  // The case-study layout builder: one table per kind of block, plus the
+  // grid's own images. Generated from Payload's own schema with
+  // "npm run schema:sql projects_blocks" rather than written by hand, then
+  // made safe to re-run.
+  `DO $$ BEGIN
+     CREATE TYPE "public"."enum_projects_blocks_image_block_width" AS ENUM('full', 'inset', 'half');
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     CREATE TYPE "public"."enum_projects_blocks_grid_block_columns" AS ENUM('2', '3', '4');
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     CREATE TYPE "public"."enum_projects_blocks_grid_block_shape" AS ENUM('natural', 'square', 'landscape', 'wide', 'portrait');
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     CREATE TYPE "public"."enum_projects_blocks_scroll_block_source" AS ENUM('image', 'pdf');
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     CREATE TYPE "public"."enum_projects_blocks_video_block_source" AS ENUM('upload', 'embed');
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `CREATE TABLE IF NOT EXISTS "projects_blocks_image_block" (
+	"_order" integer NOT NULL,
+	"_parent_id" integer NOT NULL,
+	"_path" text NOT NULL,
+	"id" varchar PRIMARY KEY NOT NULL,
+	"image_id" integer NOT NULL,
+	"width" "enum_projects_blocks_image_block_width" DEFAULT 'full',
+	"caption" varchar,
+	"block_name" varchar
+)`,
+  `CREATE TABLE IF NOT EXISTS "projects_blocks_grid_block_items" (
+	"_order" integer NOT NULL,
+	"_parent_id" varchar NOT NULL,
+	"id" varchar PRIMARY KEY NOT NULL,
+	"image_id" integer NOT NULL,
+	"caption" varchar
+)`,
+  `CREATE TABLE IF NOT EXISTS "projects_blocks_grid_block" (
+	"_order" integer NOT NULL,
+	"_parent_id" integer NOT NULL,
+	"_path" text NOT NULL,
+	"id" varchar PRIMARY KEY NOT NULL,
+	"columns" "enum_projects_blocks_grid_block_columns" DEFAULT '3',
+	"gap" numeric DEFAULT 16,
+	"shape" "enum_projects_blocks_grid_block_shape" DEFAULT 'natural',
+	"block_name" varchar
+)`,
+  `CREATE TABLE IF NOT EXISTS "projects_blocks_scroll_block" (
+	"_order" integer NOT NULL,
+	"_parent_id" integer NOT NULL,
+	"_path" text NOT NULL,
+	"id" varchar PRIMARY KEY NOT NULL,
+	"source" "enum_projects_blocks_scroll_block_source" DEFAULT 'image',
+	"image_id" integer,
+	"document_id" integer,
+	"height" numeric DEFAULT 560,
+	"caption" varchar,
+	"block_name" varchar
+)`,
+  `CREATE TABLE IF NOT EXISTS "projects_blocks_video_block" (
+	"_order" integer NOT NULL,
+	"_parent_id" integer NOT NULL,
+	"_path" text NOT NULL,
+	"id" varchar PRIMARY KEY NOT NULL,
+	"source" "enum_projects_blocks_video_block_source" DEFAULT 'upload',
+	"video_id" integer,
+	"url" varchar,
+	"poster_id" integer,
+	"loop" boolean DEFAULT false,
+	"caption" varchar,
+	"block_name" varchar
+)`,
+  `CREATE TABLE IF NOT EXISTS "projects_blocks_text_block" (
+	"_order" integer NOT NULL,
+	"_parent_id" integer NOT NULL,
+	"_path" text NOT NULL,
+	"id" varchar PRIMARY KEY NOT NULL,
+	"content" jsonb,
+	"block_name" varchar
+)`,
+  `CREATE TABLE IF NOT EXISTS "projects_blocks_quote_block" (
+	"_order" integer NOT NULL,
+	"_parent_id" integer NOT NULL,
+	"_path" text NOT NULL,
+	"id" varchar PRIMARY KEY NOT NULL,
+	"quote" varchar NOT NULL,
+	"attribution" varchar,
+	"block_name" varchar
+)`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_image_block" ADD CONSTRAINT "projects_blocks_image_block_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_image_block" ADD CONSTRAINT "projects_blocks_image_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_grid_block_items" ADD CONSTRAINT "projects_blocks_grid_block_items_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_grid_block_items" ADD CONSTRAINT "projects_blocks_grid_block_items_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."projects_blocks_grid_block"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_grid_block" ADD CONSTRAINT "projects_blocks_grid_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_scroll_block" ADD CONSTRAINT "projects_blocks_scroll_block_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_scroll_block" ADD CONSTRAINT "projects_blocks_scroll_block_document_id_documents_id_fk" FOREIGN KEY ("document_id") REFERENCES "public"."documents"("id") ON DELETE set null ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_scroll_block" ADD CONSTRAINT "projects_blocks_scroll_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_video_block" ADD CONSTRAINT "projects_blocks_video_block_video_id_videos_id_fk" FOREIGN KEY ("video_id") REFERENCES "public"."videos"("id") ON DELETE set null ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_video_block" ADD CONSTRAINT "projects_blocks_video_block_poster_id_media_id_fk" FOREIGN KEY ("poster_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_video_block" ADD CONSTRAINT "projects_blocks_video_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_text_block" ADD CONSTRAINT "projects_blocks_text_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_blocks_quote_block" ADD CONSTRAINT "projects_blocks_quote_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_image_block_order_idx" ON "projects_blocks_image_block" USING btree ("_order")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_image_block_parent_id_idx" ON "projects_blocks_image_block" USING btree ("_parent_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_image_block_path_idx" ON "projects_blocks_image_block" USING btree ("_path")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_image_block_image_idx" ON "projects_blocks_image_block" USING btree ("image_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_grid_block_items_order_idx" ON "projects_blocks_grid_block_items" USING btree ("_order")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_grid_block_items_parent_id_idx" ON "projects_blocks_grid_block_items" USING btree ("_parent_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_grid_block_items_image_idx" ON "projects_blocks_grid_block_items" USING btree ("image_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_grid_block_order_idx" ON "projects_blocks_grid_block" USING btree ("_order")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_grid_block_parent_id_idx" ON "projects_blocks_grid_block" USING btree ("_parent_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_grid_block_path_idx" ON "projects_blocks_grid_block" USING btree ("_path")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_scroll_block_order_idx" ON "projects_blocks_scroll_block" USING btree ("_order")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_scroll_block_parent_id_idx" ON "projects_blocks_scroll_block" USING btree ("_parent_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_scroll_block_path_idx" ON "projects_blocks_scroll_block" USING btree ("_path")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_scroll_block_image_idx" ON "projects_blocks_scroll_block" USING btree ("image_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_scroll_block_document_idx" ON "projects_blocks_scroll_block" USING btree ("document_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_video_block_order_idx" ON "projects_blocks_video_block" USING btree ("_order")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_video_block_parent_id_idx" ON "projects_blocks_video_block" USING btree ("_parent_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_video_block_path_idx" ON "projects_blocks_video_block" USING btree ("_path")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_video_block_video_idx" ON "projects_blocks_video_block" USING btree ("video_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_video_block_poster_idx" ON "projects_blocks_video_block" USING btree ("poster_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_text_block_order_idx" ON "projects_blocks_text_block" USING btree ("_order")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_text_block_parent_id_idx" ON "projects_blocks_text_block" USING btree ("_parent_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_text_block_path_idx" ON "projects_blocks_text_block" USING btree ("_path")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_quote_block_order_idx" ON "projects_blocks_quote_block" USING btree ("_order")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_quote_block_parent_id_idx" ON "projects_blocks_quote_block" USING btree ("_parent_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_blocks_quote_block_path_idx" ON "projects_blocks_quote_block" USING btree ("_path")`,
+
   // Footer tagline, on the Contact global.
   `ALTER TABLE "contact" ADD COLUMN IF NOT EXISTS "footer_tagline" varchar
      DEFAULT 'Here to help founders reach their creative goals and fulfill their visual dreams.'`,

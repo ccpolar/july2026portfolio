@@ -11,6 +11,7 @@
     "migrate:export": "payload run src/migrate/export.ts",
     "migrate:import": "payload run src/migrate/import.ts",
     "migrate:sync-schema": "payload run src/migrate/sync-schema.ts",
+    "schema:sql": "payload run scripts/schema-sql.ts",
     "generate:types": "payload generate:types",
     "payload": "payload"
   },
