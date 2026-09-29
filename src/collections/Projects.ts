@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { revalidateProject, revalidateProjectDelete } from '../hooks/revalidate'
+import { adminOrigin } from '../lib/previewUrl'
 
 const slugify = (value: string) =>
   value
@@ -26,8 +27,12 @@ export const Projects: CollectionConfig = {
     // The page itself, beside the fields, updating as you type. Saving is
     // still what puts a change live.
     livePreview: {
-      url: ({ data }) =>
-        `${process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'}/work/${data?.slug || ''}`,
+      // Absolute, and built from the admin's own request — the admin posts
+      // its unsaved changes to this exact origin, so it has to match the host
+      // you're actually on. A project with no slug yet previews the Recent
+      // Work page rather than a 404.
+      url: ({ data, req }) =>
+        `${adminOrigin(req)}${data?.slug ? `/work/${data.slug}` : '/work'}`,
       breakpoints: [
         { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },
         { label: 'Tablet', name: 'tablet', width: 820, height: 1180 },

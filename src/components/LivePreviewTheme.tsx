@@ -6,15 +6,14 @@ import { useEffect, useState } from 'react'
 import type { Theme } from '@/payload-types'
 import { themeToCss } from '@/lib/theme'
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-
 // Subscribes to the admin's Live Preview messages and re-injects the theme CSS
 // as fields change, so colour edits show up in the preview iframe before saving.
 // themeToCss is pure (type-only imports), so it runs the same on the client.
 const PreviewStyle = ({ initialData }: { initialData: Theme }) => {
   const { data } = useLivePreview<Theme>({
     initialData,
-    serverURL: SERVER_URL,
+    // Same-origin with the admin that frames it — see ProjectStory.
+    serverURL: window.location.origin,
     depth: 0,
   })
   return <style dangerouslySetInnerHTML={{ __html: themeToCss(data) }} />

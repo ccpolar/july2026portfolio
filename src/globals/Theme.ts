@@ -1,6 +1,7 @@
 import type { Field, GlobalConfig } from 'payload'
 
 import { revalidateEverything } from '../hooks/revalidate'
+import { adminOrigin } from '../lib/previewUrl'
 
 const hexValidate = (value: unknown): true | string => {
   if (typeof value !== 'string' || !value) return 'Pick a colour.'
@@ -43,7 +44,9 @@ export const Theme: GlobalConfig = {
     description:
       'Every colour on the site. Use each swatch to open a colour wheel, or type a hex code. The contrast panel below the neutrals updates live so you can see whether text stays readable. Toggle Live Preview (top right) to watch the homepage recolour as you edit.',
     livePreview: {
-      url: process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000',
+      // Built from the admin's own request, so the pane follows the host
+      // you're on. See Projects.
+      url: ({ req }) => `${adminOrigin(req)}/`,
       openByDefault: true,
       breakpoints: [
         { label: 'Desktop', name: 'desktop', width: 1440, height: 900 },

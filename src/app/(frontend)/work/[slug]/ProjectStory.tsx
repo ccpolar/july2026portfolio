@@ -11,8 +11,6 @@ import { projectTransitionName } from '@/lib/viewTransition'
 
 import styles from './page.module.css'
 
-const SERVER_URL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-
 const BackArrow = () => (
   <svg
     className={styles.backArrow}
@@ -106,7 +104,9 @@ const Story = ({ project, email }: Props) => {
 const LiveStory = ({ project, email }: Props) => {
   const { data } = useLivePreview<Project>({
     initialData: project,
-    serverURL: SERVER_URL,
+    // The admin frames this page from its own origin, so that's the origin
+    // messages must come from.
+    serverURL: window.location.origin,
     // Depth 1 so images and other linked records arrive resolved, the way the
     // page receives them from the server.
     depth: 1,
