@@ -69,10 +69,10 @@ const STATEMENTS = [
   // Advertising pieces can link to a Recent Work project, as branding does,
   // so a campaign's thumbnail opens its case study.
   `ALTER TABLE "advertising" ADD COLUMN IF NOT EXISTS "project_id" integer`,
-  `DO $ BEGIN
+  `DO $$ BEGIN
      ALTER TABLE "advertising" ADD CONSTRAINT "advertising_project_id_projects_id_fk"
        FOREIGN KEY ("project_id") REFERENCES "projects"("id") ON DELETE SET NULL ON UPDATE NO ACTION;
-   EXCEPTION WHEN duplicate_object THEN NULL; END $`,
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
   `CREATE INDEX IF NOT EXISTS "advertising_project_idx" ON "advertising" ("project_id")`,
 
   // The portfolio page's heading and intro, editable on the Homepage global.
@@ -88,7 +88,35 @@ const STATEMENTS = [
      DEFAULT 'Here to help founders reach their creative goals and fulfill their visual dreams.'`,
 ]
 
+/**
+ * A read-through of the statements before any database is touched, and on
+ * every build rather than only the ones that reach Postgres.
+ *
+ * Off Postgres the rest of this script does nothing, so a malformed statement
+ * used to sail through a local build and fail on Vercel instead. The case that
+ * caught us: a dollar-quoted block that arrived as `DO $ BEGIN`, because "$$"
+ * in a JavaScript replacement string means one literal "$".
+ */
+const validate = () => {
+  for (const statement of STATEMENTS) {
+    const label = statement.trim().split('\n')[0].slice(0, 60)
+    const runs = statement.match(/\$+/g) || []
+    for (const run of runs) {
+      if (run.length !== 2) {
+        throw new Error(`[schema] "${run}" should be a doubled dollar quote: ${label}…`)
+      }
+    }
+    if (runs.length % 2 !== 0) {
+      throw new Error(`[schema] unclosed dollar-quoted block: ${label}…`)
+    }
+  }
+}
+
 const main = async () => {
+  // Before the Postgres check, so a local build catches a malformed statement
+  // rather than leaving it for the deploy to find.
+  validate()
+
   const uri = process.env.DATABASE_URI || ''
   if (!/^postgres(ql)?:\/\//.test(uri)) {
     console.log('[schema] Not Postgres — skipping (Payload syncs the local database itself).')
