@@ -1,4 +1,4 @@
-import type { PayloadRequest } from 'payload'
+import type { PayloadRequest, Where } from 'payload'
 
 import styles from './DashboardOverview.module.css'
 
@@ -9,6 +9,10 @@ import styles from './DashboardOverview.module.css'
  * Payload's own dashboard lists every collection as an equal tile, which on
  * this site means sixteen of them — true, and useless. This counts the things
  * worth knowing and puts the work first.
+ *
+ * Every number here is counted from the database. Nothing is a trend or a
+ * comparison, because there is nothing honest to compare against — the second
+ * line on each tile is a real breakdown of the first.
  */
 // A dashboard widget is handed the request; the payload instance and the
 // signed-in user hang off it.
@@ -16,9 +20,10 @@ type Props = { req: PayloadRequest }
 
 export const DashboardOverview = async ({ req }: Props) => {
   const { payload, user } = req
-  const countOf = async (collection: string) => {
+
+  const countOf = async (collection: string, where?: Where) => {
     try {
-      const { totalDocs } = await payload.count({ collection: collection as never })
+      const { totalDocs } = await payload.count({ collection: collection as never, where })
       return totalDocs
     } catch {
       // A collection that isn't there yet shouldn't take the dashboard down.
@@ -26,36 +31,77 @@ export const DashboardOverview = async ({ req }: Props) => {
     }
   }
 
-  const [work, snippets, posts, services, testimonials, moodboard] = await Promise.all([
-    countOf('projects'),
-    countOf('snippets'),
-    countOf('posts'),
-    countOf('services'),
-    countOf('testimonials'),
-    countOf('moodboard'),
-  ])
+  const [work, featured, inPortfolio, snippets, posts, livePosts, services, liveServices, testimonials, moodboard] =
+    await Promise.all([
+      countOf('projects'),
+      countOf('projects', { featured: { equals: true } }),
+      countOf('projects', {
+        category: { in: ['branding', 'merchandise', 'advertising', 'website'] },
+      }),
+      countOf('snippets'),
+      countOf('posts'),
+      countOf('posts', { published: { equals: true } }),
+      countOf('services'),
+      countOf('services', { published: { equals: true } }),
+      countOf('testimonials'),
+      countOf('moodboard'),
+    ])
 
   const recent = await payload
-    .find({
-      collection: 'projects',
-      sort: '-updatedAt',
-      limit: 5,
-      depth: 0,
-    })
+    .find({ collection: 'projects', sort: '-updatedAt', limit: 5, depth: 0 })
     .then((result: { docs: { id: number | string; title?: string; updatedAt?: string }[] }) => result.docs)
     .catch(() => [])
 
   const hour = new Date().getHours()
   const greeting = hour < 5 ? 'Still up' : hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
   const name = (user as { name?: string; email?: string } | undefined)?.name?.split(' ')[0]
+  const today = new Date().toLocaleDateString('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  })
 
   const tiles = [
-    { label: 'Work', count: work, href: '/admin/collections/projects' },
-    { label: 'Services', count: services, href: '/admin/collections/services' },
-    { label: 'Snippets', count: snippets, href: '/admin/collections/snippets' },
-    { label: 'Reviews', count: testimonials, href: '/admin/collections/testimonials' },
-    { label: 'Moodboard', count: moodboard, href: '/admin/collections/moodboard' },
-    { label: 'Posts', count: posts, href: '/admin/collections/posts' },
+    {
+      label: 'Work',
+      count: work,
+      meta:
+        featured === null || inPortfolio === null
+          ? null
+          : `${featured} featured · ${inPortfolio} in portfolio`,
+      href: '/admin/collections/projects',
+      lead: true,
+    },
+    {
+      label: 'Services',
+      count: services,
+      meta: liveServices === null ? null : `${liveServices} showing on the site`,
+      href: '/admin/collections/services',
+    },
+    {
+      label: 'Snippets',
+      count: snippets,
+      meta: null,
+      href: '/admin/collections/snippets',
+    },
+    {
+      label: 'Reviews',
+      count: testimonials,
+      meta: null,
+      href: '/admin/collections/testimonials',
+    },
+    {
+      label: 'Moodboard',
+      count: moodboard,
+      meta: null,
+      href: '/admin/collections/moodboard',
+    },
+    {
+      label: 'Posts',
+      count: posts,
+      meta: livePosts === null ? null : `${livePosts} published`,
+      href: '/admin/collections/posts',
+    },
   ].filter((tile) => tile.count !== null)
 
   const formatDate = (value?: string | null) => {
@@ -73,6 +119,7 @@ export const DashboardOverview = async ({ req }: Props) => {
   return (
     <div className={styles.overview}>
       <header className={styles.head}>
+        <p className={styles.date}>{today}</p>
         <h1 className={styles.greeting}>
           {greeting}
           {name ? `, ${name}` : ''}
@@ -82,9 +129,18 @@ export const DashboardOverview = async ({ req }: Props) => {
 
       <div className={styles.tiles}>
         {tiles.map((tile) => (
-          <a className={styles.tile} href={tile.href} key={tile.label}>
-            <span className={styles.tileCount}>{tile.count}</span>
+          <a
+            className={styles.tile}
+            href={tile.href}
+            key={tile.label}
+            data-lead={tile.lead || undefined}
+          >
             <span className={styles.tileLabel}>{tile.label}</span>
+            <span className={styles.tileCount}>{tile.count}</span>
+            {tile.meta ? <span className={styles.tileMeta}>{tile.meta}</span> : null}
+            <span className={styles.tileGo} aria-hidden="true">
+              →
+            </span>
           </a>
         ))}
       </div>
@@ -114,7 +170,12 @@ export const DashboardOverview = async ({ req }: Props) => {
         <a className={styles.actionQuiet} href="/admin/collections/snippets/create">
           New snippet
         </a>
-        <a className={styles.actionQuiet} href="https://www.campagano.com" target="_blank" rel="noreferrer">
+        <a
+          className={styles.actionQuiet}
+          href="https://www.campagano.com"
+          target="_blank"
+          rel="noreferrer"
+        >
           View the site
         </a>
       </div>

@@ -55,6 +55,11 @@ export default buildConfig({
       ? { autoLogin: { email: process.env.ADMIN_AUTOLOGIN_EMAIL || '' } }
       : {}),
     importMap: { baseDir: path.resolve(dirname) },
+    components: {
+      // Gives the sidebar a top — whose site this is, and whether it is live
+      // — before the list of sections starts.
+      beforeNavLinks: ['/components/admin/NavBrand#NavBrand'],
+    },
     // The landing page: what's on the site and the way back in, instead of
     // Payload's tile per collection.
     dashboard: {

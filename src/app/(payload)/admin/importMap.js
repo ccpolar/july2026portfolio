@@ -24,6 +24,7 @@ import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0
 import { RangeField as RangeField_3aacc3486b8c6ad9f46f1e746adc49d0 } from '../../../components/admin/RangeField'
 import { ColorField as ColorField_f18d715b9f5ea63091d1361f9c46fa22 } from '../../../components/admin/ColorField'
 import { PaletteContrast as PaletteContrast_97c8da249c8007fe78aa1fedd5afa4ea } from '../../../components/admin/PaletteContrast'
+import { NavBrand as NavBrand_d7dd6c791c113ce8ff240c7282294e70 } from '../../../components/admin/NavBrand'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 import { DashboardOverview as DashboardOverview_6eebd759fa9848ad75ed4bee6bb4023d } from '../../../components/admin/DashboardOverview'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -56,6 +57,7 @@ export const importMap = {
   "/components/admin/RangeField#RangeField": RangeField_3aacc3486b8c6ad9f46f1e746adc49d0,
   "/components/admin/ColorField#ColorField": ColorField_f18d715b9f5ea63091d1361f9c46fa22,
   "/components/admin/PaletteContrast#PaletteContrast": PaletteContrast_97c8da249c8007fe78aa1fedd5afa4ea,
+  "/components/admin/NavBrand#NavBrand": NavBrand_d7dd6c791c113ce8ff240c7282294e70,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
   "/components/admin/DashboardOverview#DashboardOverview": DashboardOverview_6eebd759fa9848ad75ed4bee6bb4023d,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

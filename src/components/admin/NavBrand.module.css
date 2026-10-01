@@ -1,0 +1,63 @@
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6875rem;
+  padding: 0.25rem 0.75rem 1.125rem;
+  margin: 0 0.25rem 0.875rem;
+  border-bottom: 1px solid var(--theme-border-color);
+}
+
+/* The mark: the site's initial, in the brand red, squared off with the same
+   generous corner the rest of the panel uses. */
+.mark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 10px;
+  background: var(--admin-accent-solid);
+  color: var(--admin-accent-ink);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  letter-spacing: -0.02em;
+}
+
+.words {
+  display: grid;
+  gap: 0.0625rem;
+  min-width: 0;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  letter-spacing: -0.01em;
+  color: var(--theme-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.site {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--theme-elevation-550);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.site:hover {
+  color: var(--admin-accent-text);
+}
+
+/* Live, and saying so — the one bit of status worth carrying at the top. */
+.dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--theme-success-500);
+  flex: none;
+}
