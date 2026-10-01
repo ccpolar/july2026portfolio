@@ -51,10 +51,13 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const project = await getProject(slug)
   if (!project) return { title: 'Not found' }
 
+  // Optional now that a piece of work can be a picture with a name.
+  const description = project.summary ?? undefined
+
   return {
     title: `${project.title} — Cam`,
-    description: project.summary,
-    openGraph: { title: project.title, description: project.summary, type: 'article' },
+    description,
+    openGraph: { title: project.title, description, type: 'article' },
   }
 }
 

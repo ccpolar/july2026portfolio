@@ -1,4 +1,4 @@
-import type { Branding, Project } from '@/payload-types'
+import type { PortfolioItem } from '@/lib/portfolioItem'
 
 import { MediaImage } from '../MediaImage'
 import styles from './BrandingRows.module.css'
@@ -24,20 +24,16 @@ const Arrow = () => (
 
 /**
  * Branding work as wide, full-bleed thumbnails stacked one per row — the same
- * generous, editorial rhythm as the homepage's Recent Work. A piece linked to
- * a Recent Work project becomes a link to that project's full case study; an
- * unlinked piece is shown as a plain image.
+ * generous, editorial rhythm as the homepage's Recent Work. A piece with a case
+ * study behind it becomes a link to it; one that's just an image stays an image.
  */
-export const BrandingRows = ({ items }: { items: Branding[] }) => {
+export const BrandingRows = ({ items }: { items: PortfolioItem[] }) => {
   if (!items.length) return null
 
   return (
     <div className={styles.rows}>
       {items.map((item, i) => {
-        // Populated at depth 1; only an object carries the slug we can link to.
-        const project =
-          item.project && typeof item.project === 'object' ? (item.project as Project) : null
-        const href = project?.slug ? `/work/${project.slug}` : null
+        const href = item.href ?? null
 
         const inner = (
           <>

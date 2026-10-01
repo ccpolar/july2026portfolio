@@ -31,6 +31,8 @@ export type LightboxItem = {
   title?: string | null
   caption?: string | null
   image: number | Media | null | undefined
+  /** When the piece has a case study, the way through to it from in here. */
+  href?: string | null
 }
 
 /**
@@ -123,10 +125,17 @@ export const useLightbox = (items: LightboxItem[]) => {
               media={active.image}
               sizes="100vw"
             />
-            {active.title || active.caption ? (
+            {active.title || active.caption || active.href ? (
               <figcaption className={styles.stageCaption}>
                 {active.title ? <span className={styles.stageTitle}>{active.title}</span> : null}
                 {active.caption ? <span className={styles.stageNote}>{active.caption}</span> : null}
+                {/* The caption is click-through by default so the scrim behind
+                    it still closes; this one link takes its pointer back. */}
+                {active.href ? (
+                  <a className={styles.stageLink} href={active.href}>
+                    View project →
+                  </a>
+                ) : null}
               </figcaption>
             ) : null}
           </figure>

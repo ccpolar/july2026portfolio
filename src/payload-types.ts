@@ -68,10 +68,6 @@ export interface Config {
   blocks: {};
   collections: {
     projects: Project;
-    branding: Branding;
-    merchandise: Merchandise;
-    advertising: Advertising;
-    websites: Website;
     moodboard: Moodboard;
     snippets: Snippet;
     posts: Post;
@@ -91,10 +87,6 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     projects: ProjectsSelect<false> | ProjectsSelect<true>;
-    branding: BrandingSelect<false> | BrandingSelect<true>;
-    merchandise: MerchandiseSelect<false> | MerchandiseSelect<true>;
-    advertising: AdvertisingSelect<false> | AdvertisingSelect<true>;
-    websites: WebsitesSelect<false> | WebsitesSelect<true>;
     moodboard: MoodboardSelect<false> | MoodboardSelect<true>;
     snippets: SnippetsSelect<false> | SnippetsSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
@@ -161,7 +153,7 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Each project is one row on the Recent Work page (/work). Drag to reorder — the order here is the order visitors see. Use “Add to portfolio” on a project to also show it in a portfolio category.
+ * Every piece of work lives here, whatever it is, with the same tools on all of it. “Featured” puts a piece on the Recent Work page; the Portfolio sections put it on the Portfolio page. A piece can be in both, in several sections at once, or in none while it’s being written.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects".
@@ -179,6 +171,22 @@ export interface Project {
   client?: string | null;
   year?: number | null;
   /**
+   * Tick each section of the Portfolio page this should appear in. Leave them all unticked to keep it off that page. Separate from “Featured” above, which is the Recent Work page.
+   */
+  category?: ('branding' | 'merchandise' | 'advertising' | 'website')[] | null;
+  /**
+   * Where “Visit site” sends people — e.g. https://example.com
+   */
+  liveUrl?: string | null;
+  /**
+   * One sentence on what this project was. Shown on its Recent Work row — keep it short; the image does the talking.
+   */
+  summary?: string | null;
+  /**
+   * The single decisive image for this project. Landscape works best.
+   */
+  cover: number | Media;
+  /**
    * Short tags — e.g. Identity, Web Design, Art Direction. Two or three is plenty.
    */
   disciplines?:
@@ -188,13 +196,13 @@ export interface Project {
       }[]
     | null;
   /**
-   * One sentence on what this project was. Shown on its Recent Work row — keep it short; the image does the talking.
+   * Show this piece on the Recent Work page (/work).
    */
-  summary: string;
+  featured?: boolean | null;
   /**
-   * The single decisive image for this project. Landscape works best.
+   * Lower numbers appear first.
    */
-  cover: number | Media;
+  order?: number | null;
   /**
    * Optional longer case study, shown on the project page.
    */
@@ -363,14 +371,6 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
-  /**
-   * Show this project on the Recent Work page.
-   */
-  featured?: boolean | null;
-  /**
-   * Lower numbers appear first.
-   */
-  order?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -473,105 +473,6 @@ export interface Video {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
-}
-/**
- * Branding pieces, shown as wide stacked thumbnails on the portfolio page. Link one to a Recent Work project and its thumbnail becomes clickable, opening that project’s full case study.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "branding".
- */
-export interface Branding {
-  id: number;
-  title: string;
-  /**
-   * The piece itself — wide/landscape framing reads best here.
-   */
-  image: number | Media;
-  /**
-   * Optional. The Recent Work project this piece belongs to. When set, clicking the thumbnail opens that project’s full case study. (Copying a project in from Recent Work sets this automatically.)
-   */
-  project?: (number | null) | Project;
-  /**
-   * Lower numbers appear first.
-   */
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Merchandise shots, shown as an auto-scrolling carousel on the portfolio page. Square or product-on-plain-background images read best.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "merchandise".
- */
-export interface Merchandise {
-  id: number;
-  title: string;
-  /**
-   * The product shot. It scrolls past in the carousel — consistent framing across items looks best.
-   */
-  image: number | Media;
-  /**
-   * Lower numbers appear first.
-   */
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Advertising design, shown as a gallery grid on the portfolio page. Link a piece to a Recent Work project and its thumbnail opens that project’s full case study; an unlinked piece opens full screen as an image.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "advertising".
- */
-export interface Advertising {
-  id: number;
-  title: string;
-  /**
-   * The ad or campaign image.
-   */
-  image: number | Media;
-  /**
-   * Optional. The Recent Work project this campaign belongs to — that’s where the case study itself is written. When set, clicking the thumbnail opens it. (Copying a project in from Recent Work sets this automatically.)
-   */
-  project?: (number | null) | Project;
-  /**
-   * Optional. A short line shown under the image.
-   */
-  caption?: string | null;
-  /**
-   * Lower numbers appear first.
-   */
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Website design, shown inside a browser frame on the portfolio page. Upload a tall full-page screenshot — it scrolls inside the frame on hover.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "websites".
- */
-export interface Website {
-  id: number;
-  /**
-   * The project or client name.
-   */
-  title: string;
-  /**
-   * A tall, full-page screenshot of the site (capture the whole page, not just the top). It sits inside the browser frame and scrolls on hover.
-   */
-  screenshot: number | Media;
-  /**
-   * Optional. The real site address, e.g. https://example.com — shown in the frame’s address bar and makes the frame a link that opens the live site.
-   */
-  liveUrl?: string | null;
-  /**
-   * Lower numbers appear first.
-   */
-  order?: number | null;
-  updatedAt: string;
-  createdAt: string;
 }
 /**
  * Images on the moodboard page, where visitors can pick up and move the blocks around. Mix the block sizes for a livelier wall.
@@ -823,22 +724,6 @@ export interface PayloadLockedDocument {
         value: number | Project;
       } | null)
     | ({
-        relationTo: 'branding';
-        value: number | Branding;
-      } | null)
-    | ({
-        relationTo: 'merchandise';
-        value: number | Merchandise;
-      } | null)
-    | ({
-        relationTo: 'advertising';
-        value: number | Advertising;
-      } | null)
-    | ({
-        relationTo: 'websites';
-        value: number | Website;
-      } | null)
-    | ({
         relationTo: 'moodboard';
         value: number | Moodboard;
       } | null)
@@ -933,14 +818,18 @@ export interface ProjectsSelect<T extends boolean = true> {
   slug?: T;
   client?: T;
   year?: T;
+  category?: T;
+  liveUrl?: T;
+  summary?: T;
+  cover?: T;
   disciplines?:
     | T
     | {
         label?: T;
         id?: T;
       };
-  summary?: T;
-  cover?: T;
+  featured?: T;
+  order?: T;
   body?: T;
   layout?:
     | T
@@ -1018,56 +907,6 @@ export interface ProjectsSelect<T extends boolean = true> {
         size?: T;
         id?: T;
       };
-  featured?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "branding_select".
- */
-export interface BrandingSelect<T extends boolean = true> {
-  title?: T;
-  image?: T;
-  project?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "merchandise_select".
- */
-export interface MerchandiseSelect<T extends boolean = true> {
-  title?: T;
-  image?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "advertising_select".
- */
-export interface AdvertisingSelect<T extends boolean = true> {
-  title?: T;
-  image?: T;
-  project?: T;
-  caption?: T;
-  order?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "websites_select".
- */
-export interface WebsitesSelect<T extends boolean = true> {
-  title?: T;
-  screenshot?: T;
-  liveUrl?: T;
-  order?: T;
   updatedAt?: T;
   createdAt?: T;
 }

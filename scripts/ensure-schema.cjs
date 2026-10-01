@@ -303,6 +303,178 @@ const STATEMENTS = [
   // Footer tagline, on the Contact global.
   `ALTER TABLE "contact" ADD COLUMN IF NOT EXISTS "footer_tagline" varchar
      DEFAULT 'Here to help founders reach their creative goals and fulfill their visual dreams.'`,
+
+  // ── One Work collection ────────────────────────────────────────────────
+  // The portfolio used to be four small collections of its own — branding,
+  // merchandise, advertising, websites — each holding little more than a title
+  // and a picture, which is why a case study could only ever be written on the
+  // Recent Work side. A piece of work is now one thing wherever it appears: a
+  // project, carrying the sections of the portfolio it belongs in.
+  `DO $$ BEGIN
+     CREATE TYPE "public"."enum_projects_category" AS ENUM('branding', 'merchandise', 'advertising', 'website');
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `CREATE TABLE IF NOT EXISTS "projects_category" (
+     "order" integer NOT NULL,
+     "parent_id" integer NOT NULL,
+     "value" "enum_projects_category",
+     "id" serial PRIMARY KEY NOT NULL
+   )`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_category" ADD CONSTRAINT "projects_category_parent_fk"
+       FOREIGN KEY ("parent_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `CREATE INDEX IF NOT EXISTS "projects_category_order_idx" ON "projects_category" USING btree ("order")`,
+  `CREATE INDEX IF NOT EXISTS "projects_category_parent_idx" ON "projects_category" USING btree ("parent_id")`,
+  `ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "live_url" varchar`,
+  // Summary was required when every project was a full write-up. Most of the
+  // merchandise coming across is a product shot with a name and nothing to
+  // say. Relaxing a constraint can't lose a row, and re-running it is a no-op.
+  `ALTER TABLE "projects" ALTER COLUMN "summary" DROP NOT NULL`,
+
+  // Which portfolio row became which project. The move below reads this to
+  // know what it has already done, so it can run on every build and only ever
+  // do its work once. Payload doesn't know about this table; it's the
+  // migration's own bookkeeping, and the record of what happened.
+  `CREATE TABLE IF NOT EXISTS "portfolio_migration" (
+     "source" varchar NOT NULL,
+     "source_id" integer NOT NULL,
+     "project_id" integer NOT NULL,
+     "moved_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+     PRIMARY KEY ("source", "source_id")
+   )`,
+
+  // The move itself, row by row, because each one needs a free slug and may or
+  // may not already exist as a project.
+  //
+  // Nothing is deleted: the four old tables stay exactly as they are, so if
+  // anything about this looks wrong the originals are still there to read.
+  `DO $$
+   DECLARE
+     src record;
+     base text;
+     candidate text;
+     suffix int;
+     target int;
+     matches int;
+   BEGIN
+     -- A database created after the four collections were retired has none of
+     -- these tables, and nothing to move. PL/pgSQL plans a statement only when
+     -- it first runs, so returning here is enough — the query below is never
+     -- looked at.
+     IF to_regclass('public.branding') IS NULL
+        OR to_regclass('public.merchandise') IS NULL
+        OR to_regclass('public.advertising') IS NULL
+        OR to_regclass('public.websites') IS NULL THEN
+       RAISE NOTICE 'No portfolio collections to move.';
+       RETURN;
+     END IF;
+
+     FOR src IN
+       SELECT 'branding' AS source, 'branding' AS category, id, title,
+              image_id AS cover_id, project_id,
+              NULL::varchar AS caption, NULL::varchar AS live_url,
+              "order", created_at, updated_at
+         FROM "branding"
+       UNION ALL
+       SELECT 'merchandise', 'merchandise', id, title,
+              image_id, NULL::integer,
+              NULL::varchar, NULL::varchar,
+              "order", created_at, updated_at
+         FROM "merchandise"
+       UNION ALL
+       SELECT 'advertising', 'advertising', id, title,
+              image_id, project_id,
+              caption, NULL::varchar,
+              "order", created_at, updated_at
+         FROM "advertising"
+       UNION ALL
+       SELECT 'websites', 'website', id, title,
+              screenshot_id, NULL::integer,
+              NULL::varchar, live_url,
+              "order", created_at, updated_at
+         FROM "websites"
+       ORDER BY source, "order", id
+     LOOP
+       -- Moved on an earlier build.
+       IF EXISTS (
+         SELECT 1 FROM "portfolio_migration"
+          WHERE "source" = src.source AND "source_id" = src.id
+       ) THEN
+         CONTINUE;
+       END IF;
+
+       -- Same slug rule as the admin's: lowercase, punctuation dropped, spaces
+       -- to hyphens. POSIX character classes, not backslash escapes, because a
+       -- backslash in a JavaScript string is gone before Postgres sees it.
+       base := trim(both '-' from regexp_replace(
+                 regexp_replace(lower(trim(src.title)), '[^a-z0-9[:space:]-]', '', 'g'),
+                 '[[:space:]_-]+', '-', 'g'));
+       IF base IS NULL OR base = '' THEN
+         base := src.source;
+       END IF;
+
+       -- A piece that was already pointed at a project IS that project; so is
+       -- one whose title reduces to the same slug, which is how the live site
+       -- already paired them up. Either way the section joins the piece that's
+       -- there, rather than a second copy of the same job appearing.
+       target := NULL;
+       IF src.project_id IS NOT NULL THEN
+         SELECT id INTO target FROM "projects" WHERE id = src.project_id;
+       END IF;
+       IF target IS NULL THEN
+         SELECT count(*), min(id) INTO matches, target FROM "projects"
+          WHERE trim(both '-' from regexp_replace(
+                  regexp_replace(lower(trim(title)), '[^a-z0-9[:space:]-]', '', 'g'),
+                  '[[:space:]_-]+', '-', 'g')) = base;
+         -- Two projects sharing a title match neither, rather than a guess.
+         IF matches <> 1 THEN
+           target := NULL;
+         END IF;
+       END IF;
+
+       IF target IS NULL THEN
+         candidate := base;
+         suffix := 1;
+         WHILE EXISTS (SELECT 1 FROM "projects" WHERE "slug" = candidate) LOOP
+           suffix := suffix + 1;
+           candidate := base || '-' || suffix;
+         END LOOP;
+
+         -- featured false: these were on the portfolio page, never on Recent
+         -- Work, and the move shouldn't put them there.
+         INSERT INTO "projects"
+           ("title", "slug", "live_url", "summary", "cover_id",
+            "featured", "order", "created_at", "updated_at")
+         VALUES
+           (trim(src.title), candidate, src.live_url, src.caption, src.cover_id,
+            false, src."order", src.created_at, src.updated_at)
+         RETURNING id INTO target;
+       ELSE
+         -- Joining a project that's already there: fill its blanks, overwrite
+         -- nothing it already says.
+         UPDATE "projects"
+            SET "live_url" = COALESCE("live_url", src.live_url),
+                "summary" = COALESCE("summary", src.caption)
+          WHERE id = target;
+       END IF;
+
+       IF NOT EXISTS (
+         SELECT 1 FROM "projects_category"
+          WHERE "parent_id" = target AND "value" = src.category::"enum_projects_category"
+       ) THEN
+         INSERT INTO "projects_category" ("order", "parent_id", "value")
+         VALUES (
+           COALESCE((SELECT max("order") FROM "projects_category" WHERE "parent_id" = target), -1) + 1,
+           target,
+           src.category::"enum_projects_category"
+         );
+       END IF;
+
+       INSERT INTO "portfolio_migration" ("source", "source_id", "project_id")
+       VALUES (src.source, src.id, target);
+     END LOOP;
+   END $$`,
+
 ]
 
 /**
@@ -325,6 +497,12 @@ const validate = () => {
     }
     if (runs.length % 2 !== 0) {
       throw new Error(`[schema] unclosed dollar-quoted block: ${label}…`)
+    }
+    // The same trap from the other direction: "\s" in a JavaScript string is
+    // just "s", so a regex written here arrives at Postgres missing its
+    // escapes. Use POSIX classes ([[:space:]]) instead.
+    if (statement.includes('\\')) {
+      throw new Error(`[schema] backslash in SQL — write it as a POSIX class: ${label}…`)
     }
   }
 }
@@ -355,7 +533,13 @@ const main = async () => {
   }
 }
 
-main().catch((error) => {
-  console.error('[schema] Failed:', error)
-  process.exit(1)
-})
+if (require.main === module) {
+  main().catch((error) => {
+    console.error('[schema] Failed:', error)
+    process.exit(1)
+  })
+}
+
+// So the statements can be run against a throwaway Postgres and checked —
+// see scripts/test-migration.cjs.
+module.exports = { STATEMENTS, validate }

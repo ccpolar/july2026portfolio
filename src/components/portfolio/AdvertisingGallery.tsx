@@ -1,6 +1,6 @@
 'use client'
 
-import type { Advertising, Project } from '@/payload-types'
+import type { PortfolioItem } from '@/lib/portfolioItem'
 
 import { MediaImage } from '../MediaImage'
 import styles from './AdvertisingGallery.module.css'
@@ -28,12 +28,11 @@ const Arrow = () => (
 /**
  * Advertising work as a grid of 4:5 thumbnails, each captioned with its title.
  *
- * A campaign linked to a Recent Work project opens that project's case study,
- * the way a branding piece does — that's where the campaign is written up. One
- * with no project behind it opens full screen in the shared lightbox instead,
- * so a single image is still worth clicking.
+ * A campaign with a case study written for it opens that, the way a branding
+ * piece does. One that's a single image opens full screen in the shared
+ * lightbox instead, so it's still worth clicking.
  */
-export const AdvertisingGallery = ({ items }: { items: Advertising[] }) => {
+export const AdvertisingGallery = ({ items }: { items: PortfolioItem[] }) => {
   // Every piece stays in the lightbox's set, linked or not, so the arrow keys
   // page through the whole grid once it's open.
   const { open, element } = useLightbox(items)
@@ -44,10 +43,7 @@ export const AdvertisingGallery = ({ items }: { items: Advertising[] }) => {
     <>
       <div className={styles.grid}>
         {items.map((item, i) => {
-          // Populated at depth 1; only an object carries the slug to link to.
-          const project =
-            item.project && typeof item.project === 'object' ? (item.project as Project) : null
-          const href = project?.slug ? `/work/${project.slug}` : null
+          const href = item.href ?? null
 
           const image = (
             <MediaImage

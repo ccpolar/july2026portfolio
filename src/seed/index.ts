@@ -127,19 +127,10 @@ const fetchPhoto = async (id: string) => {
 const run = async () => {
   const payload = await getPayload({ config })
 
-  for (const collection of [
-    'projects',
-    'branding',
-    'merchandise',
-    'advertising',
-    'websites',
-    'moodboard',
-    'testimonials',
-    'media',
-  ] as const) {
+  for (const collection of ['projects', 'moodboard', 'testimonials', 'media'] as const) {
     await payload.delete({ collection, where: { id: { exists: true } } })
   }
-  payload.logger.info('Cleared projects, portfolio, testimonials and media.')
+  payload.logger.info('Cleared work, moodboard, testimonials and media.')
 
   const email = process.env.SEED_ADMIN_EMAIL ?? 'cam@polarcreativegroup.com'
   // Local convenience only. Set SEED_ADMIN_PASSWORD before seeding anything
@@ -211,76 +202,91 @@ const run = async () => {
     return doc.id
   }
 
-  // projectSlug links each piece back to a Recent Work case study, so its
-  // thumbnail is clickable on the portfolio page.
-  const brandingSeed: { title: string; photo: string; projectSlug: string }[] = [
-    { title: 'Fold Coffee — mark', photo: 'photo-1493857671505-72967e2e2760', projectSlug: 'fold-coffee' },
-    { title: 'Ossa — wordmark', photo: 'photo-1517248135467-4c7edcad34c4', projectSlug: 'ossa' },
-    { title: 'Meridian — pattern', photo: 'photo-1523275335684-37898b6baf30', projectSlug: 'meridian' },
-    { title: 'Ilex — stationery', photo: 'photo-1498804103079-a6351b050096', projectSlug: 'ilex' },
-    { title: 'Fold — packaging', photo: 'photo-1442512595331-e89e73853f31', projectSlug: 'fold-coffee' },
-    { title: 'Meridian — signage', photo: 'photo-1521302080334-4bebac2763a6', projectSlug: 'meridian' },
-  ]
-  let bOrder = 0
-  for (const b of brandingSeed) {
-    const image = await makeMedia(b.photo, `${b.title} — branding piece`, `branding-${bOrder}.jpg`)
-    await payload.create({
-      collection: 'branding',
-      data: { title: b.title, image, project: projectIdBySlug[b.projectSlug], order: bOrder++ },
+  // The portfolio page is the same Work collection, sliced by section. A piece
+  // that's already a project gains a section; one that only ever lived on the
+  // portfolio page becomes a project of its own, off Recent Work.
+  type Section = 'branding' | 'merchandise' | 'advertising' | 'website'
+
+  const addSections = async (slug: string, sections: Section[], liveUrl?: string) => {
+    const id = projectIdBySlug[slug]
+    if (!id) return
+    const existing = await payload.findByID({ collection: 'projects', id, depth: 0 })
+    await payload.update({
+      collection: 'projects',
+      id,
+      data: {
+        category: [...new Set([...(existing.category ?? []), ...sections])],
+        ...(liveUrl ? { liveUrl } : {}),
+      },
     })
   }
 
-  const merchSeed = [
-    'photo-1560343090-f0409e92791a',
-    'photo-1523275335684-37898b6baf30',
-    'photo-1600891964092-4316c288032e',
-    'photo-1517248135467-4c7edcad34c4',
-    'photo-1414235077428-338989a2e8c0',
-    'photo-1559925393-8be0ec4767c8',
-  ]
-  let mOrder = 0
-  for (const photo of merchSeed) {
-    const image = await makeMedia(photo, `Merchandise item ${mOrder + 1}`, `merch-${mOrder}.jpg`)
+  const addPiece = async (
+    piece: {
+      title: string
+      photo: string
+      sections: Section[]
+      summary?: string
+      liveUrl?: string
+    },
+    order: number,
+  ) => {
+    const cover = await makeMedia(piece.photo, piece.title, `portfolio-${order}.jpg`)
     await payload.create({
-      collection: 'merchandise',
-      data: { title: `Merch piece ${mOrder + 1}`, image, order: mOrder++ },
+      collection: 'projects',
+      data: {
+        title: piece.title,
+        cover,
+        category: piece.sections,
+        summary: piece.summary,
+        liveUrl: piece.liveUrl,
+        // On the portfolio page, not on Recent Work.
+        featured: false,
+        order,
+      },
     })
   }
 
-  const adSeed: { title: string; photo: string; caption?: string }[] = [
-    { title: 'Campaign — outdoor', photo: 'photo-1498804103079-a6351b050096', caption: 'Out-of-home, city centre run.' },
-    { title: 'Campaign — press', photo: 'photo-1521302080334-4bebac2763a6' },
-    { title: 'Campaign — social', photo: 'photo-1559496417-e7f25cb247f3', caption: 'Launch week social set.' },
-    { title: 'Campaign — print', photo: 'photo-1414235077428-338989a2e8c0' },
-    { title: 'Campaign — transit', photo: 'photo-1600891964092-4316c288032e' },
-    { title: 'Campaign — editorial', photo: 'photo-1523275335684-37898b6baf30' },
-  ]
-  let aOrder = 0
-  for (const a of adSeed) {
-    const image = await makeMedia(a.photo, `${a.title} — advertising work`, `ad-${aOrder}.jpg`)
-    await payload.create({
-      collection: 'advertising',
-      data: { title: a.title, image, caption: a.caption, order: aOrder++ },
-    })
-  }
+  // Four of the Recent Work projects also belong in portfolio sections.
+  await addSections('fold-coffee', ['branding', 'merchandise', 'website'], 'https://example.com')
+  await addSections('ossa', ['branding', 'advertising'])
+  await addSections('meridian', ['branding', 'website'])
+  await addSections('ilex', ['branding', 'advertising', 'website'], 'https://example.com')
 
-  const siteSeed: { title: string; photo: string; liveUrl?: string }[] = [
-    { title: 'Fold Coffee', photo: 'photo-1493857671505-72967e2e2760', liveUrl: 'https://example.com' },
-    { title: 'Ossa Studio', photo: 'photo-1517248135467-4c7edcad34c4', liveUrl: 'https://example.com' },
-    { title: 'Meridian', photo: 'photo-1559925393-8be0ec4767c8' },
-    { title: 'Ilex', photo: 'photo-1498804103079-a6351b050096', liveUrl: 'https://example.com' },
+  const pieces: Parameters<typeof addPiece>[0][] = [
+    { title: 'Harbour Supply', photo: 'photo-1442512595331-e89e73853f31', sections: ['branding'] },
+    { title: 'Tidewater', photo: 'photo-1521302080334-4bebac2763a6', sections: ['branding', 'merchandise'] },
+    { title: 'Caldera tote', photo: 'photo-1560343090-f0409e92791a', sections: ['merchandise'] },
+    { title: 'Caldera cap', photo: 'photo-1523275335684-37898b6baf30', sections: ['merchandise'] },
+    { title: 'Field mug', photo: 'photo-1600891964092-4316c288032e', sections: ['merchandise'] },
+    { title: 'Ossa tee', photo: 'photo-1517248135467-4c7edcad34c4', sections: ['merchandise'] },
+    { title: 'Longshore crate', photo: 'photo-1414235077428-338989a2e8c0', sections: ['merchandise'] },
+    {
+      title: 'Outdoor run',
+      photo: 'photo-1498804103079-a6351b050096',
+      sections: ['advertising'],
+      summary: 'Out-of-home, city centre run.',
+    },
+    {
+      title: 'Launch week social',
+      photo: 'photo-1559496417-e7f25cb247f3',
+      sections: ['advertising'],
+      summary: 'A fortnight of paid and organic.',
+    },
+    { title: 'Transit campaign', photo: 'photo-1559925393-8be0ec4767c8', sections: ['advertising'] },
+    {
+      title: 'Ossa Studio',
+      photo: 'photo-1493857671505-72967e2e2760',
+      sections: ['website'],
+      liveUrl: 'https://example.com',
+    },
   ]
-  let wOrder = 0
-  for (const s of siteSeed) {
-    const screenshot = await makeMedia(s.photo, `${s.title} website screenshot`, `site-${wOrder}.jpg`)
-    await payload.create({
-      collection: 'websites',
-      data: { title: s.title, screenshot, liveUrl: s.liveUrl, order: wOrder++ },
-    })
-  }
+
+  let pOrder = 0
+  for (const piece of pieces) await addPiece(piece, pOrder++)
 
   payload.logger.info(
-    `Seeded portfolio: ${brandingSeed.length} branding, ${merchSeed.length} merch, ${adSeed.length} advertising, ${siteSeed.length} websites.`,
+    `Seeded the portfolio: 4 projects given sections, ${pieces.length} pieces added.`,
   )
 
   // — Moodboard —

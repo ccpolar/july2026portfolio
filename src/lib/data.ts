@@ -1,8 +1,8 @@
 import config from '@payload-config'
-import { getPayload, type Payload } from 'payload'
+import { getPayload } from 'payload'
 import { cache } from 'react'
 
-import type { Branding, Project } from '@/payload-types'
+import { type PortfolioSection, toPortfolioItem } from './portfolioItem'
 
 const client = cache(async () => getPayload({ config }))
 
@@ -104,49 +104,33 @@ export const getSnippets = cache(async () => {
   return docs
 })
 
-// The four portfolio categories. Each is its own collection, sorted by the
-// admin's manual order, images resolved (depth 1) so the page can render them.
 /**
- * A branding piece copied in from Recent Work arrives with its Project link
- * already set, so its thumbnail opens the full case study. One added by hand
- * has that field empty, and would silently render as a dead image. Fall back
- * to the project of the same name — the pairing "Add to portfolio" creates
- * anyway — so a piece is clickable however it was added. An explicit link
- * always wins.
+ * The portfolio page, which is the same Work collection sliced by category.
+ *
+ * One query, grouped here rather than four queries against four collections:
+ * a piece moves between sections by changing one field, and whatever has been
+ * built on its Case study tab comes with it.
  */
-const linkBrandingByTitle = async (payload: Payload, docs: Branding[]) => {
-  const key = (title?: string | null) => title?.trim().toLowerCase() ?? ''
-  const unlinked = docs.filter((doc) => !doc.project && key(doc.title))
-  if (!unlinked.length) return docs
-
-  const { docs: projects } = await payload.find({ collection: 'projects', depth: 0, limit: 100 })
-  const byTitle = new Map<string, Project | null>()
-  for (const project of projects) {
-    const k = key(project.title)
-    // Two projects sharing a title link to neither, rather than to a guess.
-    byTitle.set(k, byTitle.has(k) ? null : project)
-  }
-
-  return docs.map((doc) => {
-    if (doc.project || !key(doc.title)) return doc
-    const match = byTitle.get(key(doc.title))
-    return match ? { ...doc, project: match } : doc
-  })
-}
-
 export const getPortfolio = cache(async () => {
   const payload = await client()
-  const [branding, merchandise, advertising, websites] = await Promise.all([
-    payload.find({ collection: 'branding', sort: 'order', depth: 1, limit: 100 }),
-    payload.find({ collection: 'merchandise', sort: 'order', depth: 1, limit: 100 }),
-    payload.find({ collection: 'advertising', sort: 'order', depth: 1, limit: 100 }),
-    payload.find({ collection: 'websites', sort: 'order', depth: 1, limit: 100 }),
-  ])
+  const { docs } = await payload.find({
+    collection: 'projects',
+    // Named rather than "not none", so a row whose category was never set
+    // can't slip in on a NULL.
+    where: { category: { in: ['branding', 'merchandise', 'advertising', 'website'] } },
+    sort: 'order',
+    depth: 1,
+    limit: 200,
+  })
+
+  const of = (section: PortfolioSection) =>
+    docs.filter((doc) => doc.category?.includes(section)).map(toPortfolioItem)
+
   return {
-    branding: await linkBrandingByTitle(payload, branding.docs),
-    merchandise: merchandise.docs,
-    advertising: advertising.docs,
-    websites: websites.docs,
+    branding: of('branding'),
+    merchandise: of('merchandise'),
+    advertising: of('advertising'),
+    websites: of('website'),
   }
 })
 

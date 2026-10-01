@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-import type { Merchandise } from '@/payload-types'
+import type { PortfolioItem } from '@/lib/portfolioItem'
 
 import { MediaImage } from '../MediaImage'
 import { useLightbox } from './Lightbox'
@@ -39,7 +39,7 @@ type View = 'carousel' | 'grid'
  *
  * Both are square, and a shot in either opens full size in the shared lightbox.
  */
-export const MerchShowcase = ({ items }: { items: Merchandise[] }) => {
+export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
   const [view, setView] = useState<View>('carousel')
   const { open, element, isOpen } = useLightbox(items)
   const { viewportRef, trackRef, dragging, beltProps } = useDraggableBelt({
@@ -57,7 +57,7 @@ export const MerchShowcase = ({ items }: { items: Merchandise[] }) => {
     ...items.map((item, index) => ({ item, index, clone: true })),
   ]
 
-  const thumb = (item: Merchandise, index: number, clone = false) => (
+  const thumb = (item: PortfolioItem, index: number, clone = false) => (
     <button
       type="button"
       className={styles.thumb}

@@ -25,8 +25,11 @@ const flush = (req: PayloadRequest, paths: string[]) => {
   }
 }
 
+// '/portfolio' because a piece of work shows there as well now, in whichever
+// sections it's been given.
 const projectPaths = (doc: { slug?: string | null }) => [
   '/work',
+  '/portfolio',
   ...(doc?.slug ? [`/work/${doc.slug}`] : []),
 ]
 
@@ -67,18 +70,6 @@ export const revalidatePost: CollectionAfterChangeHook = ({ doc, previousDoc, re
 
 export const revalidatePostDelete: CollectionAfterDeleteHook = ({ doc, req }) => {
   flush(req, postPaths(doc))
-  return doc
-}
-
-// Every portfolio category renders on the /portfolio page, so any add/edit/
-// delete in any of the four collections refreshes that one page.
-export const revalidatePortfolio: CollectionAfterChangeHook = ({ doc, req }) => {
-  flush(req, ['/portfolio'])
-  return doc
-}
-
-export const revalidatePortfolioDelete: CollectionAfterDeleteHook = ({ doc, req }) => {
-  flush(req, ['/portfolio'])
   return doc
 }
 

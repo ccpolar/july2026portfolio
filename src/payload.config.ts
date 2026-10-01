@@ -12,10 +12,6 @@ import { Clients } from './collections/Clients'
 import { Documents } from './collections/Documents'
 import { Media } from './collections/Media'
 import { Moodboard } from './collections/Moodboard'
-import { Advertising } from './collections/portfolio/Advertising'
-import { Branding } from './collections/portfolio/Branding'
-import { Merchandise } from './collections/portfolio/Merchandise'
-import { Websites } from './collections/portfolio/Websites'
 import { Posts } from './collections/Posts'
 import { Services } from './collections/Services'
 import { Snippets } from './collections/Snippets'
@@ -78,10 +74,6 @@ export default buildConfig({
   },
   collections: [
     Projects,
-    Branding,
-    Merchandise,
-    Advertising,
-    Websites,
     Moodboard,
     Snippets,
     Posts,
