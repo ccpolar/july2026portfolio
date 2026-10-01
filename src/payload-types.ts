@@ -1298,6 +1298,10 @@ export interface Theme {
    */
   signalColor: string;
   /**
+   * The grid of squares behind every page. Whatever this is set to, it already holds still for anyone whose device asks for less motion.
+   */
+  backgroundGrid: 'moving' | 'still' | 'off';
+  /**
    * Applies to buttons, inputs and image corners.
    */
   radius: 'sharp' | 'soft' | 'round';
@@ -1492,6 +1496,7 @@ export interface ThemeSelect<T extends boolean = true> {
   border?: T;
   brandColor?: T;
   signalColor?: T;
+  backgroundGrid?: T;
   radius?: T;
   updatedAt?: T;
   createdAt?: T;

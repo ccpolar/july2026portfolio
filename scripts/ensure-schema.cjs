@@ -537,6 +537,12 @@ const STATEMENTS = [
   `ALTER TABLE "homepage" ADD COLUMN IF NOT EXISTS "hero_cards_shape" "enum_homepage_hero_cards_shape" DEFAULT 'natural'`,
   `ALTER TABLE "homepage" ADD COLUMN IF NOT EXISTS "hero_cards_height" numeric DEFAULT 100`,
 
+  // Whether the grid behind the site drifts, holds still, or is there at all.
+  `DO $$ BEGIN
+     CREATE TYPE "public"."enum_theme_background_grid" AS ENUM('moving', 'still', 'off');
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `ALTER TABLE "theme" ADD COLUMN IF NOT EXISTS "background_grid" "enum_theme_background_grid" DEFAULT 'moving'`,
+
 ]
 
 /**

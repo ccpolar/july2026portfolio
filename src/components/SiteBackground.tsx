@@ -17,8 +17,13 @@ import styles from './SiteBackground.module.css'
  *
  * Renders nothing until those colours resolve (a single effect, essentially
  * instant) rather than flash a hardcoded colour first.
+ *
+ * Whether it drifts, holds still, or is there at all comes from the theme in
+ * /admin.
  */
-export const SiteBackground = () => {
+type Props = { mode?: 'moving' | 'still' | 'off' | null }
+
+export const SiteBackground = ({ mode = 'moving' }: Props) => {
   const [colors, setColors] = useState<{ border: string; hover: string } | null>(null)
 
   // The canvas paints with resolved colours rather than CSS, so it has to be
@@ -39,7 +44,8 @@ export const SiteBackground = () => {
     return () => root.removeEventListener(THEME_CHANGE_EVENT, read)
   }, [])
 
-  if (!colors) return null
+  // Switched off in the admin: no canvas, no listeners, nothing to paint.
+  if (mode === 'off' || !colors) return null
 
   return (
     <div className={styles.wrap} aria-hidden="true">
@@ -49,6 +55,7 @@ export const SiteBackground = () => {
         squareSize={25}
         shape="square"
         hoverTrailAmount={0}
+        motion={mode !== 'still'}
         borderColor={colors.border}
         hoverFillColor={colors.hover}
       />

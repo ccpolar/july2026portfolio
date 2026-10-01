@@ -118,7 +118,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         />
       </head>
       <body>
-        <SiteBackground />
+        <SiteBackground mode={theme?.backgroundGrid} />
         <LivePreviewTheme initialData={theme} />
         {/* Public site only — /admin keeps its normal right-click. */}
         <NoImageDownloads />

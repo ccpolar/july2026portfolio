@@ -16,6 +16,9 @@ type Props = {
   hoverFillColor?: string
   shape?: Shape
   hoverTrailAmount?: number
+  /** False holds the grid still: it is drawn once and only redrawn when the
+   *  hovered cell changes, exactly as it behaves under reduced motion. */
+  motion?: boolean
   className?: string
 }
 
@@ -39,6 +42,7 @@ export const ShapeGrid = ({
   hoverFillColor = '#222',
   shape = 'square',
   hoverTrailAmount = 0,
+  motion = true,
   className = '',
 }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -49,6 +53,9 @@ export const ShapeGrid = ({
     if (!canvas || !ctx) return
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Held still either because the site has been set that way, or because
+    // this visitor's device asks for less motion. Both land in the same place.
+    const still = !motion || reduceMotion
     // A trail is a decorative fade of past cells — pure ambience, not
     // feedback — so it's the one thing reduced motion drops outright.
     const effectiveTrail = reduceMotion ? 0 : hoverTrailAmount
@@ -276,9 +283,9 @@ export const ShapeGrid = ({
     const handleMouseMove = (event: MouseEvent) => {
       const rect = canvas.getBoundingClientRect()
       setHovered(locateCell(event.clientX - rect.left, event.clientY - rect.top))
-      // With the animation loop off (reduced motion), nothing else will
-      // redraw — do it here so hovering still gives immediate feedback.
-      if (reduceMotion) {
+      // With the animation loop off, nothing else will redraw — do it here so
+      // hovering still gives immediate feedback.
+      if (still) {
         updateCellOpacities(true)
         drawGrid()
       }
@@ -286,7 +293,7 @@ export const ShapeGrid = ({
 
     const handleMouseLeave = () => {
       setHovered(null)
-      if (reduceMotion) {
+      if (still) {
         updateCellOpacities(true)
         drawGrid()
       }
@@ -322,7 +329,7 @@ export const ShapeGrid = ({
     }
 
     const start = () => {
-      if (running || reduceMotion) return
+      if (running || still) return
       running = true
       requestId = requestAnimationFrame(tick)
     }
@@ -342,7 +349,7 @@ export const ShapeGrid = ({
     canvas.addEventListener('mousemove', handleMouseMove)
     canvas.addEventListener('mouseleave', handleMouseLeave)
 
-    if (reduceMotion) {
+    if (still) {
       // A static grid, redrawn only when the hovered cell actually changes —
       // see handleMouseMove/handleMouseLeave above. No loop runs while idle.
       drawGrid()
@@ -358,7 +365,7 @@ export const ShapeGrid = ({
       document.removeEventListener('visibilitychange', handleVisibility)
       stop()
     }
-  }, [direction, speed, borderColor, hoverFillColor, squareSize, shape, hoverTrailAmount])
+  }, [direction, speed, borderColor, hoverFillColor, squareSize, shape, hoverTrailAmount, motion])
 
   return <canvas ref={canvasRef} className={`${styles.canvas} ${className}`.trim()} />
 }

@@ -116,6 +116,22 @@ export const Theme: GlobalConfig = {
       ],
     },
     {
+      name: 'backgroundGrid',
+      label: 'Animated background',
+      type: 'select',
+      required: true,
+      defaultValue: 'moving',
+      options: [
+        { label: 'On — the grid drifts, and lights up under the cursor', value: 'moving' },
+        { label: 'Still — the grid is there, but nothing moves', value: 'still' },
+        { label: 'Off — a plain background', value: 'off' },
+      ],
+      admin: {
+        description:
+          'The grid of squares behind every page. Whatever this is set to, it already holds still for anyone whose device asks for less motion.',
+      },
+    },
+    {
       name: 'radius',
       type: 'select',
       required: true,
