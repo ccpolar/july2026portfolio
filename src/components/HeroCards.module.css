@@ -1,97 +1,58 @@
-/* The hero's fan of photographs. One number — the card width — sets the whole
-   arrangement; every offset in HeroCards.tsx is a multiple of it. */
+/* The hero's row of photographs. One number — the base unit — sets the whole
+   arrangement; every position in HeroCards.tsx is a multiple of it. */
 .stage {
-  --card-w: clamp(5rem, 9.5vw, 9.5rem);
+  --card-k: clamp(5.5rem, 12vw, 11rem);
   width: 100%;
-  /* Room above for the hover lift, below for the drooping outer cards. The
-     fan runs wider than the page on a narrow screen, where the outermost
-     cards are hidden; clipping keeps them from dragging a scrollbar in. */
-  padding-block: 1rem;
+  /* Room for the hover lift. The row runs wider than the page on a narrow
+     screen, where the outermost cards are hidden; clipping keeps them from
+     dragging a scrollbar in. */
+  padding-block: 1.25rem;
   overflow: hidden;
   margin-top: clamp(var(--space-lg), 3.5vw, var(--space-2xl));
 }
 
 .deck {
   position: relative;
-  /* The tallest card is the one in the middle; the rest hang a little lower,
-     so this leaves them room rather than cropping their corners. */
-  height: calc(var(--card-w) * 1.72);
+  /* Room for the tallest picture to take the middle; everything shares the
+     same centre line whatever shape it is. */
+  height: calc(var(--card-k) * var(--deck-h, 1));
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
+/* Every card hangs from the same centre line, upright. The size difference
+   alone carries the depth — no arc, no tilt. */
 .slot {
   position: absolute;
-  top: 0;
+  top: 50%;
   left: 50%;
-  width: var(--card-w);
-  transform: translateX(-50%) translate(calc(var(--x) * var(--card-w)), calc(var(--y) * var(--card-w)))
-    rotate(var(--r)) scale(var(--s));
+  width: calc(var(--card-k) * var(--w));
+  height: calc(var(--card-k) * var(--h));
+  transform: translate(-50%, -50%) translateX(calc(var(--x) * var(--card-k))) scale(var(--s));
   /* Soft and bouncy: it overshoots a touch and settles, the way a dealt card
      does. Long enough to read as a glide rather than a jump cut. */
-  transition:
-    transform 900ms cubic-bezier(0.34, 1.42, 0.5, 1),
-    opacity 700ms ease;
+  transition: transform 900ms cubic-bezier(0.34, 1.42, 0.5, 1);
   will-change: transform;
 }
 
-/* Depth, as atmosphere: the further from the middle, the further back. */
-.slot[data-ring='2'] {
-  opacity: 0.96;
-}
-
-.slot[data-end] {
-  opacity: 0.42;
-}
-
-/* The two ends of the fan are where the loop closes. The card on its way out
-   fades over the last stretch of its stay; the one arriving is put in place
-   with no transition while it is still invisible, then fades up. */
-.slot[data-end='out'] {
-  animation: edge-out var(--tick) linear forwards;
-}
-
-.slot[data-end='in'] {
+/* The card that has just come round from the far end is placed outright, so it
+   is simply already there rather than travelling back across the row. */
+.slot[data-wrapped] {
   transition: none;
-  animation: edge-in var(--tick) linear forwards;
-}
-
-@keyframes edge-out {
-  0%,
-  65% {
-    opacity: 0.42;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes edge-in {
-  0% {
-    opacity: 0;
-  }
-  28%,
-  100% {
-    opacity: 0.42;
-  }
-}
-
-/* Hovering anywhere over the fan holds it still, so a card can't slide out
-   from under the pointer halfway through a look. */
-.stage[data-paused] .slot {
-  animation-play-state: paused;
 }
 
 .card {
   margin: 0;
-  aspect-ratio: 3 / 4;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   border-radius: var(--radius-media);
   background: var(--surface);
-  box-shadow: 0 1px 2px color-mix(in oklch, var(--ink) 8%, transparent),
-    0 12px 28px -12px color-mix(in oklch, var(--ink) 30%, transparent);
-  /* Its own spring, independent of the fan's, so a hover reads as the card
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--ink) 8%, transparent),
+    0 14px 30px -14px color-mix(in oklch, var(--ink) 32%, transparent);
+  /* Its own spring, independent of the row's, so a hover reads as the card
      lifting towards you rather than the whole arrangement shifting. */
   transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -107,43 +68,32 @@
   object-fit: cover;
 }
 
-/* — Narrower screens: the fan keeps its shape but sheds its outermost cards
+/* — Narrower screens: the row keeps its shape and sheds its outermost cards
      rather than shrinking everything into illegibility. They stay in the
      rotation, so every picture still comes round to the middle. — */
 @media (max-width: 60rem) {
   .slot[data-ring='3'] {
     opacity: 0;
-    animation: none;
+    pointer-events: none;
   }
 }
 
 @media (max-width: 38rem) {
   .stage {
-    --card-w: clamp(5rem, 26vw, 7.5rem);
-  }
-
-  /* Only three cards left, and they barely droop — so the deck does not need
-     to hold room for an arc that is not there. */
-  .deck {
-    height: calc(var(--card-w) * 1.5);
+    --card-k: clamp(6rem, 26vw, 9rem);
   }
 
   .slot[data-ring='2'] {
     opacity: 0;
-    animation: none;
+    pointer-events: none;
   }
 }
 
-/* The fan as a still photograph: no shuffle (stopped in the component), no
-   overshoot, no fade at the ends. */
+/* The row as a still photograph: no shuffle (stopped in the component), and
+   nothing that moves on its own. */
 @media (prefers-reduced-motion: reduce) {
   .slot,
   .card {
     transition: none;
-  }
-
-  .slot[data-end] {
-    animation: none;
-    opacity: 0.42;
   }
 }

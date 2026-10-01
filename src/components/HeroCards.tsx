@@ -2,52 +2,87 @@
 
 import { type CSSProperties, useEffect, useState } from 'react'
 
-import type { Homepage } from '@/payload-types'
+import type { Homepage, Media } from '@/payload-types'
 
 import styles from './HeroCards.module.css'
 import { MediaImage } from './MediaImage'
 
 type Card = NonNullable<Homepage['heroCards']>[number]
 
-/** How long each card holds the middle before the fan shuffles along. */
+/** How long each card holds the middle before the row shuffles along. */
 const TICK = 2000
 
 /**
- * Where a card sits, given which position in the fan it currently holds.
+ * How big a card is, by how many places it sits from the middle.
  *
- * Everything is expressed in card widths rather than pixels, so the whole
- * arrangement scales with one number and keeps its proportions from a phone
- * to a wide display. `d` is the signed distance from the middle: negative to
- * the left, positive to the right, zero for the card in front.
+ * Measured off the reference: a steep, near-linear fall-off — the middle
+ * card is several times the width of the ones at the ends, which is what
+ * stops the row reading as a plain filmstrip.
  */
-const place = (count: number, slot: number) => {
-  const d = slot - (count - 1) / 2
-  const a = Math.abs(d)
-  return {
-    x: d * 1.12,
-    // Slightly more than linear, so the fan droops at the edges rather than
-    // stepping down evenly — it reads as depth instead of a staircase.
-    y: a ** 1.5 * 0.1,
-    rotate: d * 4.2,
-    scale: 1 - a * 0.125,
-    // The middle card sits in front; each step out drops behind the last.
-    z: 20 - Math.round(a * 2),
-    ring: Math.round(a),
+const scaleFor = (ring: number) => Math.max(0.18, 1 - ring * 0.26)
+
+/** The space between two cards, in base units. Constant, as in the reference. */
+const GAP = 0.06
+
+/** Which card is in a given place, once the row has shuffled along `offset` times. */
+const cardAt = (slot: number, offset: number, count: number) =>
+  (((slot - offset) % count) + count) % count
+
+/**
+ * A card's resting size, as a multiple of the base unit.
+ *
+ * Sized by area rather than by height: a card keeps the proportions of the
+ * picture in it, and two cards of the same rank cover the same amount of the
+ * page whether they are tall or wide. Scaling by height alone would let a
+ * broad landscape one place out look bigger than the tall one in the middle,
+ * which loses the order the row is built on.
+ */
+const sizeOf = (aspect: number) => ({ w: Math.sqrt(aspect), h: 1 / Math.sqrt(aspect) })
+
+/**
+ * Lays the row out left to right and returns the centre of each place.
+ *
+ * Cards keep their own proportions rather than being cropped to a common
+ * shape, so each one's width depends on the picture in it — which means the
+ * row has to be measured in the order it is actually standing in.
+ */
+const placeRow = (aspects: number[]) => {
+  const n = aspects.length
+  const widths = aspects.map((aspect, slot) =>
+    aspect === 0 ? 0 : sizeOf(aspect).w * scaleFor(Math.round(Math.abs(slot - (n - 1) / 2))),
+  )
+  const total = widths.reduce((sum, w) => sum + w, 0) + GAP * (n - 1)
+  const centres: number[] = []
+  let cursor = -total / 2
+  for (const w of widths) {
+    centres.push(cursor + w / 2)
+    cursor += w + GAP
   }
+  return centres
+}
+
+const aspectOf = (image: Card['image']): number => {
+  if (!image || typeof image !== 'object') return 1
+  const { width, height } = image as Media
+  if (!width || !height) return 1
+  return width / height
 }
 
 type Props = { cards?: Card[] | null }
 
 /**
- * The hero's fan of photographs, shuffling one place to the right every couple
+ * The hero's row of photographs, shuffling one place to the right every couple
  * of seconds so each picture takes its turn in the middle.
  *
- * The shuffle is a loop, which means one card has to get from the right-hand
- * end back to the left on every tick. That journey is hidden rather than
- * animated: both ends of the fan are faded well back, the card leaving fades
- * out over the last stretch of its stay, and the one arriving is placed with
- * no transition at all while it is still invisible, then fades up. Nothing is
- * ever seen crossing the middle.
+ * Every card sits on the same centre line — the size difference alone carries
+ * the depth, with no arc and no tilt. Pictures keep their own proportions, so
+ * nothing is cropped to fit.
+ *
+ * The shuffle is a loop, so on every tick one card has to get from the
+ * right-hand end back to the left. It goes instantly: the arriving card is
+ * placed with its transition switched off, so it is simply already there on
+ * the next frame while the rest glide along behind it. No gap opens at either
+ * end.
  */
 export const HeroCards = ({ cards }: Props) => {
   const items = (cards ?? []).filter(
@@ -55,14 +90,14 @@ export const HeroCards = ({ cards }: Props) => {
   )
   const count = items.length
 
-  // Under four cards there is no fan worth shuffling, so it stays put.
+  // Under four cards there is no row worth shuffling, so it stays put.
   const shuffles = count >= 4
   const [offset, setOffset] = useState(0)
   const [paused, setPaused] = useState(false)
 
   useEffect(() => {
     if (!shuffles || paused) return
-    // Someone who has asked for less motion gets the fan, still, as a picture.
+    // Someone who has asked for less motion gets the row, still, as a picture.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const id = window.setInterval(() => setOffset((o) => o + 1), TICK)
     return () => window.clearInterval(id)
@@ -70,37 +105,50 @@ export const HeroCards = ({ cards }: Props) => {
 
   if (!count) return null
 
+  // Measure the row as it currently stands, place by place.
+  const centres = placeRow(
+    Array.from({ length: count }, (_, slot) => aspectOf(items[cardAt(slot, offset, count)]?.image)),
+  )
+
+  // Tall enough for the tallest picture to take the middle without the row
+  // changing height underneath it. Worked out once, over every card, so the
+  // page does not shift as they come round.
+  const deckHeight = Math.max(...items.map((card) => sizeOf(aspectOf(card.image)).h))
+
   // The card that starts in the middle is the one worth fetching first.
   const firstMiddle = Math.floor((count - 1) / 2)
 
   return (
     <div
       className={styles.stage}
-      style={{ '--tick': `${TICK}ms` } as CSSProperties}
+      style={{ '--deck-h': deckHeight } as CSSProperties}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      data-paused={paused || undefined}
     >
       <ul className={styles.deck}>
         {items.map((card, i) => {
           const slot = (i + offset) % count
-          const { x, y, rotate, scale, z, ring } = place(count, slot)
-          // The card in the first slot has just come round from the last one.
-          const end = !shuffles ? undefined : slot === 0 ? 'in' : slot === count - 1 ? 'out' : undefined
+          const ring = Math.round(Math.abs(slot - (count - 1) / 2))
+          // The card in the first place has just come round from the last one;
+          // it is put there outright rather than travelling back across.
+          const wrapped = shuffles && slot === 0
 
           return (
             <li
               className={styles.slot}
               key={card.id ?? i}
               data-ring={ring}
-              data-end={end}
+              data-wrapped={wrapped || undefined}
               style={
                 {
-                  '--x': x,
-                  '--y': y,
-                  '--r': `${rotate}deg`,
-                  '--s': scale,
-                  zIndex: z,
+                  '--x': centres[slot],
+                  '--s': scaleFor(ring),
+                  // The card's own resting size; only --x and --s change as
+                  // the row moves, so every tick is a transform and nothing
+                  // re-lays out.
+                  '--w': sizeOf(aspectOf(card.image)).w,
+                  '--h': sizeOf(aspectOf(card.image)).h,
+                  zIndex: 20 - ring * 2,
                 } as CSSProperties
               }
             >
@@ -109,7 +157,7 @@ export const HeroCards = ({ cards }: Props) => {
                   className={styles.image}
                   media={card.image}
                   priority={i === firstMiddle}
-                  sizes="(min-width: 64rem) 9rem, 22vw"
+                  sizes="(min-width: 64rem) 20rem, 40vw"
                 />
               </figure>
             </li>
