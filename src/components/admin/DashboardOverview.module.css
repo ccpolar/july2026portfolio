@@ -148,13 +148,14 @@
     border-color 150ms ease;
 }
 
+/* The one button here that starts something, in the same red as Save. */
 .action {
-  background: var(--theme-elevation-1000);
-  color: #0e0e0e;
+  background: var(--admin-accent-solid);
+  color: var(--admin-accent-ink);
 }
 
 .action:hover {
-  background: var(--theme-elevation-850);
+  background: color-mix(in oklch, var(--admin-accent-solid) 88%, black);
 }
 
 .actionQuiet {
