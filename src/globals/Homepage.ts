@@ -56,6 +56,26 @@ export const Homepage: GlobalConfig = {
               },
             },
             {
+              name: 'heroCards',
+              type: 'array',
+              label: 'Hero carousel',
+              labels: { singular: 'Card', plural: 'Cards' },
+              maxRows: 7,
+              admin: {
+                initCollapsed: true,
+                description:
+                  'A fan of photographs between the headline and the paragraph below it. They shuffle on their own, so every one gets its turn in the middle. Seven is the full spread; fewer simply makes a smaller fan, and none hides it altogether. Portrait crops sit best — they are shown tall.',
+              },
+              fields: [
+                {
+                  name: 'image',
+                  type: 'upload',
+                  relationTo: 'media',
+                  required: true,
+                },
+              ],
+            },
+            {
               name: 'heroImage',
               type: 'upload',
               relationTo: 'media',

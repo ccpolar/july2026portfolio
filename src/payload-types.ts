@@ -179,7 +179,7 @@ export interface Project {
    */
   liveUrl?: string | null;
   /**
-   * One sentence on what this project was. Shown on its Recent Work row — keep it short; the image does the talking.
+   * One sentence on what this was. Shown on its Recent Work row and under it in the Advertising grid — keep it short; the image does the talking. Fine to leave empty.
    */
   summary?: string | null;
   /**
@@ -200,7 +200,7 @@ export interface Project {
    */
   featured?: boolean | null;
   /**
-   * Lower numbers appear first.
+   * Lower numbers appear first — within Recent Work, and within each portfolio section.
    */
   order?: number | null;
   /**
@@ -1172,6 +1172,15 @@ export interface Homepage {
   available?: boolean | null;
   availabilityLabel?: string | null;
   /**
+   * A fan of photographs between the headline and the paragraph below it. They shuffle on their own, so every one gets its turn in the middle. Seven is the full spread; fewer simply makes a smaller fan, and none hides it altogether. Portrait crops sit best — they are shown tall.
+   */
+  heroCards?:
+    | {
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
    * Optional. Sits centred below the buttons.
    */
   heroImage?: (number | null) | Media;
@@ -1411,6 +1420,12 @@ export interface HomepageSelect<T extends boolean = true> {
   heroIntro?: T;
   available?: T;
   availabilityLabel?: T;
+  heroCards?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
   heroImage?: T;
   heroImageSize?: T;
   trustedHeading?: T;

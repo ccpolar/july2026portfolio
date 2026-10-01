@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react'
 import type { Contact, Homepage } from '@/payload-types'
 
 import { ButtonLink } from './Button'
+import { HeroCards } from './HeroCards'
 import styles from './Hero.module.css'
 import { MediaImage } from './MediaImage'
 import { OpenContactButton } from './OpenContactButton'
@@ -37,6 +38,10 @@ export const Hero = ({ home, contact }: Props) => {
         ) : null}
 
         <h1 className={styles.title}>{home.heroLine}</h1>
+
+        <div className={styles.cards}>
+          <HeroCards cards={home.heroCards} />
+        </div>
 
         <p className={styles.intro}>{home.heroIntro}</p>
 

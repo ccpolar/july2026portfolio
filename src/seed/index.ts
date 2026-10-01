@@ -338,12 +338,32 @@ const run = async () => {
   }
   payload.logger.info('Seeded 2 placeholder testimonials — replace before launch.')
 
+  // The hero's fan of photographs. Portrait crops, since the cards are tall.
+  const heroCardPhotos = [
+    'photo-1493857671505-72967e2e2760',
+    'photo-1517248135467-4c7edcad34c4',
+    'photo-1523275335684-37898b6baf30',
+    'photo-1498804103079-a6351b050096',
+    'photo-1442512595331-e89e73853f31',
+    'photo-1521302080334-4bebac2763a6',
+    'photo-1559925393-8be0ec4767c8',
+  ]
+  const heroCards = []
+  let cOrder = 0
+  for (const photo of heroCardPhotos) {
+    const image = await makeMedia(photo, `Hero card ${cOrder + 1}`, `hero-card-${cOrder}.jpg`)
+    heroCards.push({ image })
+    cOrder += 1
+  }
+  payload.logger.info(`Seeded ${heroCards.length} hero carousel cards.`)
+
   await payload.updateGlobal({
     slug: 'homepage',
     data: {
       heroLine: 'Trust, precision, focus. Made for you.',
       heroIntro:
         'I’m Cam, a freelance designer working with founders and small studios on identity and web. No decks, no drama — careful work, shown early, and built so you can look after it yourself.',
+      heroCards,
       available: true,
       availabilityLabel: 'Available for new work',
       workHeading: 'Selected work',

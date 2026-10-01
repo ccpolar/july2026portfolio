@@ -86,6 +86,12 @@
   text-wrap: balance;
 }
 
+/* The carousel is a block in the centred column, so it needs the column's
+   full width to fan across rather than shrinking to its contents. */
+.cards {
+  width: 100%;
+}
+
 .intro {
   font-size: var(--text-lead);
   color: var(--muted);
@@ -124,6 +130,7 @@
    reads as focusing rather than sliding, and is the one piece given more
    time than the rest. — */
 .badge,
+.cards,
 .intro,
 .actions,
 .imageFrame {
@@ -135,16 +142,20 @@
   animation-delay: 90ms;
 }
 
-.intro {
-  animation-delay: 260ms;
+.cards {
+  animation-delay: 220ms;
 }
 
-.actions {
+.intro {
   animation-delay: 360ms;
 }
 
+.actions {
+  animation-delay: 450ms;
+}
+
 .imageFrame {
-  animation-delay: 460ms;
+  animation-delay: 550ms;
 }
 
 @keyframes rise {
