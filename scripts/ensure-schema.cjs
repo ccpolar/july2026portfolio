@@ -495,6 +495,41 @@ const STATEMENTS = [
   `CREATE INDEX IF NOT EXISTS "homepage_hero_cards_parent_id_idx" ON "homepage_hero_cards" USING btree ("_parent_id")`,
   `CREATE INDEX IF NOT EXISTS "homepage_hero_cards_image_idx" ON "homepage_hero_cards" USING btree ("image_id")`,
 
+  // ── Columns left behind by removed fields ──────────────────────────────
+  // Saving a global rewrites the whole row as an INSERT ... ON CONFLICT DO
+  // UPDATE, naming only the columns the current config knows about. Postgres
+  // builds that row before it works out there is a conflict, so a column left
+  // over from a field that no longer exists — NOT NULL, and with no default to
+  // fall back on — fails the whole save. Nothing reads or writes it any more;
+  // it just sits there refusing every edit.
+  //
+  // That is what happened to the homepage: "metaTitle" went in July and
+  // "approachBody" in September, both required and neither with a default, and
+  // between them they made the page unsavable with an error that says only
+  // "Something went wrong".
+  //
+  // This clears the NOT NULL from any column on that table that no longer has
+  // a field behind it. Only columns with no default can cause it, so the ones
+  // still in use are named and kept; required-ness is enforced by Payload
+  // before a write ever reaches here, so this loses nothing real.
+  `DO $$
+   DECLARE
+     col record;
+   BEGIN
+     FOR col IN
+       SELECT column_name
+         FROM information_schema.columns
+        WHERE table_schema = 'public'
+          AND table_name = 'homepage'
+          AND is_nullable = 'NO'
+          AND column_default IS NULL
+          AND column_name NOT IN ('id', 'hero_line', 'hero_intro', 'meta_description')
+     LOOP
+       EXECUTE format('ALTER TABLE "homepage" ALTER COLUMN %I DROP NOT NULL', col.column_name);
+       RAISE NOTICE 'homepage.%: cleared a NOT NULL left behind by a removed field', col.column_name;
+     END LOOP;
+   END $$`,
+
 ]
 
 /**
