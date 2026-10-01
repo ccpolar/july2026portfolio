@@ -1,0 +1,169 @@
+/* The admin's landing page. Quieter than the rest of the admin on purpose:
+   it's the first thing seen each session, so it reads as a summary rather
+   than another dense screen. */
+.overview {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2.5rem clamp(1.25rem, 4vw, 3rem) 4rem;
+  max-width: 72rem;
+}
+
+.head {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.greeting {
+  margin: 0;
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--theme-elevation-1000);
+}
+
+.sub {
+  margin: 0;
+  color: var(--theme-elevation-600);
+}
+
+/* — Counts — one row of soft tiles, each a way in. — */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.75rem;
+}
+
+.tile {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1.125rem 1.25rem;
+  background: var(--theme-elevation-100);
+  border: 1px solid var(--theme-border-color);
+  border-radius: 18px;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    transform 120ms ease;
+}
+
+.tile:hover {
+  background: var(--theme-elevation-150);
+  border-color: var(--theme-elevation-300);
+  transform: translateY(-1px);
+}
+
+.tileCount {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--theme-elevation-1000);
+  line-height: 1.1;
+}
+
+.tileLabel {
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-600);
+}
+
+/* — Recently edited — */
+.panel {
+  padding: 1.25rem 1.5rem 1.5rem;
+  background: var(--theme-elevation-100);
+  border: 1px solid var(--theme-border-color);
+  border-radius: 18px;
+}
+
+.panelTitle {
+  margin: 0 0 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-550);
+}
+
+.recent {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recentLink {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem 0;
+  border-top: 1px solid var(--theme-border-color);
+  text-decoration: none;
+  color: var(--theme-elevation-850);
+  transition: color 150ms ease;
+}
+
+.recent li:first-child .recentLink {
+  border-top: 0;
+}
+
+.recentLink:hover {
+  color: var(--theme-elevation-1000);
+}
+
+.recentTitle {
+  font-weight: 500;
+}
+
+.recentWhen {
+  flex: none;
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-500);
+  font-variant-numeric: tabular-nums;
+}
+
+.empty {
+  margin: 0;
+  color: var(--theme-elevation-550);
+}
+
+/* — Actions — */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem;
+}
+
+.action,
+.actionQuiet {
+  display: inline-flex;
+  align-items: center;
+  height: 2.5rem;
+  padding-inline: 1.125rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease;
+}
+
+.action {
+  background: var(--theme-elevation-1000);
+  color: #0e0e0e;
+}
+
+.action:hover {
+  background: var(--theme-elevation-850);
+}
+
+.actionQuiet {
+  background: transparent;
+  border: 1px solid var(--theme-border-color);
+  color: var(--theme-elevation-750);
+}
+
+.actionQuiet:hover {
+  border-color: var(--theme-elevation-400);
+  color: var(--theme-elevation-1000);
+}

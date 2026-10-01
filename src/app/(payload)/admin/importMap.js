@@ -21,11 +21,12 @@ import { StrikethroughFeatureClient as StrikethroughFeatureClient_e70f5e05f09f93
 import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
-import { TransferToPortfolio as TransferToPortfolio_fb2e603bb91096c66a82d59231c30c7f } from '../../../components/admin/TransferToPortfolio'
 import { RangeField as RangeField_3aacc3486b8c6ad9f46f1e746adc49d0 } from '../../../components/admin/RangeField'
+import { TransferToPortfolio as TransferToPortfolio_fb2e603bb91096c66a82d59231c30c7f } from '../../../components/admin/TransferToPortfolio'
 import { ColorField as ColorField_f18d715b9f5ea63091d1361f9c46fa22 } from '../../../components/admin/ColorField'
 import { PaletteContrast as PaletteContrast_97c8da249c8007fe78aa1fedd5afa4ea } from '../../../components/admin/PaletteContrast'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
+import { DashboardOverview as DashboardOverview_6eebd759fa9848ad75ed4bee6bb4023d } from '../../../components/admin/DashboardOverview'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -53,10 +54,11 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#UnderlineFeatureClient": UnderlineFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
-  "/components/admin/TransferToPortfolio#TransferToPortfolio": TransferToPortfolio_fb2e603bb91096c66a82d59231c30c7f,
   "/components/admin/RangeField#RangeField": RangeField_3aacc3486b8c6ad9f46f1e746adc49d0,
+  "/components/admin/TransferToPortfolio#TransferToPortfolio": TransferToPortfolio_fb2e603bb91096c66a82d59231c30c7f,
   "/components/admin/ColorField#ColorField": ColorField_f18d715b9f5ea63091d1361f9c46fa22,
   "/components/admin/PaletteContrast#PaletteContrast": PaletteContrast_97c8da249c8007fe78aa1fedd5afa4ea,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
+  "/components/admin/DashboardOverview#DashboardOverview": DashboardOverview_6eebd759fa9848ad75ed4bee6bb4023d,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

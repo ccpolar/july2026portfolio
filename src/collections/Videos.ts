@@ -12,7 +12,7 @@ export const Videos: CollectionConfig = {
   admin: {
     useAsTitle: 'label',
     defaultColumns: ['label', 'filename', 'updatedAt'],
-    group: 'Content',
+    group: 'Library',
     description:
       'Video files used inside case studies. MP4 plays everywhere; keep motion graphics short, since the file is served as-is. Add one to a case study with a Video block.',
   },

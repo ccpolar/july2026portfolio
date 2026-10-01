@@ -10,7 +10,7 @@ export const Branding: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'project', 'order'],
-    group: 'Portfolio',
+    group: 'Work',
     description:
       'Branding pieces, shown as wide stacked thumbnails on the portfolio page. Link one to a Recent Work project and its thumbnail becomes clickable, opening that project’s full case study.',
   },

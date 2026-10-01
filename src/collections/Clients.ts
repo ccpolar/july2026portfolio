@@ -9,7 +9,7 @@ export const Clients: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'logo', 'order'],
-    group: 'Content',
+    group: 'Site content',
     description:
       'The logos in the “Trusted by” strip under the homepage hero. They sit faded until hovered, so single-colour logos on a transparent background look most consistent.',
   },

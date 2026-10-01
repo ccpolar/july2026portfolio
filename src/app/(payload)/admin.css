@@ -1,0 +1,256 @@
+/*
+ * The admin, restyled.
+ *
+ * Payload builds every screen out of its own tokens — an elevation scale, a
+ * few radii, one border colour — so this works at that level rather than
+ * chasing individual screens. Redefining the scale restyles the lists, the
+ * forms, the drawers and anything added later, all at once.
+ *
+ * The direction is the reference Cam chose: a near-black page, panels a step
+ * above it, generously rounded corners, quiet borders, and one warm accent
+ * used sparingly.
+ */
+
+:root,
+[data-theme='dark'],
+[data-theme='light'] {
+  /* — The greys. Payload reads elevation 0 as "furthest back" and 1000 as
+       "furthest forward", and uses them for every surface and most text. — */
+  --theme-bg: #0e0e0e;
+  --theme-elevation-0: #0e0e0e;
+  --theme-elevation-50: #141414;
+  --theme-elevation-100: #171717;
+  --theme-elevation-150: #1c1c1c;
+  --theme-elevation-200: #222222;
+  --theme-elevation-250: #282828;
+  --theme-elevation-300: #333333;
+  --theme-elevation-350: #3d3d3d;
+  --theme-elevation-400: #4a4a4a;
+  --theme-elevation-450: #5a5a5a;
+  --theme-elevation-500: #6b6b6b;
+  --theme-elevation-550: #7d7d7d;
+  --theme-elevation-600: #8f8f8f;
+  --theme-elevation-650: #a0a0a0;
+  --theme-elevation-700: #b0b0b0;
+  --theme-elevation-750: #bfbfbf;
+  --theme-elevation-800: #cccccc;
+  --theme-elevation-850: #d9d9d9;
+  --theme-elevation-900: #e6e6e6;
+  --theme-elevation-950: #f0f0f0;
+  --theme-elevation-1000: #ffffff;
+
+  --theme-text: #ededed;
+  --theme-border-color: #262626;
+
+  /* The site's own signal red, used for the one thing that matters on a
+     screen rather than scattered around it. */
+  --theme-success-500: #4ea76a;
+  --color-success-500: #4ea76a;
+
+  /* — Corners. Payload's three radii, all opened up. — */
+  --style-radius-s: 8px;
+  --style-radius-m: 12px;
+  --style-radius-l: 18px;
+}
+
+/* Payload ships a light theme too; this keeps one look either way, since the
+   admin is a workspace rather than something visitors see. */
+html[data-theme='light'] {
+  color-scheme: dark;
+}
+
+/* — Page rhythm — the default admin runs edge to edge and reads as one dense
+     sheet. A little more air, and a ceiling on line length. — */
+.template-default__wrap,
+.collection-list,
+.dashboard {
+  background: var(--theme-bg);
+}
+
+.nav {
+  background: #121212;
+  border-right: 1px solid var(--theme-border-color);
+}
+
+/* The sidebar's links become soft pills, with the current one filled rather
+   than underlined — the reference's arrangement, and easier to scan. */
+.nav .nav__link,
+.nav a[class*='nav__link'] {
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  margin-inline: 0.25rem;
+  color: var(--theme-elevation-650);
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.nav .nav__link:hover {
+  background: var(--theme-elevation-100);
+  color: var(--theme-text);
+}
+
+.nav .nav__link.active,
+.nav .nav__link[aria-current='page'] {
+  background: var(--theme-elevation-150);
+  color: var(--theme-text);
+}
+
+/* Group headings in the sidebar: small, quiet, spaced — labels rather than
+   another row of links competing with the real ones. */
+.nav .nav-group__toggle,
+.nav [class*='nav-group__label'] {
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-500);
+}
+
+/* — Cards, lists and tables — */
+.collection-list__wrap,
+.table,
+.card,
+.list-controls,
+.doc-controls {
+  border-radius: var(--style-radius-l);
+}
+
+.table {
+  border: 1px solid var(--theme-border-color);
+  overflow: hidden;
+}
+
+.table table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  background: var(--theme-elevation-50);
+  font-weight: 500;
+  color: var(--theme-elevation-650);
+}
+
+.table td,
+.table th {
+  padding-block: 0.875rem;
+  border-color: var(--theme-border-color);
+}
+
+.table tbody tr:hover {
+  background: var(--theme-elevation-50);
+}
+
+/* — Fields — the default form is a tall stack of bordered boxes. Softer
+     surfaces and more space between them make a long form readable. — */
+.field-type {
+  margin-bottom: 1.5rem;
+}
+
+.field-type input[type='text'],
+.field-type input[type='email'],
+.field-type input[type='number'],
+.field-type input[type='password'],
+.field-type textarea,
+.rs__control {
+  background: var(--theme-elevation-50);
+  border: 1px solid var(--theme-border-color);
+  border-radius: var(--style-radius-m);
+  padding: 0.625rem 0.75rem;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.field-type input:hover,
+.field-type textarea:hover,
+.rs__control:hover {
+  border-color: var(--theme-elevation-300);
+}
+
+.field-type input:focus,
+.field-type textarea:focus,
+.rs__control--is-focused {
+  border-color: var(--theme-elevation-450);
+  outline: none;
+}
+
+.field-label,
+.field-type .field-label {
+  font-weight: 500;
+  color: var(--theme-elevation-750);
+  margin-bottom: 0.375rem;
+}
+
+/* Field descriptions carry most of the guidance in this admin, so they need
+   to be readable rather than a whisper under the input. */
+.field-description {
+  color: var(--theme-elevation-550);
+  line-height: 1.5;
+  margin-top: 0.375rem;
+}
+
+/* — Buttons — */
+.btn {
+  border-radius: 999px;
+  font-weight: 500;
+  transition:
+    background-color 150ms ease,
+    transform 80ms ease;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn--style-primary {
+  background: var(--theme-elevation-1000);
+  color: #0e0e0e;
+}
+
+.btn--style-secondary {
+  border-radius: 999px;
+}
+
+/* — Arrays and blocks — the case-study builder lives here, so its rows get
+     the clearest treatment on the page. — */
+.array-field__draggable-rows > div,
+.blocks-field__rows > div,
+.collapsible {
+  border-radius: var(--style-radius-m);
+}
+
+.collapsible__toggle-wrap,
+.array-field__row-header,
+.blocks-field__block-header {
+  border-radius: var(--style-radius-m) var(--style-radius-m) 0 0;
+}
+
+.collapsible--collapsed .collapsible__toggle-wrap {
+  border-radius: var(--style-radius-m);
+}
+
+/* — Document header — */
+.doc-header__title,
+.collection-list__header h1,
+.dashboard h1 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* — Upload previews — pictures in the admin get the same eased corners the
+     site gives them. — */
+.file-details__thumbnail,
+.thumbnail,
+.upload__dropzone img,
+.file-meta__thumbnail img {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* — Live preview — the pane is the point of the editor now, so it sits on
+     the page background rather than in its own grey box. — */
+.live-preview-window,
+.live-preview__wrapper {
+  background: var(--theme-bg);
+}

@@ -13,7 +13,7 @@ export const Documents: CollectionConfig = {
   admin: {
     useAsTitle: 'label',
     defaultColumns: ['label', 'filename', 'updatedAt'],
-    group: 'Content',
+    group: 'Library',
     description:
       'PDFs used inside case studies — email designs, decks, one-sheets. Add one to a case study with a Scroll window block.',
   },

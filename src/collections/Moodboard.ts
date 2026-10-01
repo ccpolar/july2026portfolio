@@ -9,7 +9,7 @@ export const Moodboard: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'blockSize', 'order'],
-    group: 'Content',
+    group: 'Work',
     description:
       'Images on the moodboard page, where visitors can pick up and move the blocks around. Mix the block sizes for a livelier wall.',
   },

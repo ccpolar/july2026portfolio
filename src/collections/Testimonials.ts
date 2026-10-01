@@ -10,7 +10,7 @@ export const Testimonials: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'company', 'published'],
-    group: 'Content',
+    group: 'Site content',
     description:
       'Real words from real clients. If none are published, the homepage simply omits this section — it never shows an empty shell.',
   },

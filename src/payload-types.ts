@@ -133,6 +133,7 @@ export interface Config {
   };
   locale: null;
   widgets: {
+    overview: OverviewWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -272,7 +273,7 @@ export interface Project {
              */
             document?: (number | null) | Document;
             /**
-             * How tall the window is on a desktop. Phones use a shorter one.
+             * How tall the window is on a desktop — drag as far as 2000px for a long email you want seen in one go. Past the height of the screen the page itself starts scrolling too, so somewhere near 700–900 usually reads best. Phones cap it at roughly half the screen either way.
              */
             height?: number | null;
             /**
@@ -1676,6 +1677,16 @@ export interface LegalSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "overview_widget".
+ */
+export interface OverviewWidget {
+  data?: {
+    [k: string]: unknown;
+  };
+  width: 'full';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

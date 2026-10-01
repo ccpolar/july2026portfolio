@@ -10,7 +10,7 @@ export const Advertising: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'project', 'order'],
-    group: 'Portfolio',
+    group: 'Work',
     description:
       'Advertising design, shown as a gallery grid on the portfolio page. Link a piece to a Recent Work project and its thumbnail opens that project’s full case study; an unlinked piece opens full screen as an image.',
   },

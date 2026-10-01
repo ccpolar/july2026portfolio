@@ -6,7 +6,7 @@ export const Media: CollectionConfig = {
     read: () => true,
   },
   admin: {
-    group: 'Content',
+    group: 'Library',
   },
   upload: {
     staticDir: 'media',

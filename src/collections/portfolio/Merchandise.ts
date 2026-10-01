@@ -10,7 +10,7 @@ export const Merchandise: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'order'],
-    group: 'Portfolio',
+    group: 'Work',
     description:
       'Merchandise shots, shown as an auto-scrolling carousel on the portfolio page. Square or product-on-plain-background images read best.',
   },

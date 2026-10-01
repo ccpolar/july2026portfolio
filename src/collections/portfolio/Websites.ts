@@ -10,7 +10,7 @@ export const Websites: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'liveUrl', 'order'],
-    group: 'Portfolio',
+    group: 'Work',
     description:
       'Website design, shown inside a browser frame on the portfolio page. Upload a tall full-page screenshot — it scrolls inside the frame on hover.',
   },

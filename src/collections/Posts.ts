@@ -20,7 +20,7 @@ export const Posts: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'publishedAt', 'published'],
-    group: 'Content',
+    group: 'Site content',
     description:
       'Posts on the blog page. The Blog link only appears in the site header once at least one post is published.',
   },

@@ -9,7 +9,7 @@ export const Services: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'price', 'order'],
-    group: 'Content',
+    group: 'Site content',
     description:
       'The cards in the homepage Services section. Untick “Show on the site” to work on one without it appearing.',
   },

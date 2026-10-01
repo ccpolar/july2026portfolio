@@ -5,7 +5,7 @@ export const Subscribers: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'createdAt'],
-    group: 'Content',
+    group: 'Admin',
     description: 'People who asked to hear about new work. Export or delete any time.',
   },
   access: {

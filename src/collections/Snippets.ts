@@ -9,7 +9,7 @@ export const Snippets: CollectionConfig = {
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'note', 'order'],
-    group: 'Content',
+    group: 'Work',
     description:
       'Screengrabs of work in progress, shown on the Snippets page. Each one is a 16:9 thumbnail visitors can click to enlarge, with a short note underneath.',
   },

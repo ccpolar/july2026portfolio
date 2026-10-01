@@ -51,7 +51,27 @@ const blobToken = process.env.BLOB_READ_WRITE_TOKEN
 export default buildConfig({
   admin: {
     user: Users.slug,
+    // Local convenience only: lets the admin be opened without a password
+    // while working on it. Gated twice — the flag has to be set *and* the
+    // build has to be a development one — so it can never apply on Vercel,
+    // which always builds with NODE_ENV=production.
+    ...(process.env.NODE_ENV !== 'production' && process.env.ADMIN_AUTOLOGIN === 'true'
+      ? { autoLogin: { email: process.env.ADMIN_AUTOLOGIN_EMAIL || '' } }
+      : {}),
     importMap: { baseDir: path.resolve(dirname) },
+    // The landing page: what's on the site and the way back in, instead of
+    // Payload's tile per collection.
+    dashboard: {
+      widgets: [
+        {
+          slug: 'overview',
+          label: 'Overview',
+          Component: '/components/admin/DashboardOverview#DashboardOverview',
+          minWidth: 'full',
+        },
+      ],
+      defaultLayout: [{ widgetSlug: 'overview', width: 'full' }],
+    },
     meta: {
       titleSuffix: '· Cam',
     },
