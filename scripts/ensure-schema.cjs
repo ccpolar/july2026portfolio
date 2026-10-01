@@ -530,6 +530,13 @@ const STATEMENTS = [
      END LOOP;
    END $$`,
 
+  // How the hero carousel is sized, on the Hero tab.
+  `DO $$ BEGIN
+     CREATE TYPE "public"."enum_homepage_hero_cards_shape" AS ENUM('natural', 'square', 'portrait', 'tall');
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `ALTER TABLE "homepage" ADD COLUMN IF NOT EXISTS "hero_cards_shape" "enum_homepage_hero_cards_shape" DEFAULT 'natural'`,
+  `ALTER TABLE "homepage" ADD COLUMN IF NOT EXISTS "hero_cards_height" numeric DEFAULT 100`,
+
 ]
 
 /**

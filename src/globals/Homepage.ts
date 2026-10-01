@@ -76,6 +76,42 @@ export const Homepage: GlobalConfig = {
               ],
             },
             {
+              name: 'heroCardsShape',
+              type: 'select',
+              label: 'Card shape',
+              defaultValue: 'natural',
+              options: [
+                { label: 'As uploaded', value: 'natural' },
+                { label: 'Square', value: 'square' },
+                { label: 'Portrait', value: 'portrait' },
+                { label: 'Tall', value: 'tall' },
+              ],
+              admin: {
+                condition: (_, siblingData) => Boolean(siblingData?.heroCards?.length),
+                description:
+                  'The shape every card is cut to. “As uploaded” leaves each picture at its own proportions. The taller shapes crop in from the sides — which is what gives the row real height when the photographs are widescreen, and what lets the setting below go further.',
+              },
+            },
+            {
+              name: 'heroCardsHeight',
+              type: 'number',
+              label: 'Carousel height',
+              defaultValue: 100,
+              min: 60,
+              max: 180,
+              admin: {
+                condition: (_, siblingData) => Boolean(siblingData?.heroCards?.length),
+                description:
+                  'How tall the row stands, against its normal size. It will not grow past the width of the page — so if turning this up stops making a difference, the row has run out of room sideways, and a taller card shape above will buy more.',
+                components: {
+                  Field: {
+                    path: '/components/admin/RangeField#RangeField',
+                    clientProps: { unit: '%', fallback: 100 },
+                  },
+                },
+              },
+            },
+            {
               name: 'heroImage',
               type: 'upload',
               relationTo: 'media',

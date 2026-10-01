@@ -40,7 +40,11 @@ export const Hero = ({ home, contact }: Props) => {
         <h1 className={styles.title}>{home.heroLine}</h1>
 
         <div className={styles.cards}>
-          <HeroCards cards={home.heroCards} />
+          <HeroCards
+            cards={home.heroCards}
+            shape={home.heroCardsShape}
+            height={home.heroCardsHeight}
+          />
         </div>
 
         <p className={styles.intro}>{home.heroIntro}</p>

@@ -61,14 +61,42 @@ const placeRow = (aspects: number[]) => {
   return centres
 }
 
-const aspectOf = (image: Card['image']): number => {
+/** The proportions each shape cuts a card to. */
+const SHAPES: Record<string, number> = {
+  square: 1,
+  portrait: 3 / 4,
+  tall: 2 / 3,
+}
+
+const aspectOf = (image: Card['image'], shape?: string | null): number => {
+  const forced = shape ? SHAPES[shape] : undefined
+  if (forced) return forced
   if (!image || typeof image !== 'object') return 1
   const { width, height } = image as Media
   if (!width || !height) return 1
   return width / height
 }
 
-type Props = { cards?: Card[] | null }
+/**
+ * The widest the row could ever stand, in base units.
+ *
+ * Cards keep their own proportions, so the row's width changes a little
+ * depending on which picture is where. Sizing off the worst case — the
+ * broadest pictures in the biggest places — gives one number that holds for
+ * every arrangement, so the row never rescales as it shuffles, and never
+ * outgrows the page.
+ */
+const widestRow = (aspects: number[]) => {
+  const n = aspects.length
+  const scales = Array.from({ length: n }, (_, i) =>
+    scaleFor(Math.round(Math.abs(i - (n - 1) / 2))),
+  ).sort((a, b) => b - a)
+  const widths = aspects.map((a) => Math.sqrt(a)).sort((a, b) => b - a)
+  const total = widths.reduce((sum, w, i) => sum + w * scales[i], 0)
+  return total + GAP * (n - 1)
+}
+
+type Props = { cards?: Card[] | null; shape?: string | null; height?: number | null }
 
 /**
  * The hero's row of photographs, shuffling one place to the right every couple
@@ -84,7 +112,7 @@ type Props = { cards?: Card[] | null }
  * the next frame while the rest glide along behind it. No gap opens at either
  * end.
  */
-export const HeroCards = ({ cards }: Props) => {
+export const HeroCards = ({ cards, shape, height }: Props) => {
   const items = (cards ?? []).filter(
     (card) => card?.image && typeof card.image === 'object' && card.image.url,
   )
@@ -107,13 +135,16 @@ export const HeroCards = ({ cards }: Props) => {
 
   // Measure the row as it currently stands, place by place.
   const centres = placeRow(
-    Array.from({ length: count }, (_, slot) => aspectOf(items[cardAt(slot, offset, count)]?.image)),
+    Array.from({ length: count }, (_, slot) =>
+      aspectOf(items[cardAt(slot, offset, count)]?.image, shape),
+    ),
   )
 
   // Tall enough for the tallest picture to take the middle without the row
   // changing height underneath it. Worked out once, over every card, so the
   // page does not shift as they come round.
-  const deckHeight = Math.max(...items.map((card) => sizeOf(aspectOf(card.image)).h))
+  const deckHeight = Math.max(...items.map((card) => sizeOf(aspectOf(card.image, shape)).h))
+  const rowWidth = widestRow(items.map((card) => aspectOf(card.image, shape)))
 
   // The card that starts in the middle is the one worth fetching first.
   const firstMiddle = Math.floor((count - 1) / 2)
@@ -121,7 +152,13 @@ export const HeroCards = ({ cards }: Props) => {
   return (
     <div
       className={styles.stage}
-      style={{ '--deck-h': deckHeight } as CSSProperties}
+      style={
+        {
+          '--deck-h': deckHeight,
+          '--row-w': rowWidth,
+          '--hero-scale': (height ?? 100) / 100,
+        } as CSSProperties
+      }
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -146,8 +183,8 @@ export const HeroCards = ({ cards }: Props) => {
                   // The card's own resting size; only --x and --s change as
                   // the row moves, so every tick is a transform and nothing
                   // re-lays out.
-                  '--w': sizeOf(aspectOf(card.image)).w,
-                  '--h': sizeOf(aspectOf(card.image)).h,
+                  '--w': sizeOf(aspectOf(card.image, shape)).w,
+                  '--h': sizeOf(aspectOf(card.image, shape)).h,
                   zIndex: 20 - ring * 2,
                 } as CSSProperties
               }

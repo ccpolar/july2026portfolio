@@ -1181,6 +1181,14 @@ export interface Homepage {
       }[]
     | null;
   /**
+   * The shape every card is cut to. “As uploaded” leaves each picture at its own proportions. The taller shapes crop in from the sides — which is what gives the row real height when the photographs are widescreen, and what lets the setting below go further.
+   */
+  heroCardsShape?: ('natural' | 'square' | 'portrait' | 'tall') | null;
+  /**
+   * How tall the row stands, against its normal size. It will not grow past the width of the page — so if turning this up stops making a difference, the row has run out of room sideways, and a taller card shape above will buy more.
+   */
+  heroCardsHeight?: number | null;
+  /**
    * Optional. Sits centred below the buttons.
    */
   heroImage?: (number | null) | Media;
@@ -1426,6 +1434,8 @@ export interface HomepageSelect<T extends boolean = true> {
         image?: T;
         id?: T;
       };
+  heroCardsShape?: T;
+  heroCardsHeight?: T;
   heroImage?: T;
   heroImageSize?: T;
   trustedHeading?: T;
