@@ -1,0 +1,37 @@
+/* Generous separation between categories — on one long scroll the space is
+   most of what tells you a new category has started, before the rule does. */
+.section {
+  padding-top: clamp(var(--space-2xl), 7vw, 6rem);
+  /* Scrolling to a category shouldn't bury its name under the floating nav. */
+  scroll-margin-top: clamp(5rem, 11vh, 7.5rem);
+}
+
+/* The first category sits right under the page's own intro, which has already
+   paid for that space. */
+.section:first-of-type {
+  padding-top: clamp(var(--space-xl), 4vw, 3rem);
+}
+
+/* Name at the left, rule running out to the right margin from it. */
+.head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  margin-bottom: clamp(var(--space-lg), 4vw, var(--space-2xl));
+}
+
+.heading {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+  flex: none;
+}
+
+/* Sits on the heading's baseline rather than centred on it, so it reads as a
+   rule the name is written on top of, not a strike through the middle. */
+.rule {
+  flex: 1;
+  height: 1px;
+  background: var(--edge-strong);
+  transform: translateY(-0.35em);
+}

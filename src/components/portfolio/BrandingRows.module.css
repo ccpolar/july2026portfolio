@@ -1,7 +1,16 @@
+/* Two up from tablet, so the category stacks into a grid rather than running
+   one piece per screen down the whole page. The gap closes as it goes wide:
+   side by side, the space between two pieces does the separating that a full
+   screen of scroll used to do on its own. */
 .rows {
   display: grid;
-  /* Generous separation so each piece reads as its own work, not a list item. */
-  gap: clamp(var(--space-2xl), 8vw, 7rem);
+  gap: clamp(var(--space-xl), 5vw, var(--space-2xl));
+}
+
+@media (min-width: 48rem) {
+  .rows {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .row {

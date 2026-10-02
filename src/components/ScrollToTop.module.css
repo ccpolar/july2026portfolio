@@ -1,0 +1,56 @@
+/* Bottom right, clear of the footer's illustration and of a phone's own home
+   indicator. Matches the nav tiles — same size, same rounding, same raised
+   surface — so it reads as part of the site's chrome rather than a widget
+   dropped on top of it. */
+.button {
+  position: fixed;
+  right: clamp(var(--space-md), 3vw, var(--space-xl));
+  bottom: max(clamp(var(--space-md), 3vw, var(--space-xl)), env(safe-area-inset-bottom));
+  z-index: 40;
+
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+
+  color: var(--ink);
+  background: var(--raised);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  box-shadow: 0 10px 24px -16px color-mix(in oklch, var(--ink) 50%, transparent);
+
+  animation: arrive var(--dur) var(--ease-out-quart);
+  transition:
+    background-color var(--dur) var(--ease-out-quart),
+    border-color var(--dur) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.button:hover {
+  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
+  border-color: var(--edge-strong);
+}
+
+.button:active {
+  transform: scale(0.94);
+}
+
+@keyframes arrive {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    animation: none;
+    transition: none;
+  }
+
+  .button:active {
+    transform: none;
+  }
+}

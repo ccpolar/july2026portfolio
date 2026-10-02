@@ -1,12 +1,9 @@
+/* One per row, full width. A website shot is the one thing here that loses
+   something at half width — it's a page, and a page wants to be read at
+   something close to the shape it's actually seen in. */
 .grid {
   display: grid;
-  gap: clamp(var(--space-xl), 5vw, var(--space-2xl));
-}
-
-@media (min-width: 52rem) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  gap: clamp(var(--space-2xl), 7vw, 5rem);
 }
 
 .item {

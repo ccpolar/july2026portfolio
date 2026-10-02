@@ -23,9 +23,8 @@ const Arrow = () => (
 )
 
 /**
- * Branding work as wide, full-bleed thumbnails stacked one per row — the same
- * generous, editorial rhythm as the homepage's Recent Work. A piece with a case
- * study behind it becomes a link to it; one that's just an image stays an image.
+ * Branding work as a two-up grid of wide thumbnails. A piece with a case study
+ * behind it becomes a link to it; one that's just an image stays an image.
  */
 export const BrandingRows = ({ items }: { items: PortfolioItem[] }) => {
   if (!items.length) return null
@@ -42,7 +41,7 @@ export const BrandingRows = ({ items }: { items: PortfolioItem[] }) => {
                 className={styles.image}
                 media={item.image}
                 priority={i === 0}
-                sizes="(min-width: 88rem) 88rem, 100vw"
+                sizes="(min-width: 88rem) 44rem, (min-width: 48rem) 50vw, 100vw"
               />
             </div>
             <figcaption className={styles.caption}>

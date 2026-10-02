@@ -3,8 +3,9 @@ import type { Metadata } from 'next'
 import { AdvertisingGallery } from '@/components/portfolio/AdvertisingGallery'
 import { BrandingRows } from '@/components/portfolio/BrandingRows'
 import { MerchShowcase } from '@/components/portfolio/MerchShowcase'
-import { PortfolioTabs } from '@/components/portfolio/PortfolioTabs'
+import { PortfolioSection } from '@/components/portfolio/PortfolioSection'
 import { WebsiteShowcase } from '@/components/portfolio/WebsiteShowcase'
+import { ScrollToTop } from '@/components/ScrollToTop'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { getChrome } from '@/lib/chrome'
@@ -30,10 +31,10 @@ export default async function PortfolioPage() {
   const [chrome, portfolio, home] = await Promise.all([getChrome(), getPortfolio(), getHomepage()])
   const { branding, merchandise, advertising, websites } = portfolio
 
-  // All four categories are always tabs; Branding is the default view. An empty
-  // category shows a quiet placeholder rather than vanishing, so the nav stays
-  // consistent.
-  const panels = [
+  // One scroll, four categories in order, rather than four tab panels behind
+  // four clicks. Every category keeps its place even when empty, so the page
+  // reads the same way each visit and a link to one still lands somewhere.
+  const sections = [
     {
       id: 'branding',
       label: 'Branding',
@@ -59,7 +60,7 @@ export default async function PortfolioPage() {
     },
     {
       id: 'websites',
-      label: 'Website design',
+      label: 'Website Design',
       content: websites.length ? <WebsiteShowcase items={websites} /> : <Empty label="Websites" />,
     },
   ]
@@ -76,9 +77,14 @@ export default async function PortfolioPage() {
         </div>
 
         <div className={`shell ${styles.body}`}>
-          <PortfolioTabs panels={panels} defaultId="branding" />
+          {sections.map((section) => (
+            <PortfolioSection key={section.id} id={section.id} label={section.label}>
+              {section.content}
+            </PortfolioSection>
+          ))}
         </div>
       </main>
+      <ScrollToTop />
       <SiteFooter siteName={chrome.siteName} />
     </>
   )

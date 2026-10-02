@@ -26,7 +26,8 @@ const Arrow = () => (
 )
 
 /**
- * Advertising work as a grid of 4:5 thumbnails, each captioned with its title.
+ * Advertising work as a two-up grid of 16:9 thumbnails, each captioned with
+ * its title — the same arrangement the branding grid above it uses.
  *
  * A campaign with a case study written for it opens that, the way a branding
  * piece does. One that's a single image opens full screen in the shared
@@ -49,7 +50,7 @@ export const AdvertisingGallery = ({ items }: { items: PortfolioItem[] }) => {
             <MediaImage
               className={styles.image}
               media={item.image}
-              sizes="(min-width: 64rem) 26rem, (min-width: 40rem) 45vw, 100vw"
+              sizes="(min-width: 88rem) 44rem, (min-width: 48rem) 50vw, 100vw"
             />
           )
 

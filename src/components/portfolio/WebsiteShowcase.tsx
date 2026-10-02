@@ -20,7 +20,7 @@ const Frame = ({ site }: { site: PortfolioItem }) => (
       <MediaImage
         className={styles.shot}
         media={site.image}
-        sizes="(min-width: 64rem) 40rem, 100vw"
+        sizes="(min-width: 88rem) 88rem, 100vw"
       />
     </div>
   </>

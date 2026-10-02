@@ -1,132 +1,119 @@
 'use client'
 
-import { useState } from 'react'
+import { type CSSProperties, useEffect, useRef, useState } from 'react'
 
 import type { PortfolioItem } from '@/lib/portfolioItem'
 
 import { MediaImage } from '../MediaImage'
 import { useLightbox } from './Lightbox'
-import { useDraggableBelt } from './useDraggableBelt'
 import styles from './MerchShowcase.module.css'
 
-const CarouselIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <rect x="5" y="3.5" width="6" height="9" rx="1" stroke="currentColor" strokeWidth="1.3" />
-    <path d="M2.5 5.5v5M13.5 5.5v5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-  </svg>
-)
-
-const GridIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-    <rect x="2.5" y="2.5" width="4.5" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-    <rect x="9" y="2.5" width="4.5" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-    <rect x="2.5" y="9" width="4.5" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-    <rect x="9" y="9" width="4.5" height="4.5" rx="1" stroke="currentColor" strokeWidth="1.3" />
-  </svg>
-)
-
-type View = 'carousel' | 'grid'
+/** How far apart the stagger spreads the cards, and how many steps it runs for
+ *  before they all leave together — a long grid shouldn't take twice as long
+ *  to deal out as a short one. */
+const STEP_MS = 34
+const MAX_STEPS = 12
 
 /**
- * Merchandise in either of two views, switched by the visitor.
+ * Merchandise as a grid of square shots, dealt out of a pile as you reach it.
  *
- * Carousel: an endless belt that drifts on its own and can be grabbed and
- * thrown to get through it faster. The items are rendered twice so the loop
- * has no seam; see useDraggableBelt for how it moves.
+ * The grid itself is the resting state: it is laid out, visible and clickable
+ * with no JavaScript at all. The animation is added on top — each card is told
+ * how far it sits from the middle of the grid, and plays that journey in
+ * reverse the first time the grid comes up the screen, so a stack in the
+ * centre scatters out into the arrangement that was already there.
  *
- * Grid: every shot at once, nothing moving — the view for actually studying
- * the work rather than watching it go by.
- *
- * Both are square, and a shot in either opens full size in the shared lightbox.
+ * It's deliberately only ever played once, and only when the grid starts out
+ * below the fold: collapsing a grid someone is already looking at, to re-deal
+ * it, would read as a glitch rather than as an entrance.
  */
 export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
-  const [view, setView] = useState<View>('carousel')
-  const { open, element, isOpen } = useLightbox(items)
-  const { viewportRef, trackRef, dragging, beltProps } = useDraggableBelt({
-    itemCount: items.length,
-    frozen: isOpen || view !== 'carousel',
-  })
+  const { open, element } = useLightbox(items)
+  const gridRef = useRef<HTMLUListElement>(null)
+  const [dealt, setDealt] = useState(false)
+
+  useEffect(() => {
+    const grid = gridRef.current
+    if (!grid) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    // Already on screen when the page settled — this visitor has seen the grid
+    // in place, so there's nothing to deal out to them.
+    const box = grid.getBoundingClientRect()
+    if (box.top < window.innerHeight) return
+
+    const cards = [...grid.children] as HTMLElement[]
+
+    // Where the pile sits. Across the grid, its middle. Down it, the grid's
+    // middle only while that is somewhere the pile will actually be seen —
+    // one column on a phone makes this grid several screens tall, and the
+    // centre of it would put the pile a thousand pixels below the fold, so
+    // every card would make its journey off-screen and simply be in place by
+    // the time it was scrolled to. Past that, the pile moves up to sit just
+    // inside the top of the grid, which is the part being looked at when the
+    // deal starts.
+    const measure = () => {
+      const g = grid.getBoundingClientRect()
+      const originX = g.left + g.width / 2
+      const originY = g.top + Math.min(g.height / 2, window.innerHeight * 0.45)
+      cards.forEach((card, i) => {
+        const r = card.getBoundingClientRect()
+        card.style.setProperty('--dx', `${(originX - (r.left + r.width / 2)).toFixed(1)}px`)
+        card.style.setProperty('--dy', `${(originY - (r.top + r.height / 2)).toFixed(1)}px`)
+        // A pile is never perfectly square: a degree or two each way, fixed per
+        // position so it's the same every time rather than random.
+        card.style.setProperty('--rot', `${(((i % 5) - 2) * 1.6).toFixed(1)}deg`)
+        card.style.setProperty('--step', `${Math.min(i, MAX_STEPS)}`)
+      })
+    }
+
+    measure()
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        // Re-measure immediately before playing: the column count may have
+        // changed since mount if the window was resized on the way down.
+        measure()
+        setDealt(true)
+        observer.disconnect()
+      },
+      // Fires as the grid's top edge just clears the bottom of the screen, so
+      // the snap to the pile happens below the fold and only the scatter is
+      // actually watched.
+      { rootMargin: '0px 0px -72px 0px' },
+    )
+    observer.observe(grid)
+    return () => observer.disconnect()
+  }, [])
 
   if (!items.length) return null
 
-  // Two copies, so crossing into the second can be silently rewound to the
-  // identical spot in the first. aria-hidden on the clone so screen readers
-  // read each shot once.
-  const run = [
-    ...items.map((item, index) => ({ item, index, clone: false })),
-    ...items.map((item, index) => ({ item, index, clone: true })),
-  ]
-
-  const thumb = (item: PortfolioItem, index: number, clone = false) => (
-    <button
-      type="button"
-      className={styles.thumb}
-      onClick={() => open(index)}
-      aria-label={`View ${item.title} full size`}
-      // A clone is a visual duplicate; keeping it out of the tab order stops
-      // the belt being traversed twice, and keeps focusable content out of an
-      // aria-hidden subtree.
-      tabIndex={clone ? -1 : undefined}
-    >
-      <MediaImage
-        className={styles.image}
-        media={item.image}
-        sizes="(min-width: 64rem) 18rem, (min-width: 40rem) 30vw, 60vw"
-      />
-    </button>
-  )
-
   return (
     <>
-      <div className={styles.head}>
-        <div className={styles.switch} role="group" aria-label="Merchandise view">
-          <button
-            type="button"
-            className={`${styles.option} ${view === 'carousel' ? styles.optionActive : ''}`}
-            onClick={() => setView('carousel')}
-            aria-pressed={view === 'carousel'}
-          >
-            <CarouselIcon />
-            Carousel
-          </button>
-          <button
-            type="button"
-            className={`${styles.option} ${view === 'grid' ? styles.optionActive : ''}`}
-            onClick={() => setView('grid')}
-            aria-pressed={view === 'grid'}
-          >
-            <GridIcon />
-            Grid
-          </button>
-        </div>
-      </div>
-
-      {/* key on the view so switching remounts the container and the settle
-          animation replays, marking the change without a transition library. */}
-      {view === 'carousel' ? (
-        <div
-          className={`${styles.viewport} ${dragging ? styles.dragging : ''}`}
-          key="carousel"
-          ref={viewportRef}
-          {...beltProps}
-        >
-          <ul className={styles.track} ref={trackRef}>
-            {run.map(({ item, index, clone }, i) => (
-              <li className={styles.item} key={`${item.id}-${i}`} aria-hidden={clone || undefined}>
-                {thumb(item, index, clone)}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        <ul className={styles.grid} key="grid">
-          {items.map((item, index) => (
-            <li className={styles.gridItem} key={item.id}>
-              {thumb(item, index)}
-            </li>
-          ))}
-        </ul>
-      )}
+      <ul
+        className={styles.grid}
+        ref={gridRef}
+        data-dealt={dealt || undefined}
+        style={{ '--step-ms': `${STEP_MS}ms` } as CSSProperties}
+      >
+        {items.map((item, index) => (
+          <li className={styles.gridItem} key={item.id}>
+            <button
+              type="button"
+              className={styles.thumb}
+              onClick={() => open(index)}
+              aria-label={`View ${item.title} full size`}
+            >
+              <MediaImage
+                className={styles.image}
+                media={item.image}
+                sizes="(min-width: 64rem) 18rem, (min-width: 40rem) 30vw, 60vw"
+              />
+            </button>
+          </li>
+        ))}
+      </ul>
 
       {element}
     </>

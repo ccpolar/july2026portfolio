@@ -1,9 +1,15 @@
+/* Two up, matching the branding grid above it — a 16:9 campaign frame wants
+   the width, and the two categories reading the same way is most of what
+   makes the page scroll as one piece rather than four. */
 .grid {
   display: grid;
-  /* Wider columns than the portrait grid needed: a 16:9 frame at the old
-     width would have been a letterbox strip. Three across on a desktop. */
-  grid-template-columns: repeat(auto-fill, minmax(min(20rem, 100%), 1fr));
-  gap: clamp(var(--space-md), 3vw, var(--space-xl));
+  gap: clamp(var(--space-xl), 5vw, var(--space-2xl));
+}
+
+@media (min-width: 48rem) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .item {
