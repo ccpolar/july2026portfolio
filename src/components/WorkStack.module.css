@@ -1,5 +1,8 @@
+/* Bottom only: every section on the page pays for the space beneath it and
+   none for the space above, so a top padding here would have the gap under
+   the client logos charged twice. */
 .section {
-  padding-block: var(--section);
+  padding-bottom: var(--section);
 }
 
 .head {
