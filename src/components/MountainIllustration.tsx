@@ -8,6 +8,20 @@
 //   - the hiker layer is removed;
 //   - the grain is a filter clipped to the scene's shapes rather than a
 //     full-size overlay, so the footer can be transparent.
+//   - a mirrored cloud tile and a repeat make continuous leftward drift seamless.
+
+function CloudTile() {
+  return (
+        <g filter="url(#mf-clouds)">
+          <path d="M-20 846 L-20 445 C 10 440 30 425 50 415 C 90 395 150 392 210 395 C 270 398 300 420 305 445 C 330 470 400 478 432 500 L 432 522 C 600 540 700 548 760 546 C 800 540 860 545 900 540 C 905 505 930 490 960 486 C 972 462 1000 454 1035 456 C 1062 458 1072 472 1080 486 C 1120 474 1180 482 1232 506 C 1262 516 1290 546 1298 580 C 1340 582 1400 586 1460 590 L 1460 846 Z" className="mf-raised" />
+          <path d="M176 350 C 220 344 300 350 358 390 C 366 396 350 398 340 394 C 290 378 230 366 180 360 C 168 358 166 352 176 350 Z" className="mf-raised" />
+          <path d="M412 460 C 430 452 470 452 486 462 C 492 470 470 478 440 478 C 418 476 404 468 412 460 Z" className="mf-raised" />
+          <path d="M822 522 C 850 512 870 496 890 470 C 900 462 904 470 898 480 C 886 500 862 516 834 526 C 822 530 814 526 822 522 Z" className="mf-raised" />
+          <path d="M238 528 C 330 526 480 530 616 552 C 626 556 616 562 604 560 C 480 548 340 542 240 540 C 226 538 226 530 238 528 Z" className="mf-sky" />
+          <path d="M740 560 C 820 552 940 548 1036 552 C 1046 556 1040 566 1028 566 C 940 566 830 572 748 574 C 734 574 730 564 740 560 Z" className="mf-sky" />
+        </g>
+  )
+}
 
 export function MountainIllustration({ className }: { className?: string }) {
   return (
@@ -36,13 +50,11 @@ export function MountainIllustration({ className }: { className?: string }) {
       <g data-layer="scene" filter="url(#mf-grain)">
       <g data-layer="clouds">
       <filter id="mf-clouds" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.035" numOctaves="3" seed="4"/><feDisplacementMap in="SourceGraphic" scale="7"/></filter>
-        <g filter="url(#mf-clouds)">
-          <path d="M-20 846 L-20 445 C 10 440 30 425 50 415 C 90 395 150 392 210 395 C 270 398 300 420 305 445 C 330 470 400 478 432 500 L 432 522 C 600 540 700 548 760 546 C 800 540 860 545 900 540 C 905 505 930 490 960 486 C 972 462 1000 454 1035 456 C 1062 458 1072 472 1080 486 C 1120 474 1180 482 1232 506 C 1262 516 1290 546 1298 580 C 1340 582 1400 586 1460 590 L 1460 846 Z" className="mf-raised" />
-          <path d="M176 350 C 220 344 300 350 358 390 C 366 396 350 398 340 394 C 290 378 230 366 180 360 C 168 358 166 352 176 350 Z" className="mf-raised" />
-          <path d="M412 460 C 430 452 470 452 486 462 C 492 470 470 478 440 478 C 418 476 404 468 412 460 Z" className="mf-raised" />
-          <path d="M822 522 C 850 512 870 496 890 470 C 900 462 904 470 898 480 C 886 500 862 516 834 526 C 822 530 814 526 822 522 Z" className="mf-raised" />
-          <path d="M238 528 C 330 526 480 530 616 552 C 626 556 616 562 604 560 C 480 548 340 542 240 540 C 226 538 226 530 238 528 Z" className="mf-sky" />
-          <path d="M740 560 C 820 552 940 548 1036 552 C 1046 556 1040 566 1028 566 C 940 566 830 572 748 574 C 734 574 730 564 740 560 Z" className="mf-sky" />
+        <g data-cloud-track="">
+        <g transform="scale(-1 1)"><CloudTile /></g>
+        <CloudTile />
+        <g transform="translate(2880 0) scale(-1 1)"><CloudTile /></g>
+        <g transform="translate(2880 0)"><CloudTile /></g>
         </g>
       </g>
       <g data-layer="range">

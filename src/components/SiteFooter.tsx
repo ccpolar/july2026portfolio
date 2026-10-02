@@ -1,6 +1,7 @@
 import { countPublishedPosts, getContact, getLegal } from '@/lib/data'
 import { hasText } from '@/lib/richText'
 
+import { FooterArt } from './FooterArt'
 import { MountainIllustration } from './MountainIllustration'
 import { NewsletterForm } from './NewsletterForm'
 import styles from './SiteFooter.module.css'
@@ -65,9 +66,9 @@ export const SiteFooter = async ({ siteName }: { siteName: string }) => {
 
   return (
     <footer className={styles.footer} style={{ viewTransitionName: 'site-footer' }}>
-      <div className={styles.art}>
+      <FooterArt className={styles.art}>
         <MountainIllustration className={styles.illustration} />
-      </div>
+      </FooterArt>
 
       <div className={styles.inner}>
         <div className={styles.brand}>
