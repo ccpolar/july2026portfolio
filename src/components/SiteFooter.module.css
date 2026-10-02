@@ -100,7 +100,16 @@
 
 /* A visible breeze: keep roots planted and the mountains / ground still.
    Transform the painted shapes, never animate the expensive noise filters.
-   Negative delays and varied periods avoid a synchronized, mechanical sway. */
+   Negative delays and varied periods avoid a synchronized, mechanical sway.
+
+   Each swaying shape sits inside TWO groups: filter="url(#mf-X)" on the
+   inner one and nothing on the outer [data-sway] one. The animation targets
+   [data-sway], never the filtered element or the shape itself -- animate a
+   transform on something a filter is reading and the browser has to re-run
+   that filter's noise every single frame, on the whole canvas that filter
+   covers, because its input just changed. Keeping the filter's input fixed
+   and moving an unfiltered ancestor instead means the filter renders once
+   and the animation is then just moving a picture, independent of effort. */
 .art {
   --wind-state: paused;
 }
@@ -110,7 +119,7 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .illustration :global([data-layer='aspens'] circle) {
+  .illustration :global([data-layer='aspens'] [data-sway]) {
     transform-box: fill-box;
     transform-origin: 50% 100%;
     animation: foliage-breeze 3.6s ease-in-out infinite;
@@ -118,18 +127,18 @@
     animation-play-state: var(--wind-state);
   }
 
-  .illustration :global([data-layer='aspens'] circle:nth-of-type(3n)) {
+  .illustration :global([data-layer='aspens'] [data-sway]:nth-of-type(3n)) {
     animation-duration: 4.4s;
     animation-delay: -5.4s;
   }
 
-  .illustration :global([data-layer='aspens'] circle:nth-of-type(3n + 1)) {
+  .illustration :global([data-layer='aspens'] [data-sway]:nth-of-type(3n + 1)) {
     animation-duration: 4.1s;
     animation-delay: -3.8s;
   }
 
-  .illustration :global([data-layer='foothills'] .mf-pine),
-  .illustration :global([data-layer='spruce'] .mf-pine) {
+  .illustration :global([data-layer='foothills'] [data-sway]),
+  .illustration :global([data-layer='spruce'] [data-sway]) {
     transform-box: fill-box;
     transform-origin: 50% 100%;
     animation: pine-breeze 4.8s ease-in-out infinite;
@@ -137,18 +146,21 @@
     animation-play-state: var(--wind-state);
   }
 
-  .illustration :global([data-layer='foothills'] .mf-pine:nth-of-type(2n)) {
+  .illustration :global([data-layer='foothills'] [data-sway]:nth-of-type(2n)) {
     animation-duration: 6s;
     animation-delay: -7.6s;
   }
 
-  .illustration :global([data-layer='spruce'] .mf-pine) {
+  .illustration :global([data-layer='spruce'] [data-sway]) {
     animation-duration: 6.8s;
     animation-delay: -6.3s;
   }
 
   /* Original + mirrored cloud tiles repeat every 2880 design units.
-     A full-period translation loops seamlessly, always traveling left. */
+     A full-period translation loops seamlessly, always traveling left. This
+     one was already structured the right way around -- filter inside each
+     CloudTile, animation on the ancestor data-cloud-track -- which is why it
+     was never part of the slowdown the layers above had. */
   .illustration :global([data-cloud-track]) {
     transform-box: view-box;
     transform-origin: 50% 50%;
