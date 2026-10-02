@@ -14,9 +14,14 @@
 
 .frame {
   overflow: hidden;
-  border-radius: var(--radius-media);
+  /* Matches the recent-work card's rounding, for one language across every
+     project thumbnail on the site. */
+  border-radius: calc(var(--radius-media) * 2.5);
   background: var(--surface);
-  border: 1px solid var(--line);
+  /* A plain hairline, not the theme's editable border colour -- that field
+     is set to the brand red, which read as every thumbnail having a red
+     outline. */
+  border: 1px solid var(--edge);
   aspect-ratio: 16 / 9;
 }
 

@@ -56,7 +56,10 @@
 }
 
 .link:hover {
-  border-color: var(--line-strong);
+  /* --edge's own stronger step, not --line-strong -- that one is built on the
+     theme's editable border colour, which is set to the brand red, so the
+     hover state was turning every card's edge red. */
+  border-color: var(--edge-strong);
 }
 
 @media (min-width: 52rem) {

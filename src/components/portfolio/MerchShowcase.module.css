@@ -11,8 +11,12 @@
   display: inline-flex;
   gap: 2px;
   padding: 2px;
-  border: 1px solid var(--line);
-  border-radius: calc(var(--radius) + 2px);
+  /* A control, so it rounds like one (same pair the nav buttons use) rather
+     than following the theme's image-frame --radius. The border was the
+     theme's editable colour field, which is set to the brand red -- a plain
+     hairline instead. */
+  border: 1px solid var(--edge);
+  border-radius: calc(var(--radius-control) + 2px);
 }
 
 .option {
@@ -21,7 +25,7 @@
   gap: 0.4rem;
   padding: var(--space-2xs) var(--space-sm);
   border: none;
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius-control) - 0.25rem);
   background: none;
   color: var(--muted);
   font: inherit;
@@ -103,9 +107,12 @@
   aspect-ratio: 1 / 1;
   padding: 0;
   overflow: hidden;
-  border-radius: var(--radius-media);
+  /* Matches the recent-work card's rounding, for one language across every
+     project thumbnail on the site. The border was the theme's editable
+     colour field, which is set to the brand red -- a plain hairline instead. */
+  border-radius: calc(var(--radius-media) * 2.5);
   background: var(--surface);
-  border: 1px solid var(--line);
+  border: 1px solid var(--edge);
   cursor: pointer;
 }
 

@@ -45,6 +45,13 @@
      lightness (see theme.ts); this is the fallback for a light page. */
   --raised: color-mix(in oklch, var(--bg) 30%, white);
   --edge: color-mix(in oklch, var(--ink) 8%, transparent);
+  /* --edge's own stronger step, the same relationship --line-strong has to
+     --line -- for a hairline that needs to read as emphasised (a hover
+     border, a separator dot) without being able to pick up whatever colour
+     the theme's editable border field happens to be set to. --line comes
+     from that field directly, so anything built on it carries the theme's
+     choice of hue; --edge-strong stays a plain step of --ink instead. */
+  --edge-strong: color-mix(in oklch, var(--ink) 24%, transparent);
 
   /* Every photograph, thumbnail and upload on the site. It follows the
      theme's corner style but never goes fully square: a picture wants its

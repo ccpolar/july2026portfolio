@@ -20,9 +20,14 @@
   display: block;
   text-decoration: none;
   color: inherit;
-  border-radius: var(--radius-media);
+  /* Matches the recent-work card's rounding, for one language across every
+     project thumbnail on the site. */
+  border-radius: calc(var(--radius-media) * 2.5);
   overflow: hidden;
-  border: 1px solid var(--line-strong);
+  /* A plain hairline, not the theme's editable border colour -- that field
+     is set to the brand red, which read as every thumbnail having a red
+     outline. */
+  border: 1px solid var(--edge-strong);
   background: var(--surface);
 }
 
@@ -33,7 +38,7 @@
   gap: var(--space-sm);
   padding: 0.6rem var(--space-sm);
   background: color-mix(in oklch, var(--surface) 70%, var(--ink) 6%);
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--edge);
 }
 
 .dots {
@@ -42,11 +47,14 @@
   flex: none;
 }
 
+/* A plain neutral trio, not traffic-light colours -- this is a generic
+   "browser window" shape standing in for whichever site is actually shown,
+   so it stays quiet rather than mimicking a real OS chrome. */
 .dots span {
   width: 0.6rem;
   height: 0.6rem;
   border-radius: 50%;
-  background: var(--line-strong);
+  background: var(--edge-strong);
 }
 
 .address {

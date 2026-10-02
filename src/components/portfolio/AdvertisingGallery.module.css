@@ -17,8 +17,12 @@
   display: block;
   width: 100%;
   padding: 0;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-media);
+  /* A plain hairline, not the theme's editable border colour -- that field
+     is set to the brand red, which read as every thumbnail having a red
+     outline. Radius matches the recent-work card's own, for one rounding
+     language across every project thumbnail on the site. */
+  border: 1px solid var(--edge);
+  border-radius: calc(var(--radius-media) * 2.5);
   overflow: hidden;
   background: var(--surface);
   cursor: pointer;

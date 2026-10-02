@@ -60,7 +60,7 @@
 .rule {
   width: 1.5rem;
   height: 1px;
-  background: var(--line-strong);
+  background: var(--edge-strong);
   flex: none;
 }
 

@@ -102,10 +102,15 @@
   }
 }
 
-@media (max-width: 22rem) {
+/* — Phone: size over count. Five smaller cards read as cramped at this width
+     no matter how well the budget above is corrected, so a phone trades two
+     more of them away and spends the room on the three that are left instead
+     — closer to the desktop middle card's own size than a five-up row could
+     ever get on a screen this narrow. — */
+@media (max-width: 34rem) {
   .stage {
     --card-k: min(
-      calc(clamp(6.5rem, 30vw, 10rem) * var(--hero-scale, 1)),
+      calc(clamp(7.5rem, 34vw, 11.5rem) * var(--hero-scale, 1)),
       calc((100cqw - 1rem) / var(--row-w-mobile, 2.6))
     );
   }

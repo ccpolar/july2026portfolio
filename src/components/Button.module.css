@@ -5,7 +5,11 @@
   font-size: var(--text-sm);
   font-weight: 500;
   text-decoration: none;
-  border-radius: var(--radius);
+  /* Controls get their own rounding, independent of the theme's --radius —
+     same rule .solid/.soft already followed; this just brings primary and
+     secondary in line with it, so every button on the site rounds the same
+     way the nav buttons do. */
+  border-radius: var(--radius-control);
   padding: 0.875rem 1.5rem;
   min-height: 2.75rem;
   border: 1px solid transparent;
@@ -27,9 +31,11 @@
 .primary {
   background: var(--brand);
   color: var(--on-brand);
-  /* --signal is the one token the theme reserves for vivid emphasis — right
-     for the site's single most important button. */
-  border-color: var(--signal);
+  /* A plain hairline, same as .soft below — the fill is what carries the
+     brand, not the border. This used to be --signal, the theme's vivid
+     accent, which read as an unwanted coloured outline on every primary
+     button on the site. */
+  border-color: var(--edge);
 }
 
 .primary:hover {
@@ -39,9 +45,8 @@
 .secondary {
   background: transparent;
   color: var(--ink);
-  /* Same --signal border as .primary — the two sit side by side in the hero
-     and should read as one red, not two slightly different ones. */
-  border-color: var(--signal);
+  /* Same hairline as .primary, for the same reason. */
+  border-color: var(--edge);
 }
 
 .secondary:hover {

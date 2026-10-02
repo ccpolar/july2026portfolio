@@ -96,7 +96,9 @@
 }
 
 .card:hover {
-  border-color: var(--line-strong);
+  /* --edge's own stronger step, not --line-strong -- that one is built on the
+     theme's editable border colour, which is set to the brand red. */
+  border-color: var(--edge-strong);
 }
 
 /* — Phones: a swipeable row instead of a tall stack — */
