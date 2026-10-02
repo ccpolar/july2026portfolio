@@ -11,9 +11,9 @@ type PanelProps = {
 }
 
 /**
- * The black panel shared by the homepage's card sections (Services,
- * Testimonials). One component, so every panel is the same width, colour and
- * heading treatment by construction rather than by keeping copies in sync.
+ * The homepage's panel of cards — only the testimonials now that Services has
+ * gone, and no longer black: it carries the same palette as the recent work
+ * cards above it. The name is left alone until the look has been signed off.
  *
  * On a phone the cards run in a swipeable row rather than a tall stack, with
  * dots underneath; from tablet up they're the grid.

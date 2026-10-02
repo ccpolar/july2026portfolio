@@ -1,5 +1,5 @@
 /* Card contents only. The panel, heading, grid and card surface come from
-   DarkPanel, shared with Services. */
+   DarkPanel. */
 .item {
   margin: 0;
 }
@@ -16,8 +16,7 @@
   text-wrap: pretty;
 }
 
-/* Who said it closes the card on a hairline — the same position the price
-   takes on a service card, so the two panels share one card anatomy. */
+/* Who said it closes the card on a hairline, below the quote it belongs to. */
 .attrib {
   display: flex;
   flex-direction: column;

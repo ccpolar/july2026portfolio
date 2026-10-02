@@ -3,8 +3,8 @@ import type { Testimonial } from '@/payload-types'
 import { DarkPanel, panelCard } from './DarkPanel'
 import styles from './Testimonials.module.css'
 
-/** Clients in their own words, one card each, on the same black panel as
- * Services so the two read as a matched pair. */
+/** Clients in their own words, one card each, in the same palette as the
+ * recent work cards above so the page reads as one material. */
 export const Testimonials = ({ testimonials }: { testimonials: Testimonial[] }) => {
   // No published quotes means no section. An empty proof shell is worse than
   // no proof at all — it advertises the absence.

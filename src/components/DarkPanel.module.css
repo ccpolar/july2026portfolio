@@ -8,32 +8,23 @@
   padding-bottom: clamp(var(--space-lg), 4vw, var(--space-xl));
 }
 
-/* — The panel — a near-black ground with its cards a clear step above it.
-   Both greys are neutral and fixed, from the reference Cam chose: mixing the
-   page's own colours produced a warm tint and a step too slight to read as
-   separate cards. Text still comes from the theme, so it follows whatever is
-   set in /admin. — */
+/* — The panel — it has no ground of its own any more. The cards sit straight
+   on the page and carry the recent work palette, so the two sections read as
+   one material instead of the page and a black island cut into it. These four
+   names are kept because the rules below and Testimonials.module.css are
+   written against them; now they simply point at the theme, which means the
+   section follows whatever colours are set in /admin, in both modes, with no
+   inversion to keep in step. --panel-pad is zero because the phone swipe row
+   below cancels it to run the cards out to the panel's edges — which are now
+   the page's own. — */
 .panel {
-  --panel-pad: clamp(0.75rem, 3vw, 2.5rem);
-  --on: var(--bg);
-  --on-muted: color-mix(in oklch, var(--bg) 68%, var(--ink));
-  --panel-ground: #131313;
-  --card: #171717;
-  --card-edge: rgb(255 255 255 / 0.09);
-
-  background: var(--panel-ground);
-  color: var(--on);
-  border-radius: clamp(1.25rem, 2.5vw, 1.75rem);
-  padding: clamp(3rem, 7vw, 5.5rem) var(--panel-pad);
-}
-
-/* In light mode the panel inverts the page, so its text is the page's own
-   background colour. In dark mode the page is already dark: the text is then
-   simply the page's text, and the panel is a step above the page rather than
-   an inversion of it. */
-:global(html[data-theme='dark']) .panel {
+  --panel-pad: 0rem;
   --on: var(--ink);
   --on-muted: var(--muted);
+  --card: var(--bg);
+  --card-edge: var(--edge);
+
+  color: var(--on);
 }
 
 .head {
@@ -87,6 +78,9 @@
   }
 }
 
+/* Radius, hairline and lift all taken from the recent work card. The card is
+   the same colour as the page it sits on, so the shadow is doing most of the
+   work of separating the two — without it these would read as flat panels. */
 .card {
   display: flex;
   flex-direction: column;
@@ -94,12 +88,15 @@
   padding: var(--space-md);
   background: var(--card);
   border: 1px solid var(--card-edge);
-  border-radius: var(--radius-control);
+  border-radius: calc(var(--radius-media) * 2.5);
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--ink) 6%, transparent),
+    0 24px 48px -32px color-mix(in oklch, var(--ink) 40%, transparent);
   transition: border-color var(--dur) var(--ease-out-quart);
 }
 
 .card:hover {
-  border-color: rgb(255 255 255 / 0.2);
+  border-color: var(--line-strong);
 }
 
 /* — Phones: a swipeable row instead of a tall stack — */
