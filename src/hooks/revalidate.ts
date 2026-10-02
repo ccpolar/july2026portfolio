@@ -25,9 +25,12 @@ const flush = (req: PayloadRequest, paths: string[]) => {
   }
 }
 
-// '/portfolio' because a piece of work shows there as well now, in whichever
-// sections it's been given.
+// '/' because the homepage's stack of recent work is built from the featured
+// projects, so ticking Featured has to show up there too. '/portfolio'
+// because a piece of work shows there as well now, in whichever sections it's
+// been given.
 const projectPaths = (doc: { slug?: string | null }) => [
+  '/',
   '/work',
   '/portfolio',
   ...(doc?.slug ? [`/work/${doc.slug}`] : []),
