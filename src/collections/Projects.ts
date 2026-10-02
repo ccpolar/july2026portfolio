@@ -22,7 +22,7 @@ export const Projects: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'title',
-    defaultColumns: ['title', 'category', 'client', 'year', 'featured'],
+    defaultColumns: ['title', 'status', 'category', 'client', 'year', 'featured'],
     group: 'Work',
     description:
       'Every piece of work lives here, whatever it is, with the same tools on all of it. “Featured” puts a piece on the Recent Work page; the Portfolio sections put it on the Portfolio page. A piece can be in both, in several sections at once, or in none while it’s being written.',
@@ -83,6 +83,19 @@ export const Projects: CollectionConfig = {
                   },
                 },
               ],
+            },
+            {
+              name: 'status',
+              type: 'select',
+              defaultValue: 'live',
+              options: [
+                { label: 'Live', value: 'live' },
+                { label: 'Draft', value: 'draft' },
+              ],
+              admin: {
+                description:
+                  'Draft takes this off Recent Work and the Portfolio, and its own page stops opening for visitors. You can still open it here and in Live Preview while signed in — it only hides from everyone else.',
+              },
             },
             {
               type: 'row',

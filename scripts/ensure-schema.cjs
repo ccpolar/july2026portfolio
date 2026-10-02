@@ -543,6 +543,14 @@ const STATEMENTS = [
    EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
   `ALTER TABLE "theme" ADD COLUMN IF NOT EXISTS "background_grid" "enum_theme_background_grid" DEFAULT 'moving'`,
 
+  // Whether a piece of work is live or a draft. Defaulted to 'live' so every
+  // existing row keeps exactly the visibility it already has the moment this
+  // runs — nothing should go dark just because the migration applied.
+  `DO $$ BEGIN
+     CREATE TYPE "public"."enum_projects_status" AS ENUM('live', 'draft');
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "status" "enum_projects_status" DEFAULT 'live'`,
+
 ]
 
 /**

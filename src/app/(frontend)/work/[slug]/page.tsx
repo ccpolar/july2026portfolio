@@ -1,5 +1,6 @@
 import config from '@payload-config'
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { getPayload } from 'payload'
 import { cache } from 'react'
@@ -23,14 +24,28 @@ const getProject = cache(async (slug: string) => {
     depth: 1,
     limit: 1,
   })
-  return docs[0] ?? null
+  const project = docs[0] ?? null
+
+  // A draft's own page is the one place this can't just be a query filter: the
+  // admin's Live Preview opens this exact URL to show unsaved changes, so a
+  // draft has to still load for whoever is signed in, while staying a 404 for
+  // everyone else. payload.auth reads the request's own cookies — same-origin,
+  // so the preview pane already carries them — and builds the request object
+  // itself, no manual plumbing needed. Skipped entirely for a live project, so
+  // this adds no cost to the normal case.
+  if (!project || project.status !== 'draft') return project
+  const { user } = await payload.auth({ headers: await headers() })
+  return user ? project : null
 })
 
 const getSiblings = cache(async () => {
   const payload = await getPayload({ config })
   const { docs } = await payload.find({
     collection: 'projects',
-    where: { featured: { equals: true } },
+    where: {
+      featured: { equals: true },
+      status: { equals: 'live' },
+    },
     sort: 'order',
     // depth 1 so the next project arrives with its cover — the end of a case
     // study is the last place to be showing a text link instead of the work.
@@ -40,11 +55,12 @@ const getSiblings = cache(async () => {
   return docs
 })
 
-export async function generateStaticParams() {
-  const payload = await getPayload({ config })
-  const { docs } = await payload.find({ collection: 'projects', depth: 0, limit: 100 })
-  return docs.filter((d) => d.slug).map((d) => ({ slug: d.slug as string }))
-}
+// No generateStaticParams: whether a draft opens depends on who's asking,
+// which a prerendered page can't express — one cached HTML output can't be
+// different for a visitor and a signed-in session. getProject's use of
+// headers() makes Next render every case study on demand regardless, so a
+// static param list would be contradictory as well as pointless here. See
+// the comment on getProject above for the per-request check itself.
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params

@@ -166,6 +166,10 @@ export interface Project {
    */
   slug?: string | null;
   /**
+   * Draft takes this off Recent Work and the Portfolio, and its own page stops opening for visitors. You can still open it here and in Live Preview while signed in — it only hides from everyone else.
+   */
+  status?: ('live' | 'draft') | null;
+  /**
    * Who it was for.
    */
   client?: string | null;
@@ -816,6 +820,7 @@ export interface PayloadMigration {
 export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   slug?: T;
+  status?: T;
   client?: T;
   year?: T;
   category?: T;

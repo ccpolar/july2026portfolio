@@ -25,7 +25,12 @@ export const getFeaturedProjects = cache(async () => {
   const payload = await client()
   const { docs } = await payload.find({
     collection: 'projects',
-    where: { featured: { equals: true } },
+    where: {
+      featured: { equals: true },
+      // Named rather than 'not draft', for the same reason the portfolio
+      // query below is: a row with no status set can't slip through on a null.
+      status: { equals: 'live' },
+    },
     sort: 'order',
     depth: 1,
     limit: 12,
@@ -115,9 +120,12 @@ export const getPortfolio = cache(async () => {
   const payload = await client()
   const { docs } = await payload.find({
     collection: 'projects',
-    // Named rather than "not none", so a row whose category was never set
-    // can't slip in on a NULL.
-    where: { category: { in: ['branding', 'merchandise', 'advertising', 'website'] } },
+    where: {
+      // Named rather than "not none", so a row whose category was never set
+      // can't slip in on a NULL.
+      category: { in: ['branding', 'merchandise', 'advertising', 'website'] },
+      status: { equals: 'live' },
+    },
     sort: 'order',
     depth: 1,
     limit: 200,
