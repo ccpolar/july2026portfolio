@@ -1,4 +1,4 @@
-import { countPublishedPosts, getContact, getLegal, getServices } from '@/lib/data'
+import { countPublishedPosts, getContact, getLegal } from '@/lib/data'
 import { hasText } from '@/lib/richText'
 
 import { MountainIllustration } from './MountainIllustration'
@@ -27,14 +27,13 @@ const Link = ({ label, href }: FooterLink) =>
  * reach out, and three columns of ways onward. Reads its own content, so each
  * page only passes the site name.
  *
- * Every column is driven from /admin: services are the live homepage cards,
- * socials come from Contact, Blog appears once a post is published (as in the
- * header), and each legal link appears once its page has text.
+ * Every column is driven from /admin: socials come from Contact, Blog appears
+ * once a post is published (as in the header), and each legal link appears
+ * once its page has text.
  */
 export const SiteFooter = async ({ siteName }: { siteName: string }) => {
-  const [contact, services, legal, postCount] = await Promise.all([
+  const [contact, legal, postCount] = await Promise.all([
     getContact(),
-    getServices(),
     getLegal(),
     countPublishedPosts(),
   ])
@@ -43,13 +42,6 @@ export const SiteFooter = async ({ siteName }: { siteName: string }) => {
   const tagline = contact.footerTagline?.trim() || DEFAULT_TAGLINE
 
   const columns: { heading: string; links: FooterLink[] }[] = [
-    {
-      heading: 'Services',
-      // The same switch as the homepage, so the two lists never disagree.
-      links: services
-        .filter((service) => service.published !== false)
-        .map((service) => ({ label: service.title, href: '/#services' })),
-    },
     {
       heading: 'Pages',
       links: [
