@@ -68,20 +68,28 @@
 }
 
 /* — The written half — */
-/* Title at the top, everything else gathered at the foot of the column — the
-   arrangement in the reference, and the reason the pinned card still reads
-   once the next one has covered its body. */
+/* The title sits at the top on its own: that strip is what stays showing in
+   the band once the next card has covered the rest, so it can't move. */
 .text {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: var(--space-lg);
+  /* No row gap on purpose: a gap would sit only above the block below and
+     push it that far past centre. The spacing is the auto margins' job here,
+     and the phone rule at the foot of this file puts the gap back for the one
+     case where there is no free space for them to share. */
+  gap: 0;
   padding: clamp(0.5rem, 1.5vw, 1.25rem);
 }
 
+/* Everything else centres in whatever height the photograph gives the card.
+   The auto margins split the leftover space evenly above and below, which is
+   what keeps the gap under the title from opening up on a tall card. They
+   also collapse to nothing on a phone, where the card is only as tall as its
+   own contents and there is no space to share out. */
 .lower {
   display: grid;
   gap: var(--space-sm);
+  margin-block: auto;
 }
 
 .title {
@@ -167,6 +175,13 @@
 
   .stack {
     gap: var(--space-xl);
+  }
+
+  /* Stacked, the card is only as tall as its own contents, so there is no
+     spare height for the auto margins to centre anything in — they collapse
+     to nothing and the gap has to do the spacing again. */
+  .text {
+    gap: var(--space-lg);
   }
 }
 
