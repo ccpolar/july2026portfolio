@@ -85,11 +85,19 @@ const aspectOf = (image: Card['image'], shape?: string | null): number => {
  * broadest pictures in the biggest places — gives one number that holds for
  * every arrangement, so the row never rescales as it shuffles, and never
  * outgrows the page.
+ *
+ * `maxRing` caps which places count towards that worst case: the CSS below
+ * hides the outer rings on a narrow screen, and a hidden card needs no room.
+ * Without this, a phone was budgeting space for the same seven-card row as
+ * desktop while only ever showing three of them — the uncounted four were
+ * still shrinking everyone else to make room they'd never use.
  */
-const widestRow = (aspects: number[]) => {
+const widestRow = (aspects: number[], maxRing = Infinity) => {
   const n = aspects.length
   const scales = Array.from({ length: n }, (_, i) =>
-    scaleFor(Math.round(Math.abs(i - (n - 1) / 2))),
+    Math.round(Math.abs(i - (n - 1) / 2)) <= maxRing
+      ? scaleFor(Math.round(Math.abs(i - (n - 1) / 2)))
+      : 0,
   ).sort((a, b) => b - a)
   const widths = aspects.map((a) => Math.sqrt(a)).sort((a, b) => b - a)
   const total = widths.reduce((sum, w, i) => sum + w * scales[i], 0)
@@ -144,7 +152,15 @@ export const HeroCards = ({ cards, shape, height }: Props) => {
   // changing height underneath it. Worked out once, over every card, so the
   // page does not shift as they come round.
   const deckHeight = Math.max(...items.map((card) => sizeOf(aspectOf(card.image, shape)).h))
-  const rowWidth = widestRow(items.map((card) => aspectOf(card.image, shape)))
+  const aspects = items.map((card) => aspectOf(card.image, shape))
+  // Three budgets, one per ring cutoff the CSS below switches between. A
+  // narrow screen hides the outer rings, and a hidden card needs no room --
+  // without this, the row always sized itself for the full seven-card
+  // spread even while only showing three of them, which is what made the
+  // ones left on screen so much smaller than they needed to be.
+  const rowWidth = widestRow(aspects)
+  const rowWidthTablet = widestRow(aspects, 2)
+  const rowWidthMobile = widestRow(aspects, 1)
 
   // The card that starts in the middle is the one worth fetching first.
   const firstMiddle = Math.floor((count - 1) / 2)
@@ -156,6 +172,8 @@ export const HeroCards = ({ cards, shape, height }: Props) => {
         {
           '--deck-h': deckHeight,
           '--row-w': rowWidth,
+          '--row-w-tablet': rowWidthTablet,
+          '--row-w-mobile': rowWidthMobile,
           '--hero-scale': (height ?? 100) / 100,
         } as CSSProperties
       }

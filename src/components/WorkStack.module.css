@@ -165,10 +165,17 @@
   margin-top: clamp(var(--space-2xl), 6vw, var(--space-3xl));
 }
 
-/* — On a phone the stack would pin cards taller than the screen, so they
-     simply run one after another, which is what a small screen wants
-     anyway. — */
-@media (max-width: 51.99rem) {
+/* — Between a phone and the two-column layout, the single-column card can
+     run past 800px tall (measured: ~650px at 540px wide, climbing to ~840px
+     by 800px wide) — taller than plenty of viewports in that range, tablets
+     held in portrait especially. The stack falls back to a plain list here,
+     same as it always has.
+
+     A real phone never reaches that: its narrower image stays well under
+     650px even at the top of this range, against phone viewport heights of
+     650–926px, so it keeps the sticky stack below instead of losing the
+     effect altogether. — */
+@media (min-width: 34rem) and (max-width: 51.99rem) {
   .card {
     position: static;
   }
@@ -182,6 +189,16 @@
      to nothing and the gap has to do the spacing again. */
   .text {
     gap: var(--space-lg);
+  }
+}
+
+/* — Phone: the sticky stack stays. Both numbers come down to match —
+     there's no header padding to spare at this width, and the title never
+     needs the wider band a 2-up tablet card would. — */
+@media (max-width: 33.99rem) {
+  .stack {
+    --stack-top: clamp(3.5rem, 7vh, 4.5rem);
+    --peek: clamp(4.5rem, 20vw, 5.75rem);
   }
 }
 

@@ -80,19 +80,33 @@
 
 /* — Narrower screens: the row keeps its shape and sheds its outermost cards
      rather than shrinking everything into illegibility. They stay in the
-     rotation, so every picture still comes round to the middle. — */
+     rotation, so every picture still comes round to the middle.
+
+     Each step also switches which --row-w the size cap divides by, to match.
+     A hidden card needs no room, so once it's gone the ones still on screen
+     are free to grow into the space it would have taken -- without this, the
+     row kept budgeting for all seven cards even while showing three of them,
+     which is what made a phone's three cards so much smaller than they
+     needed to be: they were sized to share a row that was never on screen. — */
 @media (max-width: 60rem) {
+  .stage {
+    --card-k: min(
+      calc(clamp(5.5rem, 12vw, 11rem) * var(--hero-scale, 1)),
+      calc((100cqw - 1.5rem) / var(--row-w-tablet, 4))
+    );
+  }
+
   .slot[data-ring='3'] {
     opacity: 0;
     pointer-events: none;
   }
 }
 
-@media (max-width: 38rem) {
+@media (max-width: 22rem) {
   .stage {
     --card-k: min(
-      calc(clamp(6rem, 26vw, 9rem) * var(--hero-scale, 1)),
-      calc((100cqw - 1rem) / var(--row-w, 5.6))
+      calc(clamp(6.5rem, 30vw, 10rem) * var(--hero-scale, 1)),
+      calc((100cqw - 1rem) / var(--row-w-mobile, 2.6))
     );
   }
 
