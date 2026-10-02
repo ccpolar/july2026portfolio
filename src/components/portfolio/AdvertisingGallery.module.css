@@ -1,15 +1,11 @@
-/* Two up, matching the branding grid above it — a 16:9 campaign frame wants
-   the width, and the two categories reading the same way is most of what
-   makes the page scroll as one piece rather than four. */
+/* Two up at every width, matching the branding grid exactly — same columns,
+   same gap, same caption treatment on a phone. The two categories reading the
+   same way is most of what makes the page scroll as one piece rather than
+   four, and that holds on a phone as much as on a desktop. */
 .grid {
   display: grid;
-  gap: clamp(var(--space-xl), 5vw, var(--space-2xl));
-}
-
-@media (min-width: 48rem) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--space-md), 5vw, var(--space-2xl));
 }
 
 .item {
@@ -78,6 +74,16 @@
   font-weight: 500;
   color: var(--brand);
   text-decoration: none;
+}
+
+/* Same tightening as the branding captions get at this width, so the two
+   grids still match once they're side by side on a phone. */
+@media (max-width: 40rem) {
+  .caption {
+    display: grid;
+    justify-items: start;
+    gap: 0.2rem;
+  }
 }
 
 .arrow {

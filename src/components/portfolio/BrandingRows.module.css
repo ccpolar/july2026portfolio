@@ -1,16 +1,11 @@
-/* Two up from tablet, so the category stacks into a grid rather than running
-   one piece per screen down the whole page. The gap closes as it goes wide:
-   side by side, the space between two pieces does the separating that a full
-   screen of scroll used to do on its own. */
+/* Two up at every width, phone included, so the category stacks into a grid
+   rather than running one piece per screen down the whole page. Side by side,
+   the space between two pieces does the separating that a full screen of
+   scroll used to do on its own. */
 .rows {
   display: grid;
-  gap: clamp(var(--space-xl), 5vw, var(--space-2xl));
-}
-
-@media (min-width: 48rem) {
-  .rows {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--space-md), 5vw, var(--space-2xl));
 }
 
 .row {
@@ -59,6 +54,27 @@
   font-size: var(--text-h3);
   font-weight: 500;
   letter-spacing: var(--tracking-heading);
+}
+
+/* Two up on a phone leaves each piece about a third of the width it had to
+   itself before, and a heading sized for the full width swamps it. The
+   caption stacks here too: at this width the cue was wrapping under the title
+   anyway, so it may as well be put there deliberately and tightly. */
+@media (max-width: 40rem) {
+  .row {
+    gap: var(--space-sm);
+  }
+
+  .caption {
+    display: grid;
+    justify-items: start;
+    gap: 0.2rem;
+  }
+
+  .title {
+    font-size: var(--text-body);
+    letter-spacing: var(--tracking-title);
+  }
 }
 
 /* Only linked rows carry the cue — the affordance appears exactly where a

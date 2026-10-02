@@ -1,13 +1,22 @@
 /* — The grid — every shot at once, square, nothing moving once it has
      arrived. Square shots: merchandise photographed the same way in every
      frame reads as a set rather than a pile. */
+/* Three across on a phone, four once there's room for them. Fixed counts
+   rather than auto-fill: the shots are square and small, so what matters is
+   how many sit in a row, not holding any one of them to a minimum width. */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(14rem, 100%), 1fr));
-  gap: clamp(var(--space-md), 3vw, var(--space-xl));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(var(--space-2xs), 3vw, var(--space-xl));
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (min-width: 64rem) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 .gridItem {

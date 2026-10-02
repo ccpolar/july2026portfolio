@@ -41,7 +41,7 @@ export const BrandingRows = ({ items }: { items: PortfolioItem[] }) => {
                 className={styles.image}
                 media={item.image}
                 priority={i === 0}
-                sizes="(min-width: 88rem) 44rem, (min-width: 48rem) 50vw, 100vw"
+                sizes="(min-width: 88rem) 44rem, 50vw"
               />
             </div>
             <figcaption className={styles.caption}>

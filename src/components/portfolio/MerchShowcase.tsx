@@ -108,7 +108,7 @@ export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
               <MediaImage
                 className={styles.image}
                 media={item.image}
-                sizes="(min-width: 64rem) 18rem, (min-width: 40rem) 30vw, 60vw"
+                sizes="(min-width: 64rem) 18rem, 33vw"
               />
             </button>
           </li>
