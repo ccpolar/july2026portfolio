@@ -1,6 +1,5 @@
-/* No bar: the header is a transparent strip that only positions the three
-   floating pieces. Each piece carries its own lifted surface, so content
-   scrolling underneath stays visible around them. */
+/* A transparent strip that only positions the bar; the bar itself carries the
+   surface, so content scrolling underneath stays visible around it. */
 .header {
   position: sticky;
   top: 0;
@@ -10,50 +9,69 @@
      `SiteHeader-module__hash__site-header` and the rules in globals.css that
      target it would silently never match. */
   padding: var(--space-sm) var(--space-sm) 0;
-}
-
-.bar {
   display: flex;
-  align-items: center;
   justify-content: center;
-  gap: var(--space-2xs);
 }
 
-/* — Shared lifted surface — */
-.tile,
-.links {
+/* One rectangle holding every control. The surface, the border and the
+   rounding are all on the bar now rather than on each piece — the pieces
+   inside are segments of it, divided by a hairline each. overflow keeps the
+   first and last segments' own corners inside the bar's. */
+.bar {
+  display: inline-flex;
+  align-items: stretch;
   height: 2.75rem;
   background: var(--raised);
   border: 1px solid var(--edge);
   border-radius: var(--radius-control);
+  overflow: hidden;
 }
 
-/* — The two square tiles: mark on the left, mail on the right — */
-.tile {
+.segment {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 2.75rem;
   padding: 0;
+  border: 0;
+  background: none;
   color: var(--ink);
   cursor: pointer;
   text-decoration: none;
-  transition:
-    background-color var(--dur-fast) var(--ease-out-quart),
-    transform var(--dur-fast) var(--ease-out-quart);
+  transition: background-color var(--dur-fast) var(--ease-out-quart);
 }
 
-.tile:hover {
+/* The divider between options: a hairline on the leading edge of every child
+   but the first, so there is a line *between* the options and none at either
+   end of the bar.
+
+   Matched on the bar's children rather than on .segment because the theme
+   switch is its own component with its own class — it is a segment of this
+   bar like any other, and the divider and the hover should find it without
+   SiteHeader having to reach into it.
+
+   :not(:first-child) rather than the simpler `* + *`: the theme switch zeroes
+   its own border, and at equal specificity that would win on file order and
+   leave the last divider missing. :not() carries its argument's specificity,
+   which settles it whichever stylesheet lands first. */
+.bar > *:not(:first-child) {
+  border-left: 1px solid var(--edge);
+}
+
+.bar > *:hover {
   background: color-mix(in oklch, var(--raised), var(--ink) 6%);
 }
 
-.tile:active {
-  transform: scale(0.96);
-  transition-duration: 60ms;
+.bar > *:active {
+  background: color-mix(in oklch, var(--raised), var(--ink) 10%);
 }
 
-/* The logo sits small and centred, fitted inside the tile whatever its
+/* The square segments: the mark, the mail button and the theme switch. */
+.segment:not(.link) {
+  width: 2.75rem;
+}
+
+/* The logo sits small and centred, fitted inside its segment whatever its
    proportions. Width is the binding edge for a wide mark, so the side padding
    is kept tight to give it every pixel the square allows; a square mark still
    gets breathing room from the taller top and bottom inset. */
@@ -72,66 +90,42 @@
   line-height: 1;
 }
 
-/* — The wide piece: the ways into the work — */
-.links {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  padding: 0.25rem;
-}
-
+/* — The worded segments — */
 .link {
-  display: inline-flex;
-  align-items: center;
-  height: 100%;
-  /* Sets the space between the two links: this padding on each, either side
-     of the 2px gap. */
-  padding-inline: 0.625rem;
-  border-radius: calc(var(--radius-control) - 0.25rem);
+  padding-inline: 0.875rem;
   font-size: var(--text-sm);
   font-weight: 500;
-  color: var(--ink);
-  text-decoration: none;
   white-space: nowrap;
-  transition:
-    background-color var(--dur-fast) var(--ease-out-quart),
-    color var(--dur-fast) var(--ease-out-quart);
 }
 
-.link:hover {
-  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
-}
-
-/* The page you're on is a pressed-in segment of the same piece, not an
-   underline — it reads as a position within the control. */
+/* The page you're on is a filled segment of the bar, not an underline — it
+   reads as a position within the control. */
 .link[aria-current='page'] {
   background: var(--ink);
   color: var(--bg);
 }
 
-.tile:focus-visible,
-.link:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
+.link[aria-current='page']:hover {
+  background: color-mix(in oklch, var(--ink), var(--bg) 12%);
 }
 
-/* A narrow phone still fits all three pieces on one line; the links just
-   tighten their padding rather than wrap or hide. */
-@media (max-width: 24rem) {
+/* Inset, so the ring stays inside the bar's own rounded edge rather than
+   being clipped by the overflow that keeps the segments in. */
+.bar > *:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -3px;
+  border-radius: calc(var(--radius-control) - 2px);
+}
+
+/* The smallest phones (~320px) need the whole bar inside the gutter: a step
+   down in padding and link size rather than wrapping or hiding anything. */
+@media (max-width: 22rem) {
   .link {
     padding-inline: 0.625rem;
-  }
-}
-
-/* The smallest phones (~320px) need the whole cluster inside the gutter, not
-   just on one line: closer pieces and a step down in link size. */
-@media (max-width: 22rem) {
-  .bar {
-    gap: 0.25rem;
-  }
-
-  .link {
-    padding-inline: 0.5rem;
     font-size: var(--text-label);
+  }
+
+  .segment:not(.link) {
+    width: 2.5rem;
   }
 }

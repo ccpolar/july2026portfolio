@@ -10,9 +10,10 @@ import styles from './MerchShowcase.module.css'
 
 /** How far apart the stagger spreads the cards, and how many steps it runs for
  *  before they all leave together — a long grid shouldn't take twice as long
- *  to deal out as a short one. */
-const STEP_MS = 34
-const MAX_STEPS = 12
+ *  to deal out as a short one. The step is wide enough that cards leave one
+ *  at a time at a readable pace rather than in a single burst. */
+const STEP_MS = 80
+const MAX_STEPS = 10
 
 /**
  * Merchandise as a grid of square shots, dealt out of a pile as you reach it.

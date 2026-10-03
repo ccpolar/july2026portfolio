@@ -27,21 +27,23 @@ const MailIcon = () => (
 )
 
 /**
- * Three pieces floating over the top of the page rather than a full-width
- * bar: the mark (home), the two ways into the work, and a direct line to get
- * in touch. Each piece is its own lifted surface, so the header needs no
- * backdrop of its own and the page runs uninterrupted beneath it.
+ * One lifted rectangle floating over the top of the page rather than a
+ * full-width bar. Everything lives inside it — the mark, the way into the
+ * work, the line to get in touch and the theme switch — divided by hairlines
+ * rather than by gaps, so it reads as a single control with segments instead
+ * of four separate pieces that happen to be next to each other.
  */
 export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
   const pathname = usePathname()
-  const onPortfolio = pathname === '/portfolio'
-  // A project page is part of Recent Work, so it keeps that segment lit.
-  const onRecentWork = pathname === '/work' || pathname.startsWith('/work/')
+  // The portfolio is the one way into the work now, and a project page is
+  // part of it, so a case study keeps the segment lit.
+  const onWork =
+    pathname === '/portfolio' || pathname === '/work' || pathname.startsWith('/work/')
 
   return (
     <header className={styles.header} style={{ viewTransitionName: 'site-header' }}>
       <nav className={styles.bar} aria-label="Primary">
-        <a className={`${styles.tile} ${styles.mark}`} href="/" aria-label={`${siteName} — home`}>
+        <a className={`${styles.segment} ${styles.mark}`} href="/" aria-label={`${siteName} — home`}>
           {logo ? (
             <img className={styles.logo} src={logo.url} alt="" />
           ) : (
@@ -51,35 +53,27 @@ export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
           )}
         </a>
 
-        <div className={styles.links}>
+        <a
+          className={`${styles.segment} ${styles.link}`}
+          href="/portfolio"
+          aria-current={onWork ? 'page' : undefined}
+        >
+          View Work
+        </a>
+
+        {showBlog ? (
           <a
-            className={styles.link}
-            href="/work"
-            aria-current={onRecentWork ? 'page' : undefined}
+            className={`${styles.segment} ${styles.link}`}
+            href="/blog"
+            aria-current={pathname.startsWith('/blog') ? 'page' : undefined}
           >
-            Recent Work
+            Blog
           </a>
-          <a
-            className={styles.link}
-            href="/portfolio"
-            aria-current={onPortfolio ? 'page' : undefined}
-          >
-            View Work
-          </a>
-          {showBlog ? (
-            <a
-              className={styles.link}
-              href="/blog"
-              aria-current={pathname.startsWith('/blog') ? 'page' : undefined}
-            >
-              Blog
-            </a>
-          ) : null}
-        </div>
+        ) : null}
 
         <button
           type="button"
-          className={styles.tile}
+          className={styles.segment}
           onClick={openContactModal}
           aria-label="Get in touch"
         >

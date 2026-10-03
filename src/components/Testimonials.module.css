@@ -1,7 +1,122 @@
-/* Card contents only. The panel, heading, grid and card surface come from
-   DarkPanel. */
-.item {
+/* The section, the heading and the card surface all used to come from
+   DarkPanel, which existed to keep this and the old Services panel identical.
+   Services is gone and the panel is no longer dark, so it has been folded in
+   here — this is the only thing that was still using it. */
+.section {
+  padding-bottom: var(--section);
+}
+
+.head {
+  text-align: center;
+  margin: 0 auto clamp(var(--space-xl), 5vw, var(--space-2xl));
+  max-width: 44rem;
+}
+
+.heading {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+  line-height: 1.1;
+}
+
+/* — The belt ────────────────────────────────────────────────────────────────
+   container-type is what lets a card be sized as a share of the belt rather
+   than of the track, which is as wide as all the quotes laid end to end.
+
+   The overflow is what the loop hides behind: the second copy of the run is
+   off to the right until the track has moved far enough that it is sitting
+   exactly where the first copy started. */
+.belt {
+  --gap: clamp(var(--space-sm), 2vw, var(--space-lg));
+  container-type: inline-size;
+  overflow: hidden;
+}
+
+/* Fade both ends so quotes arrive and leave rather than appearing at a hard
+   edge — only while it's actually looping. On a short run nothing enters or
+   leaves, and the fade would just be dimming the first and last quote for no
+   reason. */
+.belt[data-loops] {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 4%, #000 96%, transparent);
+}
+
+.track {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--gap);
   margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Only the looping belt is as wide as its contents; a short run is centred in
+   the space instead of being left-aligned with a hole beside it. */
+.belt[data-loops] .track {
+  justify-content: flex-start;
+  width: max-content;
+}
+
+/* Three on screen at a time on a desktop. A quote is text, and three columns
+   of it on a phone would be a few words per line, so the count comes down
+   with the width — one and a bit at the narrow end, where the part-shown
+   fourth is also what says the row keeps going. */
+.slot {
+  flex: none;
+  width: calc((100cqw - 0.35 * var(--gap)) / 1.35);
+}
+
+@media (min-width: 40rem) {
+  .slot {
+    width: calc((100cqw - var(--gap)) / 2);
+  }
+}
+
+@media (min-width: 64rem) {
+  .slot {
+    width: calc((100cqw - 2 * var(--gap)) / 3);
+  }
+}
+
+/* One copy's width is the track's half, plus the gap that sits between the
+   two copies — land exactly there and the second copy is where the first
+   started, so the restart can't be seen. */
+.belt[data-loops] .track {
+  animation: drift calc(var(--count, 4) * 9s) linear infinite;
+}
+
+@keyframes drift {
+  to {
+    transform: translateX(calc(-50% - var(--gap) / 2));
+  }
+}
+
+/* Stopped while it's being read, either by pointer or by keyboard. */
+.belt[data-loops]:hover .track,
+.belt[data-loops]:focus-within .track {
+  animation-play-state: paused;
+}
+
+/* — The card — */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  height: 100%;
+  margin: 0;
+  padding: var(--space-md);
+  background: var(--bg);
+  border: 1px solid var(--edge);
+  border-radius: calc(var(--radius-media) * 2.5);
+  box-shadow:
+    0 1px 2px color-mix(in oklch, var(--ink) 6%, transparent),
+    0 24px 48px -32px color-mix(in oklch, var(--ink) 40%, transparent);
+  transition: border-color var(--dur) var(--ease-out-quart);
+}
+
+.card:hover {
+  border-color: var(--edge-strong);
 }
 
 /* Quotes are set at reading size, not blown up into pull-quote decoration.
@@ -12,7 +127,7 @@
   margin: 0;
   font-size: var(--text-body);
   line-height: 1.6;
-  color: var(--on);
+  color: var(--ink);
   text-wrap: pretty;
 }
 
@@ -22,17 +137,53 @@
   flex-direction: column;
   gap: 0.125rem;
   padding-top: var(--space-sm);
-  border-top: 1px solid var(--card-edge);
+  border-top: 1px solid var(--edge);
 }
 
 .name {
   font-size: var(--text-body);
   font-weight: 500;
   letter-spacing: var(--tracking-title);
-  color: var(--on);
+  color: var(--ink);
 }
 
 .detail {
   font-size: var(--text-sm);
-  color: var(--on-muted);
+  color: var(--muted);
+}
+
+/* Nothing drifts for someone who asked for less motion. The belt becomes an
+   ordinary scroller instead, so every quote is still reachable — and the
+   duplicate run is dropped, since without the loop it would only be the same
+   quotes a second time. */
+@media (prefers-reduced-motion: reduce) {
+  .belt[data-loops] .track {
+    animation: none;
+  }
+
+  .belt {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    /* The layout drops pointer events on content so the background can see the
+       cursor; a scroll container has to claim the pointer back or a touch
+       swipe never pans it. */
+    pointer-events: auto;
+  }
+
+  .belt::-webkit-scrollbar {
+    display: none;
+  }
+
+  .slot {
+    scroll-snap-align: start;
+  }
+
+  .slot[aria-hidden='true'] {
+    display: none;
+  }
+
+  .card {
+    transition: none;
+  }
 }

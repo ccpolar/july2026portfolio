@@ -1,31 +1,29 @@
-/* The same lifted tile as the header's mark and mail pieces — it's a third
-   control in that row, not a different kind of thing. Sizing and surface come
-   from SiteHeader's .tile; this adds only what's particular to a switch. */
+/* The last segment of the header bar. The surface, border, rounding, divider
+   and hover all come from SiteHeader's .segment now that the bar is one
+   rectangle — painting them again here would put a second border and a second
+   rounded corner inside it. This carries only what's particular to a switch.
+
+   It is still its own component, so it keeps the segment's own geometry: the
+   bar sets the height, and a square of that height is what makes it match the
+   mark and the mail button either side of it. */
 .toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex: none;
   width: 2.75rem;
-  height: 2.75rem;
   padding: 0;
-  background: var(--raised);
-  border: 1px solid var(--edge);
-  border-radius: var(--radius-control);
+  border: 0;
+  background: none;
   color: var(--ink);
   cursor: pointer;
-  transition:
-    background-color var(--dur-fast) var(--ease-out-quart),
-    transform var(--dur-fast) var(--ease-out-quart);
+  transition: background-color var(--dur-fast) var(--ease-out-quart);
 }
 
-.toggle:hover {
-  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
-}
-
-.toggle:active {
-  transform: scale(0.94);
-  transition-duration: 60ms;
+@media (max-width: 22rem) {
+  .toggle {
+    width: 2.5rem;
+  }
 }
 
 /* The icon turns over as the palette changes, so the switch reads as one

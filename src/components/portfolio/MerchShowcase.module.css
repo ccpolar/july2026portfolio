@@ -60,7 +60,13 @@
    position through its own delay, then leaves, so they peel off the top one
    after another instead of expanding all at once. */
 .grid[data-dealt] .gridItem {
-  animation: deal 480ms var(--ease-out-expo) backwards;
+  /* Slow enough to watch a card travel rather than just notice that it has.
+     ease-out-quart rather than expo: expo puts nearly all of its distance in
+     the first fraction of the run, which at this length reads as the card
+     being already there and then easing the last few pixels. Quart keeps the
+     move visible across the whole duration and still settles rather than
+     stopping. */
+  animation: deal 1150ms var(--ease-out-quart) backwards;
   animation-delay: calc(var(--step, 0) * var(--step-ms, 34ms));
   will-change: transform;
 }
