@@ -2,7 +2,7 @@
 
 import { type CSSProperties, useCallback, useState } from 'react'
 
-import type { Homepage, Media } from '@/payload-types'
+import type { Homepage } from '@/payload-types'
 
 import styles from './HeroCards.module.css'
 import { MediaImage } from './MediaImage'
@@ -43,14 +43,27 @@ const SHAPES: Record<string, number> = {
   tall: 2 / 3,
 }
 
-const aspectOf = (image: Card['image'], shape?: string | null): number => {
-  const forced = shape ? SHAPES[shape] : undefined
-  if (forced) return forced
-  if (!image || typeof image !== 'object') return 1
-  const { width, height } = image as Media
-  if (!width || !height) return 1
-  return width / height
-}
+/**
+ * What a card is cut to when the admin hasn't asked for one of the shapes
+ * above: four by five.
+ *
+ * A fan wants one shape. Cards of several different proportions don't read as
+ * a hand of anything — the arc they're meant to describe is broken by every
+ * card that is a little shorter or wider than its neighbour. This used to
+ * fall back to each photograph's own proportions, which was right for a row
+ * that showed them one at a time and wrong for a fan.
+ */
+const DEFAULT_ASPECT = 4 / 5
+
+/**
+ * The shape value is stored as a Postgres enum, so the setting that means
+ * "leave them as they were uploaded" still arrives here under its old name
+ * even though it now means 4:5 — giving it a truer name would mean altering
+ * the enum, for no gain. The admin's label and description say 4:5, which is
+ * what it does.
+ */
+const aspectOf = (_image: Card['image'], shape?: string | null): number =>
+  (shape ? SHAPES[shape] : undefined) ?? DEFAULT_ASPECT
 
 /**
  * A card's size as a multiple of the base unit.

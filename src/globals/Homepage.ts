@@ -64,7 +64,7 @@ export const Homepage: GlobalConfig = {
               admin: {
                 initCollapsed: true,
                 description:
-                  'A fan of photographs between the headline and the paragraph below it. They shuffle on their own, so every one gets its turn in the middle. Seven is the full spread; fewer simply makes a smaller fan, and none hides it altogether. Portrait crops sit best — they are shown tall.',
+                  'A hand of photographs between the headline and the paragraph below it. They rest as a stack and fan open when a visitor reaches them, so nothing moves on its own. Seven is the full spread; fewer simply makes a smaller fan, and none hides it altogether. They are cut to one shape, set below — portrait crops sit best.',
               },
               fields: [
                 {
@@ -81,7 +81,12 @@ export const Homepage: GlobalConfig = {
               label: 'Card shape',
               defaultValue: 'natural',
               options: [
-                { label: 'As uploaded', value: 'natural' },
+                // The stored value is still 'natural', which is what it was
+                // called when it meant "leave each photograph at its own
+                // proportions". The fan wants one shape for every card, so it
+                // is 4:5 now; renaming the value would mean altering the
+                // enum in the database for nothing a visitor would see.
+                { label: '4:5', value: 'natural' },
                 { label: 'Square', value: 'square' },
                 { label: 'Portrait', value: 'portrait' },
                 { label: 'Tall', value: 'tall' },
@@ -89,7 +94,7 @@ export const Homepage: GlobalConfig = {
               admin: {
                 condition: (_, siblingData) => Boolean(siblingData?.heroCards?.length),
                 description:
-                  'The shape every card is cut to. “As uploaded” leaves each picture at its own proportions. The taller shapes crop in from the sides — which is what gives the row real height when the photographs are widescreen, and what lets the setting below go further.',
+                  'The shape every card is cut to. The fan reads as a hand of cards when they all share one shape, so 4:5 is the standard; the other shapes crop in further from the sides, which gives the fan more height when the photographs are widescreen and lets the setting below go further.',
               },
             },
             {
