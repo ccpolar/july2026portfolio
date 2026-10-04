@@ -8,7 +8,10 @@
      rewrites custom-idents, so a name declared in this file would arrive as
      `SiteHeader-module__hash__site-header` and the rules in globals.css that
      target it would silently never match. */
-  padding: var(--space-sm) var(--space-sm) 0;
+  /* No padding above: the bar meets the top of the screen rather than
+     floating under it. The side padding stays so it can't touch the edges on
+     a narrow screen. */
+  padding: 0 var(--space-sm);
   display: flex;
   justify-content: center;
 }
@@ -16,14 +19,19 @@
 /* One rectangle holding every control. The surface, the border and the
    rounding are all on the bar now rather than on each piece — the pieces
    inside are segments of it, divided by a hairline each. overflow keeps the
-   first and last segments' own corners inside the bar's. */
+   first and last segments' own corners inside the bar's.
+
+   Rounded along the bottom only, and no border along the top: squared off
+   where it meets the edge of the screen, it reads as hanging from the top
+   rather than as a pill that happens to have stopped there. */
 .bar {
   display: inline-flex;
   align-items: stretch;
   height: 2.75rem;
   background: var(--raised);
   border: 1px solid var(--edge);
-  border-radius: var(--radius-control);
+  border-top: 0;
+  border-radius: 0 0 calc(var(--radius-control) + 0.25rem) calc(var(--radius-control) + 0.25rem);
   overflow: hidden;
 }
 
