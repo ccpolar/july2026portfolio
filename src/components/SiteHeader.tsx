@@ -14,12 +14,12 @@ type Props = {
 }
 
 const MailIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-    <rect x="2.75" y="4.25" width="14.5" height="11.5" rx="2.25" stroke="currentColor" strokeWidth="1.5" />
+  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <rect x="2.75" y="4.25" width="14.5" height="11.5" rx="2.25" stroke="currentColor" strokeWidth="1.6" />
     <path
       d="m3.5 5.5 5.63 4.5a1.4 1.4 0 0 0 1.74 0L16.5 5.5"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="1.6"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -27,23 +27,26 @@ const MailIcon = () => (
 )
 
 /**
- * One lifted rectangle floating over the top of the page rather than a
- * full-width bar. Everything lives inside it — the mark, the way into the
- * work, the line to get in touch and the theme switch — divided by hairlines
- * rather than by gaps, so it reads as a single control with segments instead
- * of four separate pieces that happen to be next to each other.
+ * One bar hanging off the top of the screen: the mark and name at the left,
+ * the ways into the work in the middle, and the way to get in touch filled in
+ * at the right so the one thing worth doing is the one thing that is a button.
+ *
+ * It inverts the page rather than sitting on it — near-black on a light page —
+ * which is what lets it stay legible over whatever happens to be scrolling
+ * underneath without a backdrop filter or a border doing the work. On a dark
+ * page there is nothing to invert to, so it lifts off the background instead.
  */
 export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
   const pathname = usePathname()
   // The portfolio is the one way into the work now, and a project page is
-  // part of it, so a case study keeps the segment lit.
+  // part of it, so a case study keeps the link lit.
   const onWork =
     pathname === '/portfolio' || pathname === '/work' || pathname.startsWith('/work/')
 
   return (
     <header className={styles.header} style={{ viewTransitionName: 'site-header' }}>
       <nav className={styles.bar} aria-label="Primary">
-        <a className={`${styles.segment} ${styles.mark}`} href="/" aria-label={`${siteName} — home`}>
+        <a className={styles.brand} href="/" aria-label={`${siteName} — home`}>
           {logo ? (
             <img className={styles.logo} src={logo.url} alt="" />
           ) : (
@@ -51,36 +54,43 @@ export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
               {siteName.charAt(0)}
             </span>
           )}
+          <span className={styles.wordmark}>{siteName}</span>
         </a>
 
-        <a
-          className={`${styles.segment} ${styles.link}`}
-          href="/portfolio"
-          aria-current={onWork ? 'page' : undefined}
-        >
-          View Work
-        </a>
-
-        {showBlog ? (
+        <div className={styles.links}>
           <a
-            className={`${styles.segment} ${styles.link}`}
-            href="/blog"
-            aria-current={pathname.startsWith('/blog') ? 'page' : undefined}
+            className={styles.link}
+            href="/portfolio"
+            aria-current={onWork ? 'page' : undefined}
           >
-            Blog
+            View Work
           </a>
-        ) : null}
+          {showBlog ? (
+            <a
+              className={styles.link}
+              href="/blog"
+              aria-current={pathname.startsWith('/blog') ? 'page' : undefined}
+            >
+              Blog
+            </a>
+          ) : null}
+        </div>
 
-        <button
-          type="button"
-          className={styles.segment}
-          onClick={openContactModal}
-          aria-label="Get in touch"
-        >
-          <MailIcon />
-        </button>
-
-        <ThemeToggle />
+        <div className={styles.actions}>
+          <ThemeToggle />
+          {/* Labelled explicitly: the words are dropped on a narrow screen,
+              leaving the icon to stand for it, and the button has to keep its
+              name either way. */}
+          <button
+            type="button"
+            className={styles.cta}
+            onClick={openContactModal}
+            aria-label="Get in touch"
+          >
+            <MailIcon />
+            <span className={styles.ctaLabel}>Get in touch</span>
+          </button>
+        </div>
       </nav>
     </header>
   )

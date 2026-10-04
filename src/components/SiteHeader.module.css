@@ -16,124 +16,182 @@
   justify-content: center;
 }
 
-/* One rectangle holding every control. The surface, the border and the
-   rounding are all on the bar now rather than on each piece — the pieces
-   inside are segments of it, divided by a hairline each. overflow keeps the
-   first and last segments' own corners inside the bar's.
+/* — The bar ─────────────────────────────────────────────────────────────────
+   Inverted: near-black on a light page, so it reads as its own object over
+   whatever is scrolling under it without needing a blur or a border to hold
+   it apart. On a dark page there is nothing to invert to, so it lifts off the
+   background instead and takes a hairline to sit on.
 
-   Rounded along the bottom only, and no border along the top: squared off
-   where it meets the edge of the screen, it reads as hanging from the top
-   rather than as a pill that happens to have stopped there. */
+   Squared off where it meets the edge of the screen and rounded below, so it
+   hangs from the top rather than floating. */
 .bar {
-  display: inline-flex;
-  align-items: stretch;
-  height: 2.75rem;
-  background: var(--raised);
-  border: 1px solid var(--edge);
-  border-top: 0;
-  border-radius: 0 0 calc(var(--radius-control) + 0.25rem) calc(var(--radius-control) + 0.25rem);
-  overflow: hidden;
-}
+  --bar-bg: var(--ink);
+  --bar-on: var(--bg);
 
-.segment {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: clamp(var(--space-md), 2.5vw, 1.875rem);
+  padding: 0.625rem;
+  background: var(--bar-bg);
+  color: var(--bar-on);
+  border-radius: 0 0 1.125rem 1.125rem;
+}
+
+:global(html[data-theme='dark']) .bar {
+  --bar-bg: var(--raised);
+  --bar-on: var(--ink);
+  border: 1px solid var(--edge);
+  border-top: 0;
+}
+
+/* — The mark and the name — */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   flex: none;
-  padding: 0;
-  border: 0;
-  background: none;
-  color: var(--ink);
-  cursor: pointer;
+  color: inherit;
   text-decoration: none;
-  transition: background-color var(--dur-fast) var(--ease-out-quart);
+  padding-left: 0.25rem;
 }
 
-/* The divider between options: a hairline on the leading edge of every child
-   but the first, so there is a line *between* the options and none at either
-   end of the bar.
-
-   Matched on the bar's children rather than on .segment because the theme
-   switch is its own component with its own class — it is a segment of this
-   bar like any other, and the divider and the hover should find it without
-   SiteHeader having to reach into it.
-
-   :not(:first-child) rather than the simpler `* + *`: the theme switch zeroes
-   its own border, and at equal specificity that would win on file order and
-   leave the last divider missing. :not() carries its argument's specificity,
-   which settles it whichever stylesheet lands first. */
-.bar > *:not(:first-child) {
-  border-left: 1px solid var(--edge);
-}
-
-.bar > *:hover {
-  background: color-mix(in oklch, var(--raised), var(--ink) 6%);
-}
-
-.bar > *:active {
-  background: color-mix(in oklch, var(--raised), var(--ink) 10%);
-}
-
-/* The square segments: the mark, the mail button and the theme switch. */
-.segment:not(.link) {
-  width: 2.75rem;
-}
-
-/* The logo sits small and centred, fitted inside its segment whatever its
-   proportions. Width is the binding edge for a wide mark, so the side padding
-   is kept tight to give it every pixel the square allows; a square mark still
-   gets breathing room from the taller top and bottom inset. */
+/* Left in its own colour rather than flipped to match the text: the mark is
+   the brand red, it holds up against the bar's near-black on its own, and
+   turning the one piece of brand colour in the header grey to match its
+   surroundings would be a strange thing to do to it. */
 .logo {
   display: block;
-  width: 100%;
-  height: 100%;
-  padding: 0.5rem 0.3125rem;
+  height: 1.375rem;
+  width: auto;
+  max-width: 5rem;
   object-fit: contain;
 }
 
 .initial {
-  font-size: var(--text-body);
+  display: inline-grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: var(--text-sm);
   font-weight: 700;
   letter-spacing: var(--tracking-heading);
   line-height: 1;
 }
 
-/* — The worded segments — */
-.link {
-  padding-inline: 0.875rem;
-  font-size: var(--text-sm);
-  font-weight: 500;
+.wordmark {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
   white-space: nowrap;
 }
 
-/* The page you're on is a filled segment of the bar, not an underline — it
-   reads as a position within the control. */
+/* — The ways into the work — */
+.links {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(var(--space-md), 2vw, 1.5rem);
+}
+
+/* Quieter than the name and the button either side of them, so the bar reads
+   left to right as who this is, where to look, and what to do. Full strength
+   is the page you are on, which is the only state the bar needs to show. */
+.link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  opacity: 0.62;
+  transition: opacity var(--dur-fast) var(--ease-out-quart);
+}
+
+.link:hover,
 .link[aria-current='page'] {
-  background: var(--ink);
-  color: var(--bg);
+  opacity: 1;
 }
 
-.link[aria-current='page']:hover {
-  background: color-mix(in oklch, var(--ink), var(--bg) 12%);
+/* — The right-hand pair — */
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
 }
 
-/* Inset, so the ring stays inside the bar's own rounded edge rather than
-   being clipped by the overflow that keeps the segments in. */
-.bar > *:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: -3px;
-  border-radius: calc(var(--radius-control) - 2px);
+/* Filled, and the only filled thing in the bar: the one step worth taking is
+   the one that looks like a button. */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  padding: 0.5rem 0.9375rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: var(--bar-on);
+  color: var(--bar-bg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    opacity var(--dur-fast) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
 }
 
-/* The smallest phones (~320px) need the whole bar inside the gutter: a step
-   down in padding and link size rather than wrapping or hiding anything. */
-@media (max-width: 22rem) {
-  .link {
-    padding-inline: 0.625rem;
-    font-size: var(--text-label);
+.cta:hover {
+  opacity: 0.88;
+}
+
+.cta:active {
+  transform: scale(0.97);
+  transition-duration: 60ms;
+}
+
+.brand:focus-visible,
+.link:focus-visible,
+.cta:focus-visible,
+.bar :global(button):focus-visible {
+  outline: 2px solid var(--bar-on);
+  outline-offset: 2px;
+  border-radius: 0.375rem;
+}
+
+.cta:focus-visible {
+  outline-offset: 3px;
+}
+
+/* — Narrower screens — the name goes first, since the mark already says whose
+     site this is, and then the button's label, leaving its icon to stand for
+     it. Nothing is hidden that isn't repeated somewhere else in the bar. — */
+@media (max-width: 48rem) {
+  .wordmark {
+    display: none;
+  }
+}
+
+@media (max-width: 30rem) {
+  .bar {
+    gap: var(--space-sm);
+    padding: 0.5rem;
   }
 
-  .segment:not(.link) {
-    width: 2.5rem;
+  .cta {
+    padding: 0.5rem;
+  }
+
+  .ctaLabel {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link,
+  .cta {
+    transition: none;
+  }
+
+  .cta:active {
+    transform: none;
   }
 }

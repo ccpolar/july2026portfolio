@@ -11,19 +11,23 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 2.75rem;
+  width: 2rem;
+  height: 2rem;
   padding: 0;
   border: 0;
+  border-radius: 0.5rem;
   background: none;
-  color: var(--ink);
+  /* Inherited, not --ink: the header bar inverts the page, so the switch has
+     to take its colour from whatever it has been put inside rather than
+     assuming the page's own. */
+  color: inherit;
+  opacity: 0.62;
   cursor: pointer;
-  transition: background-color var(--dur-fast) var(--ease-out-quart);
+  transition: opacity var(--dur-fast) var(--ease-out-quart);
 }
 
-@media (max-width: 22rem) {
-  .toggle {
-    width: 2.5rem;
-  }
+.toggle:hover {
+  opacity: 1;
 }
 
 /* The icon turns over as the palette changes, so the switch reads as one
