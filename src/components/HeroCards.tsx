@@ -1,6 +1,6 @@
 'use client'
 
-import { type CSSProperties, useEffect, useState } from 'react'
+import { type CSSProperties, useCallback, useState } from 'react'
 
 import type { Homepage, Media } from '@/payload-types'
 
@@ -9,57 +9,32 @@ import { MediaImage } from './MediaImage'
 
 type Card = NonNullable<Homepage['heroCards']>[number]
 
-/** How long each card holds the middle before the row shuffles along. */
-const TICK = 2000
+/* — The numbers the fan is shaped by. Everything except the lift is a
+     multiple of the card's own size, so the arrangement holds whatever the
+     cards are sized to. — */
 
-/**
- * How big a card is, by how many places it sits from the middle.
- *
- * Measured off the reference: a steep, near-linear fall-off — the middle
- * card is several times the width of the ones at the ends, which is what
- * stops the row reading as a plain filmstrip.
- */
-const scaleFor = (ring: number) => Math.max(0.18, 1 - ring * 0.26)
+/** How far apart the cards sit at rest, as a share of a card's width. Just
+ *  enough that it reads as a stack of several rather than one photograph. */
+const REST_SPREAD = 0.045
+/** And how much they lean at rest, at the outermost card. */
+const REST_ROT = 3
 
-/** The space between two cards, in base units. Constant, as in the reference. */
-const GAP = 0.06
+/** Open, as a share of a card's width: a little under half, so each card
+ *  covers most of the one behind it the way a dealt hand does. */
+const OPEN_SPREAD = 0.46
+/** The outermost card's lean when open. */
+const OPEN_ROT = 18
+/** How far the outermost card drops, as a share of a card's height. Squared
+ *  by distance from the middle, which is what bends the row into an arc
+ *  rather than a V. */
+const ARC = 0.17
 
-/** Which card is in a given place, once the row has shuffled along `offset` times. */
-const cardAt = (slot: number, offset: number, count: number) =>
-  (((slot - offset) % count) + count) % count
-
-/**
- * A card's resting size, as a multiple of the base unit.
- *
- * Sized by area rather than by height: a card keeps the proportions of the
- * picture in it, and two cards of the same rank cover the same amount of the
- * page whether they are tall or wide. Scaling by height alone would let a
- * broad landscape one place out look bigger than the tall one in the middle,
- * which loses the order the row is built on.
- */
-const sizeOf = (aspect: number) => ({ w: Math.sqrt(aspect), h: 1 / Math.sqrt(aspect) })
-
-/**
- * Lays the row out left to right and returns the centre of each place.
- *
- * Cards keep their own proportions rather than being cropped to a common
- * shape, so each one's width depends on the picture in it — which means the
- * row has to be measured in the order it is actually standing in.
- */
-const placeRow = (aspects: number[]) => {
-  const n = aspects.length
-  const widths = aspects.map((aspect, slot) =>
-    aspect === 0 ? 0 : sizeOf(aspect).w * scaleFor(Math.round(Math.abs(slot - (n - 1) / 2))),
-  )
-  const total = widths.reduce((sum, w) => sum + w, 0) + GAP * (n - 1)
-  const centres: number[] = []
-  let cursor = -total / 2
-  for (const w of widths) {
-    centres.push(cursor + w / 2)
-    cursor += w + GAP
-  }
-  return centres
-}
+/** The hovered card's rise. */
+const LIFT_PX = 18
+/** What hovering widens the fan by: a tenth everywhere, and half again as
+ *  much from the outermost card as from the middle one. */
+const BLOOM_BASE = 0.1
+const BLOOM_EDGE = 0.18
 
 /** The proportions each shape cuts a card to. */
 const SHAPES: Record<string, number> = {
@@ -78,132 +53,165 @@ const aspectOf = (image: Card['image'], shape?: string | null): number => {
 }
 
 /**
- * The widest the row could ever stand, in base units.
+ * A card's size as a multiple of the base unit.
  *
- * Cards keep their own proportions, so the row's width changes a little
- * depending on which picture is where. Sizing off the worst case — the
- * broadest pictures in the biggest places — gives one number that holds for
- * every arrangement, so the row never rescales as it shuffles, and never
- * outgrows the page.
- *
- * `maxRing` caps which places count towards that worst case: the CSS below
- * hides the outer rings on a narrow screen, and a hidden card needs no room.
- * Without this, a phone was budgeting space for the same seven-card row as
- * desktop while only ever showing three of them — the uncounted four were
- * still shrinking everyone else to make room they'd never use.
+ * Sized by area rather than by height, so two cards of different proportions
+ * cover the same amount of the page — a landscape one doesn't swamp a tall
+ * one just by being wider.
  */
-const widestRow = (aspects: number[], maxRing = Infinity) => {
-  const n = aspects.length
-  const scales = Array.from({ length: n }, (_, i) =>
-    Math.round(Math.abs(i - (n - 1) / 2)) <= maxRing
-      ? scaleFor(Math.round(Math.abs(i - (n - 1) / 2)))
-      : 0,
-  ).sort((a, b) => b - a)
-  const widths = aspects.map((a) => Math.sqrt(a)).sort((a, b) => b - a)
-  const total = widths.reduce((sum, w, i) => sum + w * scales[i], 0)
-  return total + GAP * (n - 1)
-}
-
-type Props = { cards?: Card[] | null; shape?: string | null; height?: number | null }
+const sizeOf = (aspect: number) => ({ w: Math.sqrt(aspect), h: 1 / Math.sqrt(aspect) })
 
 /**
- * The hero's row of photographs, shuffling one place to the right every couple
- * of seconds so each picture takes its turn in the middle.
+ * The hero's photographs, held as a hand of cards.
  *
- * Every card sits on the same centre line — the size difference alone carries
- * the depth, with no arc and no tilt. Pictures keep their own proportions, so
- * nothing is cropped to fit.
+ * At rest they are a tight stack. Bring the pointer anywhere over them and
+ * they fan out into a shallow arc; hover one in particular and it lifts to
+ * the front while the whole fan opens a little wider — most when the card is
+ * an outer one, least when it's the middle.
  *
- * The shuffle is a loop, so on every tick one card has to get from the
- * right-hand end back to the left. It goes instantly: the arriving card is
- * placed with its transition switched off, so it is simply already there on
- * the next frame while the rest glide along behind it. No gap opens at either
- * end.
+ * The movement is a CSS transition on a transform, not a timeline. That is
+ * the whole reason moving between cards retargets cleanly: a transition
+ * always runs from wherever the card currently *is*, so changing the target
+ * mid-flight bends the path rather than restarting it. There is nothing to
+ * cancel, nothing to cue up, and nothing to clean up on unmount.
+ *
+ * Every number is worked out from a card's distance from the middle, so the
+ * arrangement holds for any number of cards, and all of it is derived from
+ * the index — the server and the client arrive at the same values, so there
+ * is nothing to reconcile on hydration.
  */
-export const HeroCards = ({ cards, shape, height }: Props) => {
+export const HeroCards = ({
+  cards,
+  shape,
+  height,
+}: {
+  cards?: Card[] | null
+  shape?: string | null
+  height?: number | null
+}) => {
   const items = (cards ?? []).filter(
     (card) => card?.image && typeof card.image === 'object' && card.image.url,
   )
   const count = items.length
 
-  // Under four cards there is no row worth shuffling, so it stays put.
-  const shuffles = count >= 4
-  const [offset, setOffset] = useState(0)
-  const [paused, setPaused] = useState(false)
+  const [open, setOpen] = useState(false)
+  const [active, setActive] = useState<number | null>(null)
 
-  useEffect(() => {
-    if (!shuffles || paused) return
-    // Someone who has asked for less motion gets the row, still, as a picture.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = window.setInterval(() => setOffset((o) => o + 1), TICK)
-    return () => window.clearInterval(id)
-  }, [shuffles, paused])
+  // pointerleave fires only when the pointer leaves the stage itself, not
+  // when it crosses from one card to the next inside it, so crossing between
+  // cards retargets rather than closing and reopening the fan.
+  const onLeave = useCallback(() => {
+    setOpen(false)
+    setActive(null)
+  }, [])
 
   if (!count) return null
 
-  // Measure the row as it currently stands, place by place.
-  const centres = placeRow(
-    Array.from({ length: count }, (_, slot) =>
-      aspectOf(items[cardAt(slot, offset, count)]?.image, shape),
-    ),
-  )
+  const centre = (count - 1) / 2
+  // A single card has no spread to speak of; the half keeps the division
+  // honest rather than dividing by zero.
+  const maxD = Math.max(centre, 0.5)
 
-  // Tall enough for the tallest picture to take the middle without the row
-  // changing height underneath it. Worked out once, over every card, so the
-  // page does not shift as they come round.
-  const deckHeight = Math.max(...items.map((card) => sizeOf(aspectOf(card.image, shape)).h))
-  const aspects = items.map((card) => aspectOf(card.image, shape))
-  // Three budgets, one per ring cutoff the CSS below switches between. A
-  // narrow screen hides the outer rings, and a hidden card needs no room --
-  // without this, the row always sized itself for the full seven-card
-  // spread even while only showing three of them, which is what made the
-  // ones left on screen so much smaller than they needed to be.
-  const rowWidth = widestRow(aspects)
-  const rowWidthTablet = widestRow(aspects, 2)
-  const rowWidthMobile = widestRow(aspects, 1)
+  const sizes = items.map((card) => sizeOf(aspectOf(card.image, shape)))
+  // One card's width and height carry the whole arrangement, so the spacing
+  // is even when the photographs are not all the same shape.
+  const wRef = Math.max(...sizes.map((s) => s.w))
+  const hRef = Math.max(...sizes.map((s) => s.h))
 
-  // The card that starts in the middle is the one worth fetching first.
-  const firstMiddle = Math.floor((count - 1) / 2)
+  // How much wider the fan stands while a card is hovered. Worked out once,
+  // from which card it is, and handed to the whole fan.
+  const bloom =
+    active === null ? 1 : 1 + BLOOM_BASE + BLOOM_EDGE * Math.abs((active - centre) / maxD)
+
+  /**
+   * How far the fan actually reaches, at its widest.
+   *
+   * Worked out from the four corners of every card rather than from its
+   * width and height: a card is rotated about the middle of its bottom edge,
+   * which swings its lower corners out sideways *and down past that edge*,
+   * so the room it needs is not the room it occupies standing straight. The
+   * first version of this reserved space as though it were, and the outer
+   * cards hung some 60px below their own box and over the paragraph under
+   * the hero.
+   *
+   * Everything is in multiples of the base unit, and measured from the point
+   * the cards pivot about, so the stage can be sized and the pivot placed
+   * from the same two numbers.
+   */
+  const widest = 1 + BLOOM_BASE + BLOOM_EDGE
+  let above = 0
+  let below = 0
+  let half = 0
+  for (let i = 0; i < count; i++) {
+    const d = i - centre
+    const t = d / maxD
+    const rad = (t * OPEN_ROT * widest * Math.PI) / 180
+    const cos = Math.cos(rad)
+    const sin = Math.sin(rad)
+    const tx = d * OPEN_SPREAD * wRef * widest
+    const ty = t * t * ARC * hRef
+    const { w, h } = sizes[i]
+    for (const [sx, sy] of [
+      [-w / 2, 0],
+      [w / 2, 0],
+      [-w / 2, -h],
+      [w / 2, -h],
+    ]) {
+      const x = tx + (sx * cos - sy * sin)
+      const y = ty + (sx * sin + sy * cos)
+      half = Math.max(half, Math.abs(x))
+      above = Math.max(above, -y)
+      below = Math.max(below, y)
+    }
+  }
+  const stageW = 2 * half
 
   return (
     <div
       className={styles.stage}
+      // Pointer, not mouse: one pair of handlers covers a mouse, a trackpad
+      // and a stylus. The box is sized for the fan at its widest, so a card
+      // opening outward can never cross this boundary and set off the
+      // enter/leave pair again.
+      onPointerEnter={() => setOpen(true)}
+      onPointerLeave={onLeave}
+      data-open={open || undefined}
       style={
         {
-          '--deck-h': deckHeight,
-          '--row-w': rowWidth,
-          '--row-w-tablet': rowWidthTablet,
-          '--row-w-mobile': rowWidthMobile,
+          '--count': count,
           '--hero-scale': (height ?? 100) / 100,
+          '--stage-w': stageW,
+          '--above': above,
+          '--below': below,
+          '--bloom': bloom,
         } as CSSProperties
       }
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
     >
-      <ul className={styles.deck}>
+      <ul className={styles.fan}>
         {items.map((card, i) => {
-          const slot = (i + offset) % count
-          const ring = Math.round(Math.abs(slot - (count - 1) / 2))
-          // The card in the first place has just come round from the last one;
-          // it is put there outright rather than travelling back across.
-          const wrapped = shuffles && slot === 0
+          const d = i - centre
+          const t = d / maxD
+          const size = sizes[i]
 
           return (
             <li
               className={styles.slot}
               key={card.id ?? i}
-              data-ring={ring}
-              data-wrapped={wrapped || undefined}
+              data-active={active === i || undefined}
+              onPointerEnter={() => setActive(i)}
               style={
                 {
-                  '--x': centres[slot],
-                  '--s': scaleFor(ring),
-                  // The card's own resting size; only --x and --s change as
-                  // the row moves, so every tick is a transform and nothing
-                  // re-lays out.
-                  '--w': sizeOf(aspectOf(card.image, shape)).w,
-                  '--h': sizeOf(aspectOf(card.image, shape)).h,
-                  zIndex: 20 - ring * 2,
+                  '--rest-x': d * REST_SPREAD * wRef,
+                  '--rest-y': Math.abs(t) * 0.012 * hRef,
+                  '--rest-r': t * REST_ROT,
+                  '--open-x': d * OPEN_SPREAD * wRef,
+                  '--open-y': t * t * ARC * hRef,
+                  '--open-r': t * OPEN_ROT,
+                  '--cw': size.w,
+                  '--ch': size.h,
+                  // The middle card sits in front at rest, and each step out
+                  // sits one behind — the stack reads from the middle out.
+                  '--z': 100 - Math.round(Math.abs(d) * 10),
                 } as CSSProperties
               }
             >
@@ -211,8 +219,8 @@ export const HeroCards = ({ cards, shape, height }: Props) => {
                 <MediaImage
                   className={styles.image}
                   media={card.image}
-                  priority={i === firstMiddle}
-                  sizes="(min-width: 64rem) 20rem, 40vw"
+                  priority={i === Math.round(centre)}
+                  sizes="(min-width: 64rem) 18rem, 40vw"
                 />
               </figure>
             </li>

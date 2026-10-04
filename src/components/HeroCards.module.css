@@ -1,55 +1,116 @@
-/* The hero's row of photographs. One number — the base unit — sets the whole
+/* The hero's hand of cards. One number — the base unit — sets the whole
    arrangement; every position in HeroCards.tsx is a multiple of it. */
 .stage {
-  /* The base unit, and the one place the row's size is decided.
+  /* The base unit, and the one place the fan's size is decided.
      Two limits, whichever is smaller: the size asked for in the admin, and
      whatever will actually fit across the page. The second is what stops a
-     taller setting from pushing the end cards off the edge — turn it up far
-     enough and the row simply stops growing. Measured against the stage
+     taller setting from pushing the outer cards off the edge — turn it up far
+     enough and the fan simply stops growing. Measured against the stage
      itself (cqw), so it holds at any width. */
   container-type: inline-size;
   --card-k: min(
-    calc(clamp(5.5rem, 12vw, 11rem) * var(--hero-scale, 1)),
-    calc((100cqw - 1.5rem) / var(--row-w, 5.6))
+    calc(clamp(6rem, 13vw, 12rem) * var(--hero-scale, 1)),
+    calc((100cqw - 1.5rem) / var(--stage-w, 4))
   );
+
+  position: relative;
   width: 100%;
-  /* Room for the hover lift. The row runs wider than the page on a narrow
-     screen, where the outermost cards are hidden; clipping keeps them from
-     dragging a scrollbar in. */
-  padding-block: 1.25rem;
-  overflow: hidden;
+  /* Reserved for the fan at its widest, so opening it moves nothing below it
+     and the cards never reach past the box the pointer is tracked in. The
+     two numbers come from the real corners of the rotated cards — see the
+     comment on them in HeroCards.tsx — plus the lifted card's own rise. */
+  height: calc(var(--card-k) * (var(--above, 1.2) + var(--below, 0.2)) + 18px);
   margin-top: clamp(var(--space-lg), 3.5vw, var(--space-2xl));
+
+  /* The layout drops pointer events on content so the background canvas can
+     see the cursor, and restores them per element — on links, buttons,
+     images and so on, but not on a bare div. Without this the stage would
+     never be entered at all and the fan would never open. */
+  pointer-events: auto;
 }
 
-.deck {
-  position: relative;
-  /* Room for the tallest picture to take the middle; everything shares the
-     same centre line whatever shape it is. */
-  height: calc(var(--card-k) * var(--deck-h, 1));
-  list-style: none;
+.fan {
+  position: absolute;
+  inset: 0;
   margin: 0;
   padding: 0;
+  list-style: none;
 }
 
-/* Every card hangs from the same centre line, upright. The size difference
-   alone carries the depth — no arc, no tilt. */
+/* Each card hangs from the same point. Rotating about the bottom of the card
+   rather than its middle is what makes the row open like a hand: the corners
+   stay gathered and the tops swing apart. */
 .slot {
   position: absolute;
-  top: 50%;
   left: 50%;
-  width: calc(var(--card-k) * var(--w));
-  height: calc(var(--card-k) * var(--h));
-  transform: translate(-50%, -50%) translateX(calc(var(--x) * var(--card-k))) scale(var(--s));
-  /* Soft and bouncy: it overshoots a touch and settles, the way a dealt card
-     does. Long enough to read as a glide rather than a jump cut. */
-  transition: transform 900ms cubic-bezier(0.34, 1.42, 0.5, 1);
+  /* The pivot sits exactly as far up as the lowest card corner reaches down,
+     so the fan rests on the bottom of its box rather than through it. */
+  bottom: calc(var(--card-k) * var(--below, 0.2));
+  width: calc(var(--card-k) * var(--cw));
+  height: calc(var(--card-k) * var(--ch));
+  margin-left: calc(var(--card-k) * var(--cw) / -2);
+  transform-origin: bottom center;
+  z-index: var(--z);
+
+  /* At rest. The open values are held in their own properties and switched
+     to below, rather than being recomputed — which is what lets the whole
+     arrangement be worked out once, on the server. */
+  --x: var(--rest-x);
+  --y: var(--rest-y);
+  --r: var(--rest-r);
+  --spread: 1;
+  --lift: 0px;
+
+  transform: translate3d(
+      calc(var(--card-k) * var(--x) * var(--spread)),
+      calc(var(--card-k) * var(--y) + var(--lift)),
+      0
+    )
+    rotate(calc(var(--r) * var(--spread) * 1deg));
+
+  /* A transition, not an animation: it always runs from wherever the card
+     currently is, so moving between cards bends the path instead of starting
+     a new one. The curve overshoots a little and settles back — the softness
+     is in the tail, not in a bounce. */
+  transition:
+    transform 720ms cubic-bezier(0.34, 1.38, 0.5, 1),
+    filter 320ms var(--ease-out-quart);
   will-change: transform;
 }
 
-/* The card that has just come round from the far end is placed outright, so it
-   is simply already there rather than travelling back across the row. */
-.slot[data-wrapped] {
-  transition: none;
+/* Open — the pointer is somewhere over the stage, or something inside it has
+   taken keyboard focus. The focus half only has anything to catch once the
+   cards have somewhere to go: the hero cards are photographs with no link
+   behind them today, so nothing in here is focusable. It is written now so
+   that adding a link to a card is all it takes — see the note in
+   HeroCards.tsx. */
+.stage[data-open] .slot,
+.stage:focus-within .slot {
+  --x: var(--open-x);
+  --y: var(--open-y);
+  --r: var(--open-r);
+  --spread: var(--bloom, 1);
+}
+
+/* The one being hovered — or the one holding keyboard focus — comes forward
+   of everything else, and rises. */
+.stage[data-open] .slot[data-active],
+.slot:focus-within {
+  --lift: calc(-1 * 18px);
+  z-index: 200;
+}
+
+/* A focused card has to be visible as the focused one, not merely raised. */
+.slot :global(a):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: calc(var(--radius-media) * 2);
+}
+
+/* The rest of the fan dims a touch while one card is singled out, so the
+   lifted one reads as chosen rather than merely nearer. */
+.stage[data-open] .slot:not([data-active]) {
+  filter: brightness(0.94);
 }
 
 .card {
@@ -57,18 +118,11 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border-radius: var(--radius-media);
+  border-radius: calc(var(--radius-media) * 2);
   background: var(--surface);
   box-shadow:
-    0 1px 2px color-mix(in oklch, var(--ink) 8%, transparent),
-    0 14px 30px -14px color-mix(in oklch, var(--ink) 32%, transparent);
-  /* Its own spring, independent of the row's, so a hover reads as the card
-     lifting towards you rather than the whole arrangement shifting. */
-  transition: transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.slot:hover .card {
-  transform: scale(1.07) translateY(-2.5%);
+    0 1px 2px color-mix(in oklch, var(--ink) 10%, transparent),
+    0 18px 40px -18px color-mix(in oklch, var(--ink) 38%, transparent);
 }
 
 .image {
@@ -78,54 +132,66 @@
   object-fit: cover;
 }
 
-/* — Narrower screens: the row keeps its shape and sheds its outermost cards
-     rather than shrinking everything into illegibility. They stay in the
-     rotation, so every picture still comes round to the middle.
+/* — Touch — no pointer to hover with, so the fan is simply open and stays
+     open. Narrower and flatter than the pointer version, so the whole hand
+     fits a phone without any of it reaching off the side.
 
-     Each step also switches which --row-w the size cap divides by, to match.
-     A hidden card needs no room, so once it's gone the ones still on screen
-     are free to grow into the space it would have taken -- without this, the
-     row kept budgeting for all seven cards even while showing three of them,
-     which is what made a phone's three cards so much smaller than they
-     needed to be: they were sized to share a row that was never on screen. — */
-@media (max-width: 60rem) {
-  .stage {
-    --card-k: min(
-      calc(clamp(5.5rem, 12vw, 11rem) * var(--hero-scale, 1)),
-      calc((100cqw - 1.5rem) / var(--row-w-tablet, 4))
-    );
-  }
-
-  .slot[data-ring='3'] {
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
-/* — Phone: size over count. Five smaller cards read as cramped at this width
-     no matter how well the budget above is corrected, so a phone trades two
-     more of them away and spends the room on the three that are left instead
-     — closer to the desktop middle card's own size than a five-up row could
-     ever get on a screen this narrow. — */
-@media (max-width: 34rem) {
-  .stage {
-    --card-k: min(
-      calc(clamp(7.5rem, 34vw, 11.5rem) * var(--hero-scale, 1)),
-      calc((100cqw - 1rem) / var(--row-w-mobile, 2.6))
-    );
-  }
-
-  .slot[data-ring='2'] {
-    opacity: 0;
-    pointer-events: none;
-  }
-}
-
-/* The row as a still photograph: no shuffle (stopped in the component), and
-   nothing that moves on its own. */
-@media (prefers-reduced-motion: reduce) {
+     This sits after the rules above and matches them for weight, so it wins
+     on order — a touch that does fire a pointer event gets the same
+     arrangement either way, and nothing is waiting on a hover that will
+     never come. — */
+@media (hover: none) {
+  /* Written against the same selectors as the pointer rules above, not a
+     plainer one: a tap does fire a pointer event, so the stage picks up
+     data-open and data-active on a touch screen too, and a rule that only
+     matched .slot would lose to those and let the fan re-spread under the
+     finger. Matching them and coming later settles it. */
   .slot,
-  .card {
+  .stage[data-open] .slot,
+  .stage:focus-within .slot {
+    --x: var(--open-x);
+    --y: var(--open-y);
+    --r: var(--open-r);
+    /* Tighter than the pointer version so the whole hand fits a phone. */
+    --spread: 0.82;
+  }
+
+  /* A tap shouldn't single a card out and strand it in front — on a touch
+     screen there is nothing to un-hover it with. */
+  .stage[data-open] .slot[data-active],
+  .slot:focus-within {
+    --lift: 0px;
+    z-index: var(--z);
+  }
+
+  .stage[data-open] .slot:not([data-active]) {
+    filter: none;
+  }
+}
+
+/* — Reduced motion — the fan is laid out open and readable from the first
+     paint, and nothing moves between states. The arrangement is still the
+     arrangement; it just doesn't travel to get there. — */
+@media (prefers-reduced-motion: reduce) {
+  /* Same reasoning as the touch block: matched against the open-state
+     selectors so the arrangement can't be changed out from under someone who
+     asked for less movement. */
+  .slot,
+  .stage[data-open] .slot,
+  .stage:focus-within .slot {
+    --x: var(--open-x);
+    --y: var(--open-y);
+    --r: var(--open-r);
+    --spread: 0.9;
     transition: none;
+  }
+
+  .stage[data-open] .slot[data-active],
+  .slot:focus-within {
+    --lift: 0px;
+  }
+
+  .stage[data-open] .slot:not([data-active]) {
+    filter: none;
   }
 }
