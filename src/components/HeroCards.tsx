@@ -19,9 +19,12 @@ const REST_SPREAD = 0.045
 /** And how much they lean at rest, at the outermost card. */
 const REST_ROT = 3
 
-/** Open, as a share of a card's width: a little under half, so each card
- *  covers most of the one behind it the way a dealt hand does. */
-const OPEN_SPREAD = 0.46
+/** Open, as a share of a card's width: each card covers most of the one
+ *  behind it, the way a dealt hand does. Tighter than it looks like it wants
+ *  to be, because the fan's open width is what caps how large a card can be:
+ *  the two trade directly against each other, and at this size the cards
+ *  earn more than the spread does. */
+const OPEN_SPREAD = 0.38
 /** The outermost card's lean when open. */
 const OPEN_ROT = 18
 /** How far the outermost card drops, as a share of a card's height. Squared

@@ -9,7 +9,7 @@
      itself (cqw), so it holds at any width. */
   container-type: inline-size;
   --card-k: min(
-    calc(clamp(6rem, 13vw, 12rem) * var(--hero-scale, 1)),
+    calc(clamp(7rem, 19vw, 19rem) * var(--hero-scale, 1)),
     calc((100cqw - 1.5rem) / var(--stage-w, 4))
   );
 
