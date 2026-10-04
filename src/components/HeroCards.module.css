@@ -1,13 +1,25 @@
 /* The hero's hand of cards. One number — the base unit — sets the whole
-   arrangement; every position in HeroCards.tsx is a multiple of it. */
+   arrangement; every position in HeroCards.tsx is a multiple of it.
+
+   The frame exists only to be the thing the base unit is measured against.
+   An element cannot be its own container: container-type serves cqw to an
+   element's descendants, not to itself, so a cqw used in the stage's own
+   height silently fell back to the viewport while the same unit inside the
+   cards resolved against the stage. The stage then reserved height for a
+   card (viewport / stage width) times larger than the one it drew — a gap
+   above the fan that grew with the window, 85px at 1440 and 247px at 1900.
+   With the measuring moved out here, both resolve against the same width. */
+.frame {
+  container-type: inline-size;
+  width: 100%;
+}
+
 .stage {
   /* The base unit, and the one place the fan's size is decided.
      Two limits, whichever is smaller: the size asked for in the admin, and
      whatever will actually fit across the page. The second is what stops a
      taller setting from pushing the outer cards off the edge — turn it up far
-     enough and the fan simply stops growing. Measured against the stage
-     itself (cqw), so it holds at any width. */
-  container-type: inline-size;
+     enough and the fan simply stops growing. */
   --card-k: min(
     calc(clamp(7rem, 19vw, 19rem) * var(--hero-scale, 1)),
     calc((100cqw - 1.5rem) / var(--stage-w, 4))
@@ -20,7 +32,20 @@
      two numbers come from the real corners of the rotated cards — see the
      comment on them in HeroCards.tsx — plus the lifted card's own rise. */
   height: calc(var(--card-k) * (var(--above, 1.2) + var(--below, 0.2)) + 18px);
-  margin-top: clamp(var(--space-lg), 3.5vw, var(--space-2xl));
+
+  /* Deliberately tighter than the gap under the fan. The cards are the
+     headline's evidence, so they belong to it; the paragraph and the buttons
+     are the next thought. The floor the open fan needs to swing into — about
+     95px of reserved room below the resting stack, see --below above — already
+     supplies the larger break on the other side, so this only has to be small
+     enough that the pair reads as one group. Measured: ~50px above against
+     ~125px below.
+
+     Which is also why the resting stack is not centred in its own box. It
+     sits high on purpose: the empty room beneath it is the open state's, and
+     dropping the cards into it to even the two gaps out would bind the fan to
+     the paragraph instead of to the headline. */
+  margin-top: clamp(var(--space-md), 2vw, var(--space-lg));
 
   /* The layout drops pointer events on content so the background canvas can
      see the cursor, and restores them per element — on links, buttons,

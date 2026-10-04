@@ -183,66 +183,71 @@ export const HeroCards = ({
   const stageW = 2 * half
 
   return (
-    <div
-      className={styles.stage}
-      // Pointer, not mouse: one pair of handlers covers a mouse, a trackpad
-      // and a stylus. The box is sized for the fan at its widest, so a card
-      // opening outward can never cross this boundary and set off the
-      // enter/leave pair again.
-      onPointerEnter={() => setOpen(true)}
-      onPointerLeave={onLeave}
-      data-open={open || undefined}
-      style={
-        {
-          '--count': count,
-          '--hero-scale': (height ?? 100) / 100,
-          '--stage-w': stageW,
-          '--above': above,
-          '--below': below,
-          '--bloom': bloom,
-        } as CSSProperties
-      }
-    >
-      <ul className={styles.fan}>
-        {items.map((card, i) => {
-          const d = i - centre
-          const t = d / maxD
-          const size = sizes[i]
+    // The frame is only here to be measured against: see the note on it in
+    // HeroCards.module.css for why the base unit can't be worked out on the
+    // stage itself.
+    <div className={styles.frame}>
+      <div
+        className={styles.stage}
+        // Pointer, not mouse: one pair of handlers covers a mouse, a trackpad
+        // and a stylus. The box is sized for the fan at its widest, so a card
+        // opening outward can never cross this boundary and set off the
+        // enter/leave pair again.
+        onPointerEnter={() => setOpen(true)}
+        onPointerLeave={onLeave}
+        data-open={open || undefined}
+        style={
+          {
+            '--count': count,
+            '--hero-scale': (height ?? 100) / 100,
+            '--stage-w': stageW,
+            '--above': above,
+            '--below': below,
+            '--bloom': bloom,
+          } as CSSProperties
+        }
+      >
+        <ul className={styles.fan}>
+          {items.map((card, i) => {
+            const d = i - centre
+            const t = d / maxD
+            const size = sizes[i]
 
-          return (
-            <li
-              className={styles.slot}
-              key={card.id ?? i}
-              data-active={active === i || undefined}
-              onPointerEnter={() => setActive(i)}
-              style={
-                {
-                  '--rest-x': d * REST_SPREAD * wRef,
-                  '--rest-y': Math.abs(t) * 0.012 * hRef,
-                  '--rest-r': t * REST_ROT,
-                  '--open-x': d * OPEN_SPREAD * wRef,
-                  '--open-y': t * t * ARC * hRef,
-                  '--open-r': t * OPEN_ROT,
-                  '--cw': size.w,
-                  '--ch': size.h,
-                  // The middle card sits in front at rest, and each step out
-                  // sits one behind — the stack reads from the middle out.
-                  '--z': 100 - Math.round(Math.abs(d) * 10),
-                } as CSSProperties
-              }
-            >
-              <figure className={styles.card}>
-                <MediaImage
-                  className={styles.image}
-                  media={card.image}
-                  priority={i === Math.round(centre)}
-                  sizes="(min-width: 64rem) 18rem, 40vw"
-                />
-              </figure>
-            </li>
-          )
-        })}
-      </ul>
+            return (
+              <li
+                className={styles.slot}
+                key={card.id ?? i}
+                data-active={active === i || undefined}
+                onPointerEnter={() => setActive(i)}
+                style={
+                  {
+                    '--rest-x': d * REST_SPREAD * wRef,
+                    '--rest-y': Math.abs(t) * 0.012 * hRef,
+                    '--rest-r': t * REST_ROT,
+                    '--open-x': d * OPEN_SPREAD * wRef,
+                    '--open-y': t * t * ARC * hRef,
+                    '--open-r': t * OPEN_ROT,
+                    '--cw': size.w,
+                    '--ch': size.h,
+                    // The middle card sits in front at rest, and each step
+                    // out sits one behind — the stack reads from the middle.
+                    '--z': 100 - Math.round(Math.abs(d) * 10),
+                  } as CSSProperties
+                }
+              >
+                <figure className={styles.card}>
+                  <MediaImage
+                    className={styles.image}
+                    media={card.image}
+                    priority={i === Math.round(centre)}
+                    sizes="(min-width: 64rem) 18rem, 40vw"
+                  />
+                </figure>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
     </div>
   )
 }

@@ -1,21 +1,35 @@
-/* Top: enough air under the floating nav for the badge to start a new idea,
-   no more. Bottom: the logo strip continues the hero's argument (who trusts
-   this person), so it follows at a hero-internal distance rather than a full
-   section break. When the strip is hidden, Recent Work brings its own top
-   padding, so this never leaves the next section cramped. */
+/* Top: enough air under the nav for the badge to start a new idea, no more.
+   Bottom: the logo strip continues the hero's argument (who trusts this
+   person), so it follows at a hero-internal distance rather than a full
+   section break — well inside --section, which is what a real break costs.
+   When the strip is hidden, Recent Work brings its own top padding, so this
+   never leaves the next section cramped.
+
+   The same value both ends, because they were already rendering within a
+   couple of pixels of each other and two expressions that agree by accident
+   are worse than one that says so. Scale steps, and fluid on width like
+   every other measurement on the page: the top used to be set in vh, which
+   quietly made the hero's air depend on how tall the window was while
+   nothing around it did. */
 .hero {
-  padding-block: clamp(3.5rem, 9vh, 6.5rem) clamp(3.5rem, 6vw, 5.5rem);
+  padding-block: clamp(var(--space-xl), 6vw, var(--space-3xl));
 }
 
 /* On a phone the hero fills the first screen, so the logo strip under it
    starts below the fold rather than showing a slice of itself on load.
    100svh is the screen with the browser's bars showing — the state the page
-   loads in — less the sticky header above the hero (1rem padding + a 2.75rem
-   tile), and a little more so nothing of the strip's top edge shows. */
+   loads in — less the sticky header above the hero, and a little more so
+   nothing of the strip's top edge shows.
+
+   3rem is the header, measured: the bar hangs off the top edge with no
+   padding above it, so it is exactly its own height. It used to be written
+   as 3.75rem, from when the bar floated under 1rem of padding and stood
+   2.75rem tall — both of which stopped being true when it became one
+   rectangle flush to the top. */
 @media (max-width: 39.99rem) {
   .hero {
-    min-height: calc(100vh - 3.75rem + 0.75rem);
-    min-height: calc(100svh - 3.75rem + 0.75rem);
+    min-height: calc(100vh - 3rem + 0.75rem);
+    min-height: calc(100svh - 3rem + 0.75rem);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -34,7 +48,9 @@
 .badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.625rem;
+  gap: var(--space-2xs);
+  /* Uneven left/right on purpose: the dot carries less visual weight than the
+     text's own edge, so it needs less room beside it to look centred. */
   padding: 0.5rem 0.875rem 0.5rem 0.75rem;
   background: var(--raised);
   border: 1px solid var(--edge);
@@ -101,11 +117,14 @@
   margin-top: clamp(var(--space-md), 2.4vw, var(--space-lg));
 }
 
+/* Two separate decisions, so they need more room between them than the badge
+   has inside itself. At 8px they were tighter than the badge's own dot-to-text
+   gap and read as one segmented control rather than a choice. */
 .actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: var(--space-2xs);
+  gap: var(--space-xs);
   margin-top: clamp(var(--space-lg), 4vw, var(--space-xl));
 }
 
