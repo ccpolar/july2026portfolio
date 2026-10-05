@@ -123,7 +123,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         {/* Before the grid, so that if the grid is ever switched on in
             /admin its squares drift across the sky rather than under it. */}
         <div className={styles.sky} aria-hidden="true">
-          <LandscapeScene scene="clouds" priority />
+          <LandscapeScene scene="clouds" priority animated={false} />
         </div>
         <SiteBackground mode={theme?.backgroundGrid} />
         <LivePreviewTheme initialData={theme} />

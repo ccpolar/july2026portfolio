@@ -30,11 +30,29 @@ export const LandscapeScene = ({
   scene,
   className,
   priority = false,
+  animated = true,
 }: {
   scene: SceneName
   className?: string
-  /** The hero's sky is on screen at once; the footer's is a page away. */
+  /** The sky is on screen at once; the footer's picture is a page away. */
   priority?: boolean
+  /**
+   * Whether this scene gets a canvas for the shader to draw into.
+   *
+   * Without one the painting is simply a painting, and the motion module
+   * skips the scene entirely — it only adopts an element that has both an
+   * image and a canvas.
+   *
+   * The page-wide sky asks for `false`, and not for want of trying: a
+   * `position: fixed`, full-viewport WebGL canvas is mis-composited by
+   * Chromium, which leaves a band across the top of the screen showing
+   * whatever is behind it. It survives promoting the layer, promoting the
+   * canvas, overscanning past the viewport edge, switching the element to
+   * sticky, and taking the sticky header out of the picture; the band tracks
+   * the top of the viewport rather than the layer, so there is nowhere to
+   * move it to. The same scene as a plain image is perfectly stable.
+   */
+  animated?: boolean
 }) => {
   const base = `/landscape/${ART[scene].file}`
 
@@ -64,7 +82,9 @@ export const LandscapeScene = ({
           output (see landscapeMotion.ts), so each path is darkened exactly
           once and neither depends on how the canvas happens to composite. */}
       <div className={styles.veil} />
-      <canvas className={styles.canvas} data-landscape-canvas aria-hidden="true" />
+      {animated ? (
+        <canvas className={styles.canvas} data-landscape-canvas aria-hidden="true" />
+      ) : null}
     </div>
   )
 }

@@ -9,7 +9,13 @@
    It sits in the body rather than inside .content, which means the body's own
    background colour is still behind it — the colour set in /admin stays the
    floor of the page, and remains the whole story if the painting ever fails
-   to load. */
+   to load.
+
+   The sky is a still painting, deliberately: see the note on `animated` in
+   LandscapeScene.tsx for why a fixed canvas can't be made to hold up here.
+   The motion lives in the footer's landscape, which is in normal flow and
+   where the richer movement is anyway — grasses, flowers and water rather
+   than clouds that take a minute to cross. */
 .sky {
   position: fixed;
   inset: 0;
