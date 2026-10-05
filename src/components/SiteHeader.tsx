@@ -27,13 +27,9 @@ const MailIcon = () => (
 )
 
 /**
- * One bar hanging off the top of the screen: the mark at the left, the ways
- * into the work in the middle, and the way to get in touch filled in at the
- * right so the one thing worth doing is the one thing that is a button.
- *
- * The mark stands alone — the name isn't set beside it. It is still the
- * link's accessible name, so anyone listening to the page hears whose site
- * this is; it just isn't said twice to anyone looking at it.
+ * One bar hanging off the top of the screen: the mark and name at the left,
+ * the ways into the work in the middle, and the way to get in touch filled in
+ * at the right so the one thing worth doing is the one thing that is a button.
  *
  * It inverts the page rather than sitting on it — near-black on a light page —
  * which is what lets it stay legible over whatever happens to be scrolling
@@ -58,6 +54,7 @@ export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
               {siteName.charAt(0)}
             </span>
           )}
+          <span className={styles.wordmark}>{siteName}</span>
         </a>
 
         <div className={styles.links}>
