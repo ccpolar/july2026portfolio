@@ -1,0 +1,43 @@
+/* Sits in the footer's legal strip among the other small print, because
+   that is where this site already keeps its utilities and because a control
+   for an effect shouldn't compete with the work the page is showing.
+   Inherits its colour from the strip, so it stays readable whatever the
+   strip is set to. */
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  font-size: var(--text-label);
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  /* A step back from the links beside it: this is a preference, not a
+     destination. */
+  opacity: 0.78;
+  transition: opacity var(--dur-fast, 160ms) var(--ease-out-quart);
+}
+
+.toggle:hover {
+  opacity: 1;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+.toggle:focus-visible {
+  opacity: 1;
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toggle {
+    transition: none;
+  }
+}

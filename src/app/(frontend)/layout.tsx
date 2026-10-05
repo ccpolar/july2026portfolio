@@ -3,6 +3,7 @@ import React from 'react'
 
 import { ContactModal } from '@/components/ContactModal'
 import { type IntroImage, IntroOverlay } from '@/components/IntroOverlay'
+import { LandscapeMotionProvider } from '@/components/LandscapeMotion'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { NoImageDownloads } from '@/components/NoImageDownloads'
 import { SiteBackground } from '@/components/SiteBackground'
@@ -122,12 +123,18 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         <LivePreviewTheme initialData={theme} />
         {/* Public site only — /admin keeps its normal right-click. */}
         <NoImageDownloads />
-        <div className={styles.content} data-site-content>
-          <a className="skip-link" href="#main">
-            Skip to content
-          </a>
-          {children}
-        </div>
+        {/* Drives the painted hero sky and footer landscape, and gives the
+            footer's pause control something to talk to. Wraps the content
+            rather than sitting beside it so one instance covers both scenes
+            and a single control pauses the pair. */}
+        <LandscapeMotionProvider>
+          <div className={styles.content} data-site-content>
+            <a className="skip-link" href="#main">
+              Skip to content
+            </a>
+            {children}
+          </div>
+        </LandscapeMotionProvider>
         {/* One dialog for the whole site — the header's "Get in touch" and
             the hero's "Start a project" both open it by id rather than each
             holding their own copy. */}

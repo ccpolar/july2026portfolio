@@ -1,0 +1,474 @@
+/*
+ * Mountain footer — a linocut Rocky Mountain scene in the site palette.
+ * Design source: Paper, "Cameron Pagano - Mountains Footer (Site Palette)", 1440 × 846.
+ *
+ * Every colour derives from the theme variables (--bg, --ink, --signal,
+ * --raised), so the scene follows whatever is set in /admin. The five greys
+ * are ink mixed into the silver ground:
+ *   meadow 15% · foothill 30% · rock 45% · rock-shade 65% · pine 85%
+ * Change the look through those, never by editing MountainIllustration's paths.
+ */
+
+.footer {
+  --footer-sky: var(--bg);
+  --footer-ink: var(--ink);
+  --footer-signal: var(--signal);
+  --footer-raised: var(--raised);
+  --footer-meadow: color-mix(in oklch, var(--footer-ink) 15%, var(--footer-sky));
+  --footer-foothill: color-mix(in oklch, var(--footer-ink) 30%, var(--footer-sky));
+  --footer-rock: color-mix(in oklch, var(--footer-ink) 45%, var(--footer-sky));
+  --footer-rock-shade: color-mix(in oklch, var(--footer-ink) 65%, var(--footer-sky));
+  --footer-pine: color-mix(in oklch, var(--footer-ink) 85%, var(--footer-sky));
+
+  /* The scene's height follows the 1440 × 846 design ratio, clamped so a wide
+     screen doesn't grow the footer past the peaks. */
+  --art-h: clamp(420px, 58.75vw, 1100px);
+
+  /* How much of the scene sits below its tallest peak (y 250 of 846). The
+     scene scales with the screen but the text doesn't, so the text has to be
+     kept above this line rather than placed where it sat in the 1440 design:
+     at 1024 it would otherwise land on the mountains. The scene is scaled by
+     its height up to 1872px wide, and by the width beyond, where the art-h
+     clamp stops growing and the sky starts cropping. */
+  --below-peak: max(calc(var(--art-h) * 0.7045), 41.39vw);
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: var(--art-h);
+  padding-bottom: calc(var(--below-peak) + 24px);
+  /* No fill of its own: the site's background runs on behind the scene. */
+  color: var(--footer-ink);
+  font-family: var(--font-text);
+  /* Name set inline in SiteFooter.tsx — see the note in SiteHeader.module.css. */
+}
+
+.art {
+  position: absolute;
+  inset: auto 0 0 0;
+  height: var(--art-h);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* The layout hands pointer events back to every svg on the page; the scene is
+   decoration and should never be the thing under the cursor. */
+.footer .illustration {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* At night the scene is not the day scene inverted: the sky darkens, the
+   mountains stay mid-grey so they read against it, the pines go darkest, and
+   the snow and clouds keep their light. Deriving these the usual way — ink
+   mixed into the sky — would swap the trees and the snow, because in dark
+   mode the ink is the near-white one. */
+:global(html[data-theme='dark']) .footer {
+  --footer-meadow: #1a1a1a;
+  --footer-foothill: #2b2b2b;
+  --footer-rock: #3c3c3c;
+  --footer-rock-shade: #2e2e2e;
+  --footer-pine: #0b0b0b;
+  --footer-raised: #d6d6d6;
+  /* The trail is drawn in the snow's colour. At night that put the legal
+     line — light text, lying on the ground — across bright white tracks, so
+     the ground's marks dim while the snow and clouds keep their light. */
+  --footer-raised-stroke: #4a4a4a;
+  --footer-ground-mark: #3a3a3a;
+}
+
+/* The same reasoning as the trail, for the tracks worn into the meadow:
+   they're painted in the snow's colour too, and only the ones down here sit
+   under text. Scoped to the meadow layer so the snow keeps its own. */
+:global(html[data-theme='dark']) .footer :global([data-layer='meadow'] .mf-raised) {
+  fill: var(--footer-ground-mark);
+}
+
+/* — Illustration colours (classes emitted by MountainIllustration) — */
+.footer :global(.mf-sky) { fill: var(--footer-sky); }
+.footer :global(.mf-raised) { fill: var(--footer-raised); }
+.footer :global(.mf-raised-stroke) { stroke: var(--footer-raised-stroke, var(--footer-raised)); }
+.footer :global(.mf-rock) { fill: var(--footer-rock); }
+.footer :global(.mf-rock-shade) { fill: var(--footer-rock-shade); }
+.footer :global(.mf-pine) { fill: var(--footer-pine); }
+.footer :global(.mf-signal) { fill: var(--footer-signal); }
+.footer :global(.mf-foothill) { fill: var(--footer-foothill); }
+.footer :global(.mf-meadow) { fill: var(--footer-meadow); }
+.footer :global(.mf-ink) { fill: var(--footer-ink); }
+
+/* A visible breeze: keep roots planted and the mountains / ground still.
+   Transform the painted shapes, never animate the expensive noise filters.
+   Negative delays and varied periods avoid a synchronized, mechanical sway.
+
+   Each swaying shape sits inside TWO groups: filter="url(#mf-X)" on the
+   inner one and nothing on the outer [data-sway] one. The animation targets
+   [data-sway], never the filtered element or the shape itself -- animate a
+   transform on something a filter is reading and the browser has to re-run
+   that filter's noise every single frame, on the whole canvas that filter
+   covers, because its input just changed. Keeping the filter's input fixed
+   and moving an unfiltered ancestor instead means the filter renders once
+   and the animation is then just moving a picture, independent of effort. */
+.art {
+  --wind-state: paused;
+}
+
+.art[data-wind='running'] {
+  --wind-state: running;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .illustration :global([data-layer='aspens'] [data-sway]) {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: foliage-breeze 3.6s ease-in-out infinite;
+    animation-delay: -2.1s;
+    animation-play-state: var(--wind-state);
+  }
+
+  .illustration :global([data-layer='aspens'] [data-sway]:nth-of-type(3n)) {
+    animation-duration: 4.4s;
+    animation-delay: -5.4s;
+  }
+
+  .illustration :global([data-layer='aspens'] [data-sway]:nth-of-type(3n + 1)) {
+    animation-duration: 4.1s;
+    animation-delay: -3.8s;
+  }
+
+  .illustration :global([data-layer='foothills'] [data-sway]),
+  .illustration :global([data-layer='spruce'] [data-sway]) {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: pine-breeze 4.8s ease-in-out infinite;
+    animation-delay: -4.2s;
+    animation-play-state: var(--wind-state);
+  }
+
+  .illustration :global([data-layer='foothills'] [data-sway]:nth-of-type(2n)) {
+    animation-duration: 6s;
+    animation-delay: -7.6s;
+  }
+
+  .illustration :global([data-layer='spruce'] [data-sway]) {
+    animation-duration: 6.8s;
+    animation-delay: -6.3s;
+  }
+
+  /* Original + mirrored cloud tiles repeat every 2880 design units.
+     A full-period translation loops seamlessly, always traveling left. This
+     one was already structured the right way around -- filter inside each
+     CloudTile, animation on the ancestor data-cloud-track -- which is why it
+     was never part of the slowdown the layers above had. */
+  .illustration :global([data-cloud-track]) {
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: cloud-drift 160s linear infinite;
+    animation-delay: 0s;
+    animation-play-state: var(--wind-state);
+  }
+}
+
+@keyframes foliage-breeze {
+  0%, 100% { transform: translateX(-4px) skewX(-13deg); }
+  40% { transform: translateX(4px) skewX(15deg); }
+  72% { transform: translateX(-1px) skewX(-4deg); }
+}
+
+@keyframes pine-breeze {
+  0%, 100% { transform: skewX(-3.5deg); }
+  45% { transform: skewX(4.5deg); }
+  76% { transform: skewX(-1deg); }
+}
+
+@keyframes cloud-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-2880px); }
+}
+
+/* — Content — */
+.inner {
+  max-width: var(--max);
+  margin-inline: auto;
+  padding: 62px var(--gutter) 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 48px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 480px;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 18px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.mark {
+  width: 97px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.name {
+  font-family: var(--font-display);
+  /* Off the text scale on purpose: the wordmark is set to the height of the
+     mark beside it, not to the running text. */
+  font-size: 1.875rem;
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+}
+
+.tagline {
+  max-width: 470px;
+  font-size: var(--text-body);
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: 0.005em;
+}
+
+/* The newsletter keeps its own compact form; this only sets its prompt in
+   the tagline's voice, a step quieter. */
+.newsletter {
+  display: grid;
+  gap: 10px;
+  margin-top: 4px;
+  max-width: 26rem;
+}
+
+.newsletterNote {
+  font-size: var(--text-label);
+  line-height: 1.45;
+  color: color-mix(in oklch, var(--footer-ink) 72%, var(--footer-sky));
+}
+
+.columns {
+  display: flex;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.column:nth-child(1) { width: 185px; }
+.column:nth-child(2) { width: 186px; }
+.column:nth-child(3) { width: 130px; }
+
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+}
+
+/* Line height on the list, not just the link: each item's line box is sized
+   by the li's own font, which would otherwise be the body's taller one and
+   open the rows up past the design's 33px rhythm. */
+.list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.link {
+  color: inherit;
+  text-decoration: none;
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  text-underline-offset: 3px;
+}
+
+.link:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+.link:focus-visible,
+.wordmark:focus-visible {
+  outline: 2px solid var(--footer-signal);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Legal line sits on the meadow at the bottom of the scene: the copyright
+   from the left, the page links from the right, on one baseline. */
+.legal,
+.legalLinks {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.copyright {
+  font-size: var(--text-sm);
+  line-height: 1.35;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.legalLinks {
+  margin: 0;
+  list-style: none;
+  justify-content: flex-end;
+  gap: 50px;
+  /* Only the links themselves take the pointer; the rest of the row is the
+     scene underneath. */
+  pointer-events: none;
+}
+
+.legalLinks li {
+  pointer-events: auto;
+}
+
+.legalLinks .link {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+}
+
+/* — Tablet and phone: content, then the scene, with the legal line laid over
+   the scene's ground as on desktop — */
+@media (max-width: 960px) {
+  .footer {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-bottom: 0;
+  }
+
+  /* Full width: in a column flexbox, the auto inline margins that centre the
+     content on desktop would otherwise shrink it to fit and float it
+     mid-screen, off the page's left edge. */
+  .inner {
+    order: 1;
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 40px;
+    padding-top: 48px;
+  }
+
+  /* Services, Pages and Socials always side by side, sharing the width
+     equally rather than at the design's fixed desktop widths. */
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 16px;
+  }
+
+  .column:nth-child(n) {
+    width: auto;
+  }
+
+  /* In flow instead of behind the content. The scene's sky is empty, so it
+     rises out of the site's background with no seam. */
+  .art {
+    order: 3;
+    position: relative;
+    inset: auto;
+    z-index: 0;
+    height: clamp(300px, 70vw, 560px);
+    margin-top: 24px;
+  }
+
+  /* The links join the footer's text, after the columns and before the
+     scene. Over the ground they fell on the busiest part of the picture and
+     couldn't be read. */
+  .legalLinks {
+    order: 2;
+    position: static;
+    max-width: none;
+    margin-inline: 0;
+    padding-inline: var(--gutter);
+    margin-top: 20px;
+    justify-content: flex-start;
+    gap: 24px;
+  }
+
+  /* On the scene's ground, pinned to the footer's bottom edge, which is the
+     scene's bottom edge here. */
+  .legal {
+    max-width: none;
+    margin-inline: 0;
+    bottom: 12px;
+  }
+
+  .copyright,
+  .legalLinks .link {
+    font-size: var(--text-label);
+    letter-spacing: 0.01em;
+  }
+}
+
+/* Phones: everything a step smaller so three columns fit across. */
+@media (max-width: 560px) {
+  .inner {
+    gap: 32px;
+    padding-top: 40px;
+  }
+
+  .columns {
+    column-gap: 12px;
+  }
+
+  .column {
+    gap: 12px;
+  }
+
+  .heading {
+    font-size: var(--text-sm);
+  }
+
+  .list {
+    gap: 9px;
+    font-size: var(--text-label);
+    line-height: 1.3;
+  }
+
+  .link {
+    font-size: var(--text-label);
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+  }
+
+  /* The ground is shallow at this size, so the line sits low and small. */
+  .legal {
+    bottom: 8px;
+  }
+
+  .legalLinks {
+    gap: 16px;
+  }
+
+  .copyright,
+  .legalLinks .link {
+    font-size: var(--text-label);
+  }
+}
