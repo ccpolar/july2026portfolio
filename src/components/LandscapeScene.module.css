@@ -43,6 +43,15 @@
   );
 }
 
+/* The three layers, stacked explicitly rather than by document order.
+
+   Order here is not optional and must not be left implicit: a WebGL canvas
+   is promoted to its own compositing layer, and a promoted layer sits above
+   siblings that have no z-index of their own however late they appear in the
+   document. The night veil below is a pseudo-element, so without a number of
+   its own it loses to the canvas and dims only the still image underneath —
+   which looks correct until the shader starts drawing, and then silently
+   isn't. */
 .art,
 .canvas {
   position: absolute;
@@ -53,13 +62,29 @@
   pointer-events: none;
 }
 
+/* The still painting, underneath. */
+.art {
+  z-index: 0;
+}
+
 /* The painting is what's on screen until the shader has a frame worth
    showing; then the canvas crossfades over it. They are the same picture at
    that moment, so the fade is only there to cover the texture upload on a
    slow machine — not a reveal. Removing `motion-ready` (no WebGL, a lost
    context, or the OS asking for less motion) puts the painting straight
    back. */
+/* The veil that darkens the still painting at night, between the two layers
+   so it covers the image and not the canvas. Nothing in light mode. */
+.veil {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: color-mix(in oklch, var(--bg) calc(var(--scene-dim, 0) * 100%), transparent);
+}
+
 .canvas {
+  z-index: 2;
   opacity: 0;
   transition: opacity 320ms var(--ease-out-quart);
 }
@@ -85,20 +110,17 @@
    — the lake still the lightest thing in the meadow, the pines still the
    darkest.
 
-   It sits above both layers, so the shader's frame is dimmed to exactly the
-   same degree as the still image it replaces and switching between them is
+   One number, declared here and read by both paths: the veil above mixes the
+   page colour over the still image with it, and the shader reads it off this
+   element to do the same arithmetic to its own output. Set it here and both
+   follow, so the two can't drift apart and the swap between them is
    invisible.
 
-   The strength is set by contrast, not by taste: the page's muted body text
-   is the palest thing that has to be read over these, and at anything weaker
-   than this it falls under 4.5:1 against the brightest paint — the sky
+   The strength is decided by contrast, not taste: the page's muted body text
+   is the palest thing that has to be read over these, and anything weaker
+   than this drops it under 4.5:1 against the brightest paint — the open sky
    behind the hero's paragraph, and the snow on the peaks. 86% puts the
-   whitest pixel in either painting at about rgb(46), which carries that text
-   at 4.7:1 with the headline far above it. */
-:global(html[data-theme='dark']) .scene::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: color-mix(in oklch, var(--bg) 86%, transparent);
-  pointer-events: none;
+   whitest pixel in either painting at about rgb(46). */
+:global(html[data-theme='dark']) .scene {
+  --scene-dim: 0.86;
 }

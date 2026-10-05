@@ -21,7 +21,7 @@
 
 const vertex = `attribute vec2 a;varying vec2 uv;void main(){uv=vec2((a.x+1.)*.5,(1.-a.y)*.5);gl_Position=vec4(a,0.,1.);}`
 
-const fragment = `precision highp float;varying vec2 uv;uniform sampler2D image;uniform float time;uniform float mode;uniform vec2 view;
+const fragment = `precision highp float;varying vec2 uv;uniform sampler2D image;uniform float time;uniform float mode;uniform vec2 view;uniform float dim;uniform vec3 dimColor;
 float ellipse(vec2 p,vec2 c,vec2 r){float d=length((p-c)/r);return 1.-smoothstep(.75,1.,d);}
 void main(){
  vec2 p=uv;float aspect=view.x/view.y;vec2 cover=aspect>2.?vec2(1.,2./aspect):vec2(aspect/2.,1.);p=(p-.5)*cover+.5;vec2 q=p;float t=time;
@@ -45,7 +45,13 @@ void main(){
   float anchor=.25+.75*pow(abs(sin(p.y*38.+p.x*13.)),1.5);
   q.x+=plant*.0048*gust*anchor;q.y+=plant*.0011*sin(t*1.13+p.x*15.+.6)*anchor;
  }
- vec4 color=texture2D(image,clamp(q,vec2(.001),vec2(.999)));gl_FragColor=color;
+ vec4 color=texture2D(image,clamp(q,vec2(.001),vec2(.999)));
+ // Night, applied here rather than by a layer over the top: a canvas running
+ // WebGL is promoted to its own compositing layer, and an overlay above it is
+ // not reliably composited over the frames it draws. Doing it in the shader
+ // means what's on screen is dimmed by construction. Same arithmetic as the
+ // CSS veil over the still image, so the two match.
+ gl_FragColor=vec4(mix(color.rgb,dimColor,dim),1.);
 }`
 
 export type LandscapeMotion = {
@@ -79,6 +85,8 @@ type Scene = {
   texture?: WebGLTexture | null
   clock?: WebGLUniformLocation | null
   view?: WebGLUniformLocation | null
+  dim?: WebGLUniformLocation | null
+  dimColor?: WebGLUniformLocation | null
   upload?: () => void
   error?: () => void
   contextlost?: () => void
@@ -98,6 +106,25 @@ type Scene = {
  * motion. The canvas only fades in over it once there is something better to
  * show.
  */
+/**
+ * Turns any CSS colour the page is actually using — a var() chain, hex,
+ * oklch — into the 0..1 components the shader wants, by letting the browser
+ * compute it and then letting a 2D canvas decode it.
+ */
+const toRgb = (expression: string): [number, number, number] => {
+  const probe = document.createElement('span')
+  probe.style.color = expression
+  document.body.appendChild(probe)
+  const computed = getComputedStyle(probe).color
+  document.body.removeChild(probe)
+  const ctx = document.createElement('canvas').getContext('2d')
+  if (!ctx) return [0, 0, 0]
+  ctx.fillStyle = computed
+  ctx.fillRect(0, 0, 1, 1)
+  const [r, g, b] = ctx.getImageData(0, 0, 1, 1).data
+  return [r / 255, g / 255, b / 255]
+}
+
 export function createLandscapeMotion(
   root: ParentNode = document,
   options: Options = {},
@@ -144,6 +171,31 @@ export function createLandscapeMotion(
     gl.uniform1f(s.clock!, time)
     gl.drawArrays(gl.TRIANGLES, 0, 6)
   }
+
+  /**
+   * How far towards the page's own colour this scene should sit, read from
+   * the stylesheet so the decision stays with the design rather than being a
+   * number buried in here. Dark mode sets it; light mode leaves it at zero.
+   */
+  function readDim(s: Scene) {
+    if (!s.program) return
+    const amount = parseFloat(getComputedStyle(s.element).getPropertyValue('--scene-dim')) || 0
+    const [r, g, b] = amount > 0 ? toRgb('var(--bg)') : [0, 0, 0]
+    s.gl.useProgram(s.program)
+    s.gl.uniform1f(s.dim!, amount)
+    s.gl.uniform3f(s.dimColor!, r, g, b)
+  }
+
+  // The theme can change under a scene at any time, from the toggle in the
+  // header or from the system. Watching the attribute catches every route to
+  // it, including one set directly without announcing itself.
+  const theme = new MutationObserver(() => {
+    states.forEach((s) => {
+      readDim(s)
+      if (s.ready && s.visible) draw(s)
+    })
+  })
+  theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
 
   function tick(now: number) {
     raf = 0
@@ -244,6 +296,9 @@ export function createLandscapeMotion(
       )
       s.clock = gl.getUniformLocation(s.program!, 'time')
       s.view = gl.getUniformLocation(s.program!, 'view')
+      s.dim = gl.getUniformLocation(s.program!, 'dim')
+      s.dimColor = gl.getUniformLocation(s.program!, 'dimColor')
+      readDim(s)
       s.upload = () => {
         if (disposed || s.lost) return
         try {
@@ -309,6 +364,7 @@ export function createLandscapeMotion(
       if (disposed) return
       disposed = true
       stop()
+      theme.disconnect()
       document.removeEventListener('visibilitychange', visibility)
       media.removeEventListener('change', preference)
       for (const s of states) {

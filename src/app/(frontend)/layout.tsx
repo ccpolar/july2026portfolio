@@ -4,6 +4,7 @@ import React from 'react'
 import { ContactModal } from '@/components/ContactModal'
 import { type IntroImage, IntroOverlay } from '@/components/IntroOverlay'
 import { LandscapeMotionProvider } from '@/components/LandscapeMotion'
+import { LandscapeScene } from '@/components/LandscapeScene'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { NoImageDownloads } from '@/components/NoImageDownloads'
 import { SiteBackground } from '@/components/SiteBackground'
@@ -119,6 +120,11 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         />
       </head>
       <body>
+        {/* Before the grid, so that if the grid is ever switched on in
+            /admin its squares drift across the sky rather than under it. */}
+        <div className={styles.sky} aria-hidden="true">
+          <LandscapeScene scene="clouds" priority />
+        </div>
         <SiteBackground mode={theme?.backgroundGrid} />
         <LivePreviewTheme initialData={theme} />
         {/* Public site only — /admin keeps its normal right-click. */}

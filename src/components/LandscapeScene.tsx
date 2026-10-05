@@ -59,6 +59,11 @@ export const LandscapeScene = ({
         decoding="async"
         {...(priority ? { fetchPriority: 'high' as const } : { loading: 'lazy' as const })}
       />
+      {/* Dims the still painting at night. A real element between the two
+          layers, not a pseudo-element over both: the shader dims its own
+          output (see landscapeMotion.ts), so each path is darkened exactly
+          once and neither depends on how the canvas happens to composite. */}
+      <div className={styles.veil} />
       <canvas className={styles.canvas} data-landscape-canvas aria-hidden="true" />
     </div>
   )

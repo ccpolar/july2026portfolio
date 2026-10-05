@@ -13,40 +13,6 @@
    nothing around it did. */
 .hero {
   padding-block: clamp(var(--space-xl), 6vw, var(--space-3xl));
-  /* Above the sky behind it. A stacking order local to the frame, so this
-     can't reach past it and interfere with the header or the modal. */
-  position: relative;
-  z-index: 1;
-}
-
-/* Full-bleed, and its own stacking context so the two layers inside order
-   themselves without anything else on the page having to know about them. */
-.frame {
-  position: relative;
-  isolation: isolate;
-}
-
-/* The painted sky.
-
-   It overhangs the top of the frame rather than starting at it: the nav is a
-   sticky bar with no padding above it, so the hero begins at the bar's lower
-   edge, and a sky that began there too would leave a strip of page
-   background across the top of the screen with the bar floating in it. The
-   overhang is generous on purpose — more than the bar is tall — because
-   anything spilling past the top of the document is simply not drawn, while
-   falling short would show as a seam. No layout changes either way: this is
-   positioned, so the column below is untouched.
-
-   Not clipped by the frame, which is why .frame has no overflow of its own;
-   the scene clips its own picture. */
-.sky {
-  --scene-rise: 5rem;
-  /* And out again at the bottom, into the page. The painting is already
-     palest along its lower edge, so this only has to dissolve the line where
-     the drifting grid behind the page starts showing again. */
-  --scene-fade-bottom: 8rem;
-
-  z-index: 0;
 }
 
 /* On a phone the hero fills the first screen, so the logo strip under it

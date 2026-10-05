@@ -54,11 +54,21 @@
   min-height: clamp(34rem, 50vw, 56rem);
 }
 
-/* The painting starts rather than being cut in: it fades up out of the page
-   over its first 90px. See LandscapeScene.module.css for why this is a mask
-   on the picture and not a strip of page colour laid over it. */
+/* The painting's own sky is dissolved away, not just softened at the edge.
+
+   The page carries a painted sky of its own, pinned behind everything, and
+   this picture has a second one across its top third. Two skies meeting
+   would read as two pictures stacked; so the mask here runs long — through
+   the whole of the painted sky and up to the ridgeline — and what is left is
+   mountains, water and meadow rising out of the same clouds the page has
+   been showing all the way down.
+
+   A proportion rather than a length, because the share of the picture its
+   sky occupies doesn't change with the window, but the number of pixels
+   does. See LandscapeScene.module.css for why this is a mask on the picture
+   and not a panel of colour over it. */
 .art {
-  --scene-fade-top: 90px;
+  --scene-fade-top: 46%;
 
   z-index: 0;
 }
