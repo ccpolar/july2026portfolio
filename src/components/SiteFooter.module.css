@@ -66,9 +66,10 @@
    A proportion rather than a length, because the share of the picture its
    sky occupies doesn't change with the window, but the number of pixels
    does. See LandscapeScene.module.css for why this is a mask on the picture
-   and not a panel of colour over it. */
+   and not a panel of colour over it — and for why only a scene that needs
+   one gets one. */
 .art {
-  --scene-fade-top: 46%;
+  --scene-mask: linear-gradient(to bottom, transparent 0, #000 46%, #000 100%);
 
   z-index: 0;
 }
@@ -273,7 +274,7 @@
     --scene-height: var(--band);
     /* Shorter fade, because the picture itself is shorter — and it now falls
        between the content and the picture, where the real edge is. */
-    --scene-fade-top: 56px;
+    --scene-mask: linear-gradient(to bottom, transparent 0, #000 56px, #000 100%);
   }
 
   .inner {

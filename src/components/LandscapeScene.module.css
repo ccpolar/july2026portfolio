@@ -28,19 +28,19 @@
      reach the drifting-square canvas behind them, not stop here. */
   pointer-events: none;
 
-  /* …and the other two fade the picture out at its edges instead of ending
-     it on a line. This has to be a mask, not a panel of page colour laid on
-     top: the site's drifting grid is a fixed canvas *behind* the page, so
-     covering the join with an opaque strip only moves the line to the top of
-     the strip, where the grid stops. Masking lets the grid carry on showing
-     through the painting as it fades, and there is no edge anywhere. */
-  mask-image: linear-gradient(
-    to bottom,
-    transparent 0,
-    #000 var(--scene-fade-top, 0px),
-    #000 calc(100% - var(--scene-fade-bottom, 0px)),
-    transparent 100%
-  );
+  /* …and --scene-mask fades the picture out at an edge instead of ending it
+     on a line. It has to be a mask rather than a panel of page colour laid
+     on top, because whatever is behind the painting has to keep showing
+     through as it fades; an opaque strip would only move the line to the top
+     of the strip.
+
+     It defaults to none, and a scene that doesn't need one must not be given
+     one. A mask turns the scene into a layer the compositor has to assemble
+     by hand, and on the sky — which is fixed, full-viewport, and sits under
+     a sticky header — Chromium left a band the exact height of that header
+     unpainted, showing the page colour through it. The mask there was doing
+     nothing visible and breaking the thing it was attached to. */
+  mask-image: var(--scene-mask, none);
 }
 
 /* The three layers, stacked explicitly rather than by document order.
