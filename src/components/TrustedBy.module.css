@@ -85,7 +85,7 @@
 }
 
 :global(html[data-theme='dark']) .cell:hover {
-  background: #ededed;
+  background: var(--ink);
   border-color: rgb(255 255 255 / 0.16);
 }
 

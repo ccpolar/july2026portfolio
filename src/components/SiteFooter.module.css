@@ -34,6 +34,9 @@
 :global(html[data-theme='dark']) .footer {
   --footer-ink: var(--ink);
   --footer-muted: color-mix(in oklch, var(--ink) 72%, transparent);
+  /* The strip's daylight pine is too warm to sit under a moonlit sky; at
+     night it takes the deepest blue in the palette instead. */
+  --footer-ground: #0b1725;
 }
 
 /* — The picture —
@@ -70,6 +73,12 @@
    one gets one. */
 .art {
   --scene-mask: linear-gradient(to bottom, transparent 0, #000 46%, #000 100%);
+  /* At night this picture is veiled by a gradient rather than one flat
+     amount: heaviest where its sky meets the page's, lifting towards the
+     meadow so the lake and the flowers keep some colour after dark. Both
+     numbers live with the dark palette in theme.ts. */
+  --scene-dim-from: var(--scene-dim-top);
+  --scene-dim-to: var(--scene-dim-bottom);
 
   z-index: 0;
 }

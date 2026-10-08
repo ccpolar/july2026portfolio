@@ -76,11 +76,21 @@
 /* The veil that darkens the still painting at night, between the two layers
    so it covers the image and not the canvas. Nothing in light mode. */
 .veil {
+  --from: var(--scene-dim-from, var(--scene-dim, 0));
+  --to: var(--scene-dim-to, var(--scene-dim, 0));
+
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  background: color-mix(in oklch, var(--bg) calc(var(--scene-dim, 0) * 100%), transparent);
+  /* Top to bottom, the same direction and the same two numbers the shader
+     reads off this element — so the still painting and the drawn frame are
+     darkened identically and swapping between them is invisible. A scene
+     that wants one flat amount just leaves both ends equal. */
+  background: linear-gradient(
+    color-mix(in oklch, var(--scene-veil, var(--bg)) calc(var(--from) * 100%), transparent),
+    color-mix(in oklch, var(--scene-veil, var(--bg)) calc(var(--to) * 100%), transparent)
+  );
 }
 
 .canvas {
@@ -110,17 +120,12 @@
    — the lake still the lightest thing in the meadow, the pines still the
    darkest.
 
-   One number, declared here and read by both paths: the veil above mixes the
-   page colour over the still image with it, and the shader reads it off this
-   element to do the same arithmetic to its own output. Set it here and both
-   follow, so the two can't drift apart and the swap between them is
-   invisible.
+   The colour and the strengths come from the moonlit design and live in
+   theme.ts beside the rest of the dark palette — --scene-veil, --scene-dim
+   and the footer's two-ended pair. They are read here by the veil above and
+   off this same element by the shader, so the two can't drift apart.
 
-   The strength is decided by contrast, not taste: the page's muted body text
-   is the palest thing that has to be read over these, and anything weaker
-   than this drops it under 4.5:1 against the brightest paint — the open sky
-   behind the hero's paragraph, and the snow on the peaks. 86% puts the
-   whitest pixel in either painting at about rgb(46). */
-:global(html[data-theme='dark']) .scene {
-  --scene-dim: 0.86;
-}
+   The strength is also answerable to contrast, not only to taste: the page's
+   muted text is the palest thing that has to be read over these, and at the
+   footer's lightest end it still clears 4.5:1 against the brightest paint —
+   the open sky behind the hero's paragraph, and the snow on the peaks. */

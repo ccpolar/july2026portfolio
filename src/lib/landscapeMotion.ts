@@ -21,7 +21,7 @@
 
 const vertex = `attribute vec2 a;varying vec2 uv;void main(){uv=vec2((a.x+1.)*.5,(1.-a.y)*.5);gl_Position=vec4(a,0.,1.);}`
 
-const fragment = `precision highp float;varying vec2 uv;uniform sampler2D image;uniform float time;uniform float mode;uniform vec2 view;uniform float dim;uniform vec3 dimColor;
+const fragment = `precision highp float;varying vec2 uv;uniform sampler2D image;uniform float time;uniform float mode;uniform vec2 view;uniform vec2 dim;uniform vec3 dimColor;
 float ellipse(vec2 p,vec2 c,vec2 r){float d=length((p-c)/r);return 1.-smoothstep(.75,1.,d);}
 void main(){
  vec2 p=uv;float aspect=view.x/view.y;vec2 cover=aspect>2.?vec2(1.,2./aspect):vec2(aspect/2.,1.);p=(p-.5)*cover+.5;vec2 q=p;float t=time;
@@ -50,8 +50,9 @@ void main(){
  // WebGL is promoted to its own compositing layer, and an overlay above it is
  // not reliably composited over the frames it draws. Doing it in the shader
  // means what's on screen is dimmed by construction. Same arithmetic as the
- // CSS veil over the still image, so the two match.
- gl_FragColor=vec4(mix(color.rgb,dimColor,dim),1.);
+ // CSS veil over the still image, so the two match — including the gradient,
+ // which runs top to bottom of the element exactly as the CSS one does.
+ gl_FragColor=vec4(mix(color.rgb,dimColor,mix(dim.x,dim.y,uv.y)),1.);
 }`
 
 export type LandscapeMotion = {
@@ -179,10 +180,20 @@ export function createLandscapeMotion(
    */
   function readDim(s: Scene) {
     if (!s.program) return
-    const amount = parseFloat(getComputedStyle(s.element).getPropertyValue('--scene-dim')) || 0
-    const [r, g, b] = amount > 0 ? toRgb('var(--bg)') : [0, 0, 0]
+    const css = getComputedStyle(s.element)
+    const num = (name: string, fallback: number) => {
+      const v = parseFloat(css.getPropertyValue(name))
+      return Number.isFinite(v) ? v : fallback
+    }
+    // A scene veils by one amount unless it asks for a gradient, which the
+    // footer does so its meadow keeps more colour than its sky.
+    const base = num('--scene-dim', 0)
+    const from = num('--scene-dim-from', base)
+    const to = num('--scene-dim-to', base)
+    const veil = css.getPropertyValue('--scene-veil').trim() || 'var(--bg)'
+    const [r, g, b] = from > 0 || to > 0 ? toRgb(veil) : [0, 0, 0]
     s.gl.useProgram(s.program)
-    s.gl.uniform1f(s.dim!, amount)
+    s.gl.uniform2f(s.dim!, from, to)
     s.gl.uniform3f(s.dimColor!, r, g, b)
   }
 

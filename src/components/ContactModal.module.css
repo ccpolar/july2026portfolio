@@ -38,11 +38,13 @@
 }
 
 /* Dark mode: the page is already dark, so there's nothing to invert — the
-   shell takes the same near-black ground as the homepage panels instead of
-   the page's ink, which by then is the near-white one. */
+   shell takes the page's own ground rather than its ink, which by then is
+   the near-white one. A step below the page so the dialog reads as set into
+   it, and in the palette's own blue rather than a neutral that would look
+   grey against a moonlit page. */
 :global(html[data-theme='dark']) .dialog,
 :global(html[data-theme='dark']) .dialog::backdrop {
-  background: #131313;
+  background: color-mix(in oklch, var(--bg) 88%, black);
 }
 
 :global(html[data-theme='dark']) .dialog {
@@ -50,7 +52,7 @@
 }
 
 :global(html[data-theme='dark']) .close {
-  background: #171717;
+  background: var(--raised);
   border-color: rgb(255 255 255 / 0.12);
   color: var(--ink);
 }

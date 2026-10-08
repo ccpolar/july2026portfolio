@@ -23,6 +23,24 @@
   pointer-events: none;
 }
 
+/* The moon and its stars.
+
+   A layer of its own rather than part of the fixed sky, and so it scrolls
+   away with the first screen instead of following you down the page. That is
+   what the design asks for — the moon sits near the top of the page — and it
+   is also what keeps it from drifting over the footer's columns, which is
+   exactly what a pinned one did.
+
+   Between the sky and the content: above the painting it hangs in, below
+   everything anyone has to read. */
+.night {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 100vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
 /* Gives all real page content (header, sections, footer) an explicit
    stacking position above the fixed SiteBackground canvas, which sits at
    z-index: var(--z-base) with no positioning context of its own to lose to

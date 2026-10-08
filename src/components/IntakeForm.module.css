@@ -15,11 +15,11 @@
 
 /* The form is a dark surface whichever palette the site is in. Its greys are
    mixed from the page's ink, which in dark mode is the near-white one — so
-   there they're pinned to the scale the Services panels use. */
+   there they take the palette's own raised surface instead. */
 :global(html[data-theme='dark']) .root {
   --on: var(--ink);
   --on-muted: var(--muted);
-  --card: #171717;
+  --card: var(--raised);
   --card-edge: rgb(255 255 255 / 0.12);
   --card-hover: rgb(255 255 255 / 0.26);
 }

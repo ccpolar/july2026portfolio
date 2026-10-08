@@ -5,6 +5,7 @@ import { ContactModal } from '@/components/ContactModal'
 import { type IntroImage, IntroOverlay } from '@/components/IntroOverlay'
 import { LandscapeMotionProvider } from '@/components/LandscapeMotion'
 import { LandscapeScene } from '@/components/LandscapeScene'
+import { Moonlight } from '@/components/Moonlight'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { NoImageDownloads } from '@/components/NoImageDownloads'
 import { SiteBackground } from '@/components/SiteBackground'
@@ -124,6 +125,9 @@ export default async function FrontendLayout({ children }: { children: React.Rea
             /admin its squares drift across the sky rather than under it. */}
         <div className={styles.sky} aria-hidden="true">
           <LandscapeScene scene="clouds" priority animated={false} />
+        </div>
+        <div className={styles.night}>
+          <Moonlight />
         </div>
         <SiteBackground mode={theme?.backgroundGrid} />
         <LivePreviewTheme initialData={theme} />

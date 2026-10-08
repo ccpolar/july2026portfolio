@@ -1,0 +1,69 @@
+/* The moon and stars, over the painted sky.
+
+   They fill whatever layer they are placed in; the layout puts them in one
+   that covers the first screen and scrolls away, so the moon rises over the
+   hero and is gone by the time the page reaches the work. Decoration only:
+   nothing here takes the pointer and nothing here is readable. */
+.moonlight {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Daylight. The theme is settled on <html> before the first paint, so this
+   never flashes a moon over a blue sky on the way in. */
+:global(html:not([data-theme='dark'])) .moonlight {
+  display: none;
+}
+
+/* Across the top of the sky, nowhere near the content's measure. */
+.stars {
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 700px;
+}
+
+/* Upper right, clear of the headline. The glow is the box; the disc is the
+   svg centred in it. Placed as a proportion of the width so it holds the
+   same relationship to the column as the screen changes, rather than
+   drifting into the text on a narrow laptop. */
+.moon {
+  position: absolute;
+  left: 77.08%;
+  top: 110px;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgb(219 234 247 / 0.2), transparent 70%);
+}
+
+.moon svg {
+  width: 64px;
+  height: 64px;
+}
+
+/* On a phone the measure runs nearly edge to edge, so the moon comes in off
+   the right margin and sits higher and smaller — present, but never behind
+   a line of type. */
+@media (max-width: 53rem) {
+  .moon {
+    left: auto;
+    right: 4%;
+    top: 75px;
+    width: 90px;
+    height: 90px;
+  }
+
+  .moon svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .stars {
+    height: 460px;
+  }
+}

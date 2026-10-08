@@ -19,20 +19,50 @@ const DEFAULTS = {
 } as const
 
 /**
- * The dark palette. The admin's colours describe the light site; rather than
- * ask for a second set of seven, dark mode is a fixed neutral scale in the
- * same spirit as the Services panels — a near-black page with each surface a
- * small step above it. Brand and signal carry straight over, so the site keeps
- * its accent in both modes.
+ * The dark palette — the moonlit version of the site.
+ *
+ * The admin's colours describe the light site; rather than ask for a second
+ * set of seven, dark mode is a fixed scale. It used to be a neutral one, a
+ * near-black page with each surface a small step above it. It is now the
+ * night sky the paintings are veiled to: a deep blue page, panels a step up
+ * out of it, and type that reads as moonlight rather than as grey. Brand and
+ * signal still carry straight over, so the site keeps its accent in both
+ * modes.
+ *
+ * The values come from the approved "Moonlit Clouds & Alpine Lake" design.
+ * Only the muted text is ours: the design doesn't specify one, and it has to
+ * clear 4.5:1 against the panels as well as the page, which it does at 5.1
+ * and 6.9 respectively.
  */
 const DARK = {
-  background: '#0e0e0e',
-  text: '#ededed',
-  mutedText: '#9a9a9a',
-  surface: '#171717',
-  border: '#272727',
-  raised: '#1c1c1c',
-  gridLine: '#242424',
+  background: '#101c30',
+  text: '#eef3f8',
+  mutedText: '#96a6ba',
+  surface: '#22344b',
+  border: '#45566c',
+  raised: '#22344b',
+  gridLine: '#2a3b52',
+} as const
+
+/**
+ * What the paintings are veiled towards at night, and how far.
+ *
+ * A touch deeper and bluer than the page itself, so the sky reads as sky
+ * rather than as a flat wash of the background colour. The footer's veil is
+ * a gradient instead of a single value: heaviest where its sky meets the
+ * page's own, lifting towards the meadow so the lake and the flowers keep
+ * some of their colour after dark.
+ */
+const NIGHT_VEIL = {
+  color: '#091831',
+  /* The design asks for 0.82 here. It is 0.86 because the muted body text
+     that runs over this sky — the hero's paragraph — lands at 4.10:1 against
+     the brightest cloud at 0.82, and 4.70:1 at 0.86. Four hundredths of a
+     veil is not a visible change to the sky; failing the contrast floor on
+     body text is. */
+  sky: 0.86,
+  footerTop: 0.86,
+  footerBottom: 0.6,
 } as const
 
 /** How light the brand has to be to read as text on the dark page. */
@@ -195,6 +225,12 @@ export const themeToCss = (theme: Partial<Theme> | null | undefined): string => 
     `--on-brand:${darkOnBrand};` +
     `--on-signal:${darkOnSignal};` +
     `--grid-line:${DARK.gridLine};` +
+    // Read by the paintings' own veil and by the shader that draws them, so
+    // the still image and the animated frame are darkened identically.
+    `--scene-veil:${NIGHT_VEIL.color};` +
+    `--scene-dim:${NIGHT_VEIL.sky};` +
+    `--scene-dim-top:${NIGHT_VEIL.footerTop};` +
+    `--scene-dim-bottom:${NIGHT_VEIL.footerBottom};` +
     `color-scheme:dark;` +
     `}`
   )
