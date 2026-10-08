@@ -45,10 +45,13 @@
 }
 
 /* — The mark and the name — */
+/* The mark on its own. The name used to sit beside it and no longer does —
+   it stays as the link's aria-label, so the link is still named, but the bar
+   doesn't spell out whose site this is next to the logo that already says
+   so. */
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
   flex: none;
   color: inherit;
   text-decoration: none;
@@ -76,13 +79,6 @@
   font-weight: 700;
   letter-spacing: var(--tracking-heading);
   line-height: 1;
-}
-
-.wordmark {
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
 }
 
 /* — The ways into the work — */
@@ -161,15 +157,8 @@
   outline-offset: 3px;
 }
 
-/* — Narrower screens — the name goes first, since the mark already says whose
-     site this is, and then the button's label, leaving its icon to stand for
-     it. Nothing is hidden that isn't repeated somewhere else in the bar. — */
-@media (max-width: 48rem) {
-  .wordmark {
-    display: none;
-  }
-}
-
+/* — Narrower screens — the button's label goes, leaving its icon to stand
+     for it. Nothing is hidden that isn't said somewhere else in the bar. — */
 @media (max-width: 30rem) {
   .bar {
     gap: var(--space-sm);
