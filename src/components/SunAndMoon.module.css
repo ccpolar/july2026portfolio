@@ -1,0 +1,109 @@
+/* Whichever of the two is up, over the painted sky.
+
+   They fill whatever layer they are placed in; the layout puts them in one
+   that covers the first screen and scrolls away, so the sun or the moon
+   stands over the hero and is gone by the time the page reaches the work.
+   Decoration only: nothing here takes the pointer and nothing here is
+   readable. */
+.bodies {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* Fades in rather than appearing: the sunset hands over to this at the end
+     of its run, while its own risen body is still on screen, so the two
+     cross rather than one blinking out and the other blinking in. */
+  transition: opacity var(--dur, 260ms) var(--ease-out-quart);
+}
+
+/* Out of the way while the sky is running its own sun and moon — see
+   SkyTransition. Instant, because this is a handover, not a fade-out. */
+:global(html[data-sky='running']) .bodies {
+  opacity: 0;
+  transition: none;
+}
+
+/* — Day and night — each body belongs to one palette, and the stars to the
+     night. Hidden rather than faded: the crossing between them is the
+     sunset's job, and it has already happened by the time these change. — */
+:global(html:not([data-theme='dark'])) .moon,
+:global(html:not([data-theme='dark'])) .stars,
+:global(html[data-theme='dark']) .sun {
+  display: none;
+}
+
+/* Across the top of the sky, nowhere near the content's measure. */
+.stars {
+  position: absolute;
+  inset: 0 0 auto;
+  width: 100%;
+  height: 700px;
+}
+
+/* Upper right, clear of the headline. The glow is the box; the body is
+   centred in it. Placed as a proportion of the width so it holds the same
+   relationship to the column as the screen changes, rather than drifting
+   into the text on a narrow laptop. */
+.sun,
+.moon {
+  position: absolute;
+  left: 77.08%;
+  top: 110px;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Both bodies are drawn from the shared tokens in globals.css, because the
+   sunset draws its own copies of them and the two have to be identical at
+   the moment it hands over. */
+.moon {
+  background: var(--moon-glow);
+}
+
+.sun {
+  background: var(--sun-glow);
+}
+
+.moonDisc,
+.sunDisc {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
+.moonDisc {
+  background: var(--moon-disc);
+  box-shadow: var(--moon-cast);
+}
+
+.sunDisc {
+  background: var(--sun-disc);
+  box-shadow: var(--sun-cast);
+}
+
+/* On a phone the measure runs nearly edge to edge, so the pair come in off
+   the right margin and sit higher and smaller — present, but never behind a
+   line of type. */
+@media (max-width: 53rem) {
+  .sun,
+  .moon {
+    left: auto;
+    right: 4%;
+    top: 75px;
+    width: 90px;
+    height: 90px;
+  }
+
+  .moonDisc,
+  .sunDisc {
+    width: 40px;
+    height: 40px;
+  }
+
+  .stars {
+    height: 460px;
+  }
+}

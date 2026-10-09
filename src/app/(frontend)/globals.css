@@ -53,6 +53,30 @@
      choice of hue; --edge-strong stays a plain step of --ink instead. */
   --edge-strong: color-mix(in oklch, var(--ink) 24%, transparent);
 
+  /* — The sun and the moon —
+
+     Defined once, here, because two different components draw them: the one
+     that hangs in the page's sky, and the sunset that swings the other one
+     up to replace it. The animation ends by handing over to the resting
+     body, so if these two drew them even slightly differently you would see
+     the swap at the exact moment the eye is on it.
+
+     The sun is softer than the moon on purpose. It hangs in a sky that is
+     already bright, so a hard white disc reads as a sticker stuck on a
+     painting; a warm core behind a wide, weak haze reads as the sun behind
+     thin cloud. The moon has a dark sky to sit against and can be solid. */
+  --sun-disc: radial-gradient(
+    circle at 42% 38%,
+    rgb(255 253 246 / 0.96) 0%,
+    rgb(255 228 173 / 0.85) 52%,
+    rgb(255 196 120 / 0.55) 100%
+  );
+  --sun-glow: radial-gradient(circle, rgb(255 206 138 / 0.3), transparent 68%);
+  --sun-cast: 0 0 44px 16px rgb(255 203 133 / 0.3);
+  --moon-disc: radial-gradient(circle at 38% 34%, #ffffff 0%, #eef4fb 62%, #c9d9ea 100%);
+  --moon-glow: radial-gradient(circle, rgb(219 234 247 / 0.2), transparent 70%);
+  --moon-cast: 0 0 52px 20px rgb(219 234 247 / 0.28);
+
   /* Every photograph, thumbnail and upload on the site. It follows the
      theme's corner style but never goes fully square: a picture wants its
      corners eased off the page even where a panel edge shouldn't be. */

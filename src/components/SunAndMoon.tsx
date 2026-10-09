@@ -1,4 +1,4 @@
-import styles from './Moonlight.module.css'
+import styles from './SunAndMoon.module.css'
 
 /**
  * Fixed positions rather than random ones: the stars are rendered on the
@@ -34,18 +34,22 @@ const STARS = [
 ] as const
 
 /**
- * The moon, and a scattering of stars, for the night sky.
+ * Whichever of the two is up: the sun by day, the moon and a scattering of
+ * stars by night.
  *
- * Decoration on top of the painted sky, and only at night. Which theme is in
- * force isn't known on the server — the boot script sets it on <html> before
- * the first paint — so this is always rendered and hidden by CSS in light
- * mode. It costs nothing to carry: a handful of circles and no image.
+ * Both hang in the same place, which is the place the sunset animation hands
+ * over to — press the switch and the one that rises comes to rest exactly
+ * here, so there is no moment where the sky is briefly empty or has two of
+ * anything in it.
  *
- * It never takes the pointer and is hidden from screen readers; there is
- * nothing here to read.
+ * Which theme is in force isn't known on the server — the boot script sets it
+ * on <html> before the first paint — so both are always rendered and CSS
+ * decides. It costs nothing to carry: a couple of gradients and no image.
+ *
+ * Decoration. Nothing here takes the pointer and nothing here is readable.
  */
-export const Moonlight = () => (
-  <div className={styles.moonlight} aria-hidden="true">
+export const SunAndMoon = () => (
+  <div className={styles.bodies} aria-hidden="true">
     <svg className={styles.stars} viewBox="0 0 100 100" preserveAspectRatio="none" focusable="false">
       {STARS.map((s) => (
         <circle
@@ -62,17 +66,12 @@ export const Moonlight = () => (
       ))}
     </svg>
 
+    <div className={styles.sun}>
+      <div className={styles.sunDisc} />
+    </div>
+
     <div className={styles.moon}>
-      <svg viewBox="0 0 64 64" focusable="false">
-        <defs>
-          <radialGradient id="moonlight-disc" cx="38%" cy="34%" r="72%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="62%" stopColor="#eef4fb" />
-            <stop offset="100%" stopColor="#c9d9ea" />
-          </radialGradient>
-        </defs>
-        <circle cx="32" cy="32" r="27" fill="url(#moonlight-disc)" />
-      </svg>
+      <div className={styles.moonDisc} />
     </div>
   </div>
 )

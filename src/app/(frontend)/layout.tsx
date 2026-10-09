@@ -5,7 +5,7 @@ import { ContactModal } from '@/components/ContactModal'
 import { type IntroImage, IntroOverlay } from '@/components/IntroOverlay'
 import { LandscapeMotionProvider } from '@/components/LandscapeMotion'
 import { LandscapeScene } from '@/components/LandscapeScene'
-import { Moonlight } from '@/components/Moonlight'
+import { SunAndMoon } from '@/components/SunAndMoon'
 import { SkyTransition } from '@/components/SkyTransition'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { NoImageDownloads } from '@/components/NoImageDownloads'
@@ -128,7 +128,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
           <LandscapeScene scene="clouds" priority animated={false} />
         </div>
         <div className={styles.night}>
-          <Moonlight />
+          <SunAndMoon />
         </div>
         <SiteBackground mode={theme?.backgroundGrid} />
         <LivePreviewTheme initialData={theme} />

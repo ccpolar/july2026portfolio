@@ -62,8 +62,9 @@
 
 /* — The two bodies —
 
-   Both sit where the page's own moon lives, so the one that rises comes to
-   rest in the place the real moon occupies and the hand-off is invisible.
+   Both sit where the page hangs its own sun and moon, so whichever rises
+   comes to rest in the place the resting one occupies and the hand-off is
+   invisible.
    The travel is in vh rather than pixels: they should leave and enter the
    frame, not move a fixed distance that happens to clear a laptop. */
 .sun,
@@ -85,14 +86,25 @@
   border-radius: 50%;
 }
 
+/* The same two the page itself hangs in its sky — see globals.css. They
+   have to match exactly, because this animation ends by handing the risen
+   one over to the resting one. */
+.sun {
+  background: var(--sun-glow);
+}
+
+.moon {
+  background: var(--moon-glow);
+}
+
 .sunDisc {
-  background: radial-gradient(circle at 38% 34%, #fff6e2 0%, #ffd38a 55%, #ffab5c 100%);
-  box-shadow: 0 0 60px 24px rgb(255 183 104 / 0.45);
+  background: var(--sun-disc);
+  box-shadow: var(--sun-cast);
 }
 
 .moonDisc {
-  background: radial-gradient(circle at 38% 34%, #ffffff 0%, #eef4fb 62%, #c9d9ea 100%);
-  box-shadow: 0 0 52px 20px rgb(219 234 247 / 0.28);
+  background: var(--moon-disc);
+  box-shadow: var(--moon-cast);
 }
 
 /* One goes down, then the other comes up — staggered by a delay rather than
@@ -108,15 +120,16 @@
     calc(var(--sky-ms) * 0.44) both;
 }
 
-/* Going the other way, the same two swapped — except the sun doesn't stay,
-   because the day palette has no sun in it. It comes up, and the light it
-   brought is all that's left of it. */
+/* Going the other way, the same two swapped. Both rises end at rest rather
+   than fading, because the page keeps whichever body is up — the sun by day
+   now, as well as the moon by night — and this one is standing in for it
+   until the handover. */
 .sky[data-to='light'] .moon {
   animation: body-set calc(var(--sky-ms) * 0.58) cubic-bezier(0.4, 0, 0.7, 0.4) both;
 }
 
 .sky[data-to='light'] .sun {
-  animation: sun-rise calc(var(--sky-ms) * 0.56) var(--ease-out-expo)
+  animation: body-rise calc(var(--sky-ms) * 0.56) var(--ease-out-expo)
     calc(var(--sky-ms) * 0.44) both;
 }
 
@@ -142,20 +155,6 @@
   }
 }
 
-@keyframes sun-rise {
-  0% {
-    opacity: 0;
-    transform: translateY(44vh) scale(0.84);
-  }
-  66% {
-    opacity: 1;
-    transform: translateY(2vh) scale(0.98);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(0) scale(1);
-  }
-}
 
 /* On a phone the pair track the page's own moon to its narrow-screen place,
    so the one that rises still lands where the real one will be. */
