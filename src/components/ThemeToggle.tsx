@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { THEME_CHANGE_EVENT, THEME_STORAGE_KEY } from '@/lib/appearance'
+import { requestTheme, THEME_CHANGE_EVENT } from '@/lib/appearance'
 
 import styles from './ThemeToggle.module.css'
 
@@ -36,45 +36,24 @@ const MoonIcon = () => (
  * before paint, so this reads that attribute rather than holding its own idea
  * of the state — and renders nothing until it has, so the button can't show
  * the wrong icon for a frame.
+ *
+ * The switch itself turns over as soon as it is pressed; the page follows
+ * about half a second later, under the warmest part of the sunset. Pressing a
+ * control should feel instant even when what it sets in motion takes a
+ * moment.
  */
 export const ThemeToggle = () => {
   const [theme, setTheme] = useState<'light' | 'dark' | null>(null)
 
-  const apply = (next: 'light' | 'dark', remember = true) => {
+  useEffect(() => {
     const root = document.documentElement
-    root.setAttribute('data-theme', next)
-    root.style.colorScheme = next
-    setTheme(next)
-    if (remember) {
-      try {
-        localStorage.setItem(THEME_STORAGE_KEY, next)
-      } catch {
-        /* storage blocked — the choice lasts for this page only */
-      }
-    }
-    root.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT))
-  }
-
-  useEffect(() => {
-    const current = document.documentElement.getAttribute('data-theme')
-    setTheme(current === 'dark' ? 'dark' : 'light')
-  }, [])
-
-  // Follow the device while the visitor hasn't chosen for themselves.
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-color-scheme: dark)')
-    const onChange = (e: MediaQueryListEvent) => {
-      let stored: string | null = null
-      try {
-        stored = localStorage.getItem(THEME_STORAGE_KEY)
-      } catch {
-        /* storage blocked — treat as no choice made */
-      }
-      if (stored === 'light' || stored === 'dark') return
-      apply(e.matches ? 'dark' : 'light', false)
-    }
-    query.addEventListener('change', onChange)
-    return () => query.removeEventListener('change', onChange)
+    const read = () => setTheme(root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light')
+    read()
+    // The palette can also change from somewhere else — another tab's
+    // choice, or the sky finishing its run — so follow the attribute rather
+    // than assuming this button is the only thing that moves it.
+    root.addEventListener(THEME_CHANGE_EVENT, read)
+    return () => root.removeEventListener(THEME_CHANGE_EVENT, read)
   }, [])
 
   const dark = theme === 'dark'
@@ -83,7 +62,11 @@ export const ThemeToggle = () => {
     <button
       type="button"
       className={styles.toggle}
-      onClick={() => apply(dark ? 'light' : 'dark')}
+      onClick={() => {
+        const next = dark ? 'light' : 'dark'
+        setTheme(next)
+        requestTheme(next)
+      }}
       role="switch"
       aria-checked={dark}
       aria-label="Dark mode"

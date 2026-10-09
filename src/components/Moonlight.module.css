@@ -9,6 +9,17 @@
   inset: 0;
   overflow: hidden;
   pointer-events: none;
+  /* Fades in rather than appearing: the sunset hands over to this at the end
+     of its run, while its own risen moon is still on screen, so the two
+     cross rather than one blinking out and the other blinking in. */
+  transition: opacity var(--dur, 260ms) var(--ease-out-quart);
+}
+
+/* Out of the way while the sky is running its own sun and moon — see
+   SkyTransition. Instant, because this is a handover, not a fade-out. */
+:global(html[data-sky='running']) .moonlight {
+  opacity: 0;
+  transition: none;
 }
 
 /* Daylight. The theme is settled on <html> before the first paint, so this

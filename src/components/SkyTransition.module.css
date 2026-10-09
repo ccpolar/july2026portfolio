@@ -1,0 +1,185 @@
+/* The sun setting and the moon rising, over the top of a palette change.
+
+   Fixed to the viewport and above everything, because for a second and a
+   half this is the weather rather than part of the page. It never takes the
+   pointer: the site stays clickable right through it, and someone who
+   presses the switch twice gets the second sky, not a locked screen. */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* — The light itself —
+
+   A warm band low in the frame, the way the last of the sun actually looks,
+   rather than an even sheet of orange over the whole screen. It is also what
+   the palette change hides under: it peaks at the moment the tokens turn
+   over, so the swap reads as the light going rather than as a switch. */
+.wash {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background:
+    radial-gradient(
+      120% 78% at 78% 92%,
+      rgb(255 176 94 / 0.55) 0%,
+      rgb(236 123 78 / 0.3) 38%,
+      transparent 72%
+    ),
+    linear-gradient(to bottom, transparent 30%, rgb(32 44 74 / 0.45) 100%);
+  animation: wash var(--sky-ms) var(--ease-out-quart) both;
+}
+
+/* Sunrise is cooler and higher — the light arriving rather than leaving. */
+.sky[data-to='light'] .wash {
+  background:
+    radial-gradient(
+      120% 78% at 74% 86%,
+      rgb(255 214 150 / 0.5) 0%,
+      rgb(255 176 120 / 0.26) 40%,
+      transparent 74%
+    ),
+    linear-gradient(to bottom, rgb(226 238 250 / 0.35) 0%, transparent 60%);
+}
+
+@keyframes wash {
+  0% {
+    opacity: 0;
+  }
+  38% {
+    opacity: 1;
+  }
+  62% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* — The two bodies —
+
+   Both sit where the page's own moon lives, so the one that rises comes to
+   rest in the place the real moon occupies and the hand-off is invisible.
+   The travel is in vh rather than pixels: they should leave and enter the
+   frame, not move a fixed distance that happens to clear a laptop. */
+.sun,
+.moon {
+  position: absolute;
+  left: 77.08%;
+  top: 110px;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sunDisc,
+.moonDisc {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
+.sunDisc {
+  background: radial-gradient(circle at 38% 34%, #fff6e2 0%, #ffd38a 55%, #ffab5c 100%);
+  box-shadow: 0 0 60px 24px rgb(255 183 104 / 0.45);
+}
+
+.moonDisc {
+  background: radial-gradient(circle at 38% 34%, #ffffff 0%, #eef4fb 62%, #c9d9ea 100%);
+  box-shadow: 0 0 52px 20px rgb(219 234 247 / 0.28);
+}
+
+/* One goes down, then the other comes up — staggered by a delay rather than
+   overlapped inside one timeline, because a sunset where both are in the sky
+   at once isn't a sunset, it's two circles in a column. The first is gone
+   before the second is worth looking at. */
+.sky[data-to='dark'] .sun {
+  animation: body-set calc(var(--sky-ms) * 0.58) cubic-bezier(0.4, 0, 0.7, 0.4) both;
+}
+
+.sky[data-to='dark'] .moon {
+  animation: body-rise calc(var(--sky-ms) * 0.56) var(--ease-out-expo)
+    calc(var(--sky-ms) * 0.44) both;
+}
+
+/* Going the other way, the same two swapped — except the sun doesn't stay,
+   because the day palette has no sun in it. It comes up, and the light it
+   brought is all that's left of it. */
+.sky[data-to='light'] .moon {
+  animation: body-set calc(var(--sky-ms) * 0.58) cubic-bezier(0.4, 0, 0.7, 0.4) both;
+}
+
+.sky[data-to='light'] .sun {
+  animation: sun-rise calc(var(--sky-ms) * 0.56) var(--ease-out-expo)
+    calc(var(--sky-ms) * 0.44) both;
+}
+
+@keyframes body-set {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(40vh) scale(0.84);
+  }
+}
+
+@keyframes body-rise {
+  from {
+    opacity: 0;
+    transform: translateY(44vh) scale(0.86);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes sun-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(44vh) scale(0.84);
+  }
+  66% {
+    opacity: 1;
+    transform: translateY(2vh) scale(0.98);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* On a phone the pair track the page's own moon to its narrow-screen place,
+   so the one that rises still lands where the real one will be. */
+@media (max-width: 53rem) {
+  .sun,
+  .moon {
+    left: auto;
+    right: 4%;
+    top: 75px;
+    width: 90px;
+    height: 90px;
+  }
+
+  .sunDisc,
+  .moonDisc {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* Asked for less movement: nothing here ever mounts (requestTheme swaps the
+   palette outright instead), but if it somehow did, it holds still. */
+@media (prefers-reduced-motion: reduce) {
+  .sky {
+    display: none;
+  }
+}

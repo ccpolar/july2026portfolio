@@ -6,6 +6,7 @@ import { type IntroImage, IntroOverlay } from '@/components/IntroOverlay'
 import { LandscapeMotionProvider } from '@/components/LandscapeMotion'
 import { LandscapeScene } from '@/components/LandscapeScene'
 import { Moonlight } from '@/components/Moonlight'
+import { SkyTransition } from '@/components/SkyTransition'
 import { LivePreviewTheme } from '@/components/LivePreviewTheme'
 import { NoImageDownloads } from '@/components/NoImageDownloads'
 import { SiteBackground } from '@/components/SiteBackground'
@@ -148,6 +149,9 @@ export default async function FrontendLayout({ children }: { children: React.Rea
         {/* One dialog for the whole site — the header's "Get in touch" and
             the hero's "Start a project" both open it by id rather than each
             holding their own copy. */}
+        {/* The sun going down and the moon coming up, over the palette
+            change. Outside .content so it is never dimmed or clipped by it. */}
+        <SkyTransition />
         <ContactModal services={intakeServices} />
         {introImages.length ? (
           <IntroOverlay
