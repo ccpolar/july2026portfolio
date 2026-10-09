@@ -271,8 +271,13 @@
   .picture {
     /* Declared here and inherited by .art inside it, so the room reserved
        below the text and the height of the band filling it can never drift
-       apart. */
-    --band: clamp(14rem, 42vw, 22rem);
+       apart.
+
+       Generous, because a phone is the one place this picture has to carry
+       the whole close of the page on its own — there is no column of links
+       beside it to share the weight, and at the old height the mountains and
+       the lake were squeezed into a strip. */
+    --band: clamp(18rem, 80vw, 26rem);
 
     min-height: 0;
     padding-bottom: var(--band);
@@ -282,15 +287,21 @@
     --scene-top: auto;
     --scene-height: var(--band);
     /* Shorter fade, because the picture itself is shorter — and it now falls
-       between the content and the picture, where the real edge is. */
-    --scene-mask: linear-gradient(to bottom, transparent 0, #000 56px, #000 100%);
+       between the content and the picture, where the real edge is. Short
+       enough that the picture reads as beginning where the text stops: a
+       long fade here is indistinguishable from a gap. */
+    --scene-mask: linear-gradient(to bottom, transparent 0, #000 32px, #000 100%);
   }
 
   .inner {
     flex-direction: column;
     gap: var(--space-xl);
     padding-top: clamp(var(--space-xl), 8vw, var(--space-2xl));
-    padding-bottom: var(--space-md);
+    /* Close to the picture on purpose: the links and the landscape are one
+       ending, not two blocks with a margin between them. What reads as the
+       gap here is mostly the picture's own fade, so this only has to not add
+       to it. */
+    padding-bottom: var(--space-2xs);
   }
 
   .brand {

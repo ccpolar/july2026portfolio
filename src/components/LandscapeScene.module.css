@@ -59,6 +59,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  /* Which part of the painting a crop keeps. Centre unless asked otherwise —
+     and only ever asked otherwise on a scene with no canvas, because the
+     shader works out its own crop from the element's proportions and assumes
+     the centred one. Move this on an animated scene and the ripples stop
+     landing on the lake. */
+  object-position: var(--scene-position, 50% 50%);
   pointer-events: none;
 }
 

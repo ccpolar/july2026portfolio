@@ -23,6 +23,28 @@
   pointer-events: none;
 }
 
+/* On a phone the sky is a tall narrow window onto a painting twice as wide
+   as it is high, so `cover` scales it by height and keeps a strip barely a
+   fifth of its width. Centred, that strip is the quiet open middle of the
+   picture — the one part with almost no cloud in it, which is why the hero
+   came out as a pale wash. The clouds are out towards the edges, so the crop
+   moves there.
+
+   How far across is set by contrast as much as by the picture. Further out
+   is cloudier, but the hero's muted paragraph is read over this, and past
+   about a quarter in the clouds behind it darken enough to take that text
+   under 4.5:1 — 4.36 at 20%, 4.77 at 24%, 5.07 here. This is the furthest
+   towards the weather that still carries the words.
+
+   Safe to move here only because this scene has no canvas: the shader
+   assumes a centred crop, and the sky is a still painting. See the note on
+   --scene-position. */
+@media (max-width: 53rem) {
+  .sky {
+    --scene-position: 28% 50%;
+  }
+}
+
 /* The moon and its stars.
 
    A layer of its own rather than part of the fixed sky, and so it scrolls
