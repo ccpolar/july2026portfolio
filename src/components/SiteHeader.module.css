@@ -17,10 +17,21 @@
 }
 
 /* — The bar ─────────────────────────────────────────────────────────────────
-   Inverted: near-black on a light page, so it reads as its own object over
-   whatever is scrolling under it without needing a blur or a border to hold
-   it apart. On a dark page there is nothing to invert to, so it lifts off the
-   background instead and takes a hairline to sit on.
+   Inverted, in both palettes: it takes the page's ink as its ground and the
+   page's ground as its ink, so it is near-black on a light page and near-
+   white on a dark one. That is the whole rule, and it needs no help — a bar
+   built out of the two colours the page is already guaranteeing contrast
+   between reads as its own object over whatever is scrolling under it,
+   without a blur or a border to hold it apart.
+
+   It used to make an exception of dark mode, lifting a dark bar a step off a
+   dark page and giving it a hairline to sit on. That wasn't an inversion,
+   it was a near-miss of one, and it needed the border precisely because it
+   never got far enough from the page to stand on its own.
+
+   Everything inside follows from these two: the links and the switch inherit
+   the colour, the call to action swaps them, and the focus ring takes the
+   foreground. Nothing in here names a colour of its own.
 
    Squared off where it meets the edge of the screen and rounded below, so it
    hangs from the top rather than floating. */
@@ -37,13 +48,6 @@
   border-radius: 0 0 1.125rem 1.125rem;
 }
 
-:global(html[data-theme='dark']) .bar {
-  --bar-bg: var(--raised);
-  --bar-on: var(--ink);
-  border: 1px solid var(--edge);
-  border-top: 0;
-}
-
 /* — The mark and the name — */
 /* The mark on its own. The name used to sit beside it and no longer does —
    it stays as the link's aria-label, so the link is still named, but the bar
@@ -58,16 +62,30 @@
   padding-left: 0.25rem;
 }
 
-/* Left in its own colour rather than flipped to match the text: the mark is
-   the brand red, it holds up against the bar's near-black on its own, and
-   turning the one piece of brand colour in the header grey to match its
-   surroundings would be a strange thing to do to it. */
+/* Drawn in the bar's own foreground rather than in the brand red, so it
+   turns over with everything else: white on the near-black day bar, dark
+   blue on the near-white night one. It used to keep its red, which read
+   well enough on the dark bar and would have sat on a white one like a
+   sticker.
+
+   The file is used as a mask and the colour comes from currentColor, which
+   is why it recolours cleanly instead of being approximated by a filter
+   chain — there is no filter that turns red into a specific dark blue.
+   The mark is a single colour on transparency, so nothing is lost; a
+   full-colour logo uploaded here would be flattened to one colour, which is
+   the trade this makes deliberately. */
 .logo {
   display: block;
   height: 1.375rem;
-  width: auto;
+  /* The box comes from the file's own proportions, since a masked element
+     has no intrinsic size to lay itself out from. */
+  aspect-ratio: var(--logo-ratio, 24 / 7);
   max-width: 5rem;
-  object-fit: contain;
+  background: currentColor;
+  mask-image: var(--logo-src);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
 }
 
 .initial {

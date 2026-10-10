@@ -1,6 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
+import type { CSSProperties } from 'react'
 
 import { openContactModal } from '@/lib/contactModal'
 
@@ -9,7 +10,7 @@ import { ThemeToggle } from './ThemeToggle'
 
 type Props = {
   siteName: string
-  logo: { url: string; height: number } | null
+  logo: { url: string; height: number; ratio: number | null } | null
   showBlog: boolean
 }
 
@@ -52,7 +53,21 @@ export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
       <nav className={styles.bar} aria-label="Primary">
         <a className={styles.brand} href="/" aria-label={`${siteName} — home`}>
           {logo ? (
-            <img className={styles.logo} src={logo.url} alt="" />
+            // A masked box rather than an image, so the mark is painted in
+            // the bar's own colour and turns over with it. See .logo.
+            <span
+              className={styles.logo}
+              style={
+                {
+                  // Quoted, not re-encoded: the URL arrives already percent-
+                  // encoded, and encoding it again turns %20 into %2520.
+                  // JSON.stringify escapes only the quote and backslash that
+                  // could close a CSS string early.
+                  '--logo-src': `url(${JSON.stringify(logo.url)})`,
+                  ...(logo.ratio ? { '--logo-ratio': String(logo.ratio) } : {}),
+                } as CSSProperties
+              }
+            />
           ) : (
             <span className={styles.initial} aria-hidden="true">
               {siteName.charAt(0)}
