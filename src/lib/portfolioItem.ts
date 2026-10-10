@@ -42,11 +42,33 @@ export const hasCaseStudy = (project: Project) =>
     Boolean(project.layout?.length) ||
     Boolean(project.gallery?.length))
 
+/**
+ * Where a website project sends people: the live site itself.
+ *
+ * A website is shown as the thing it is — a visitor wants to use it, not read
+ * about it — so clicking one opens the site in a new tab rather than a case
+ * study. Every place a project can be clicked asks this first, so the rule
+ * can't hold in one spot and not another.
+ *
+ * Only http and https are linked. The field is free text: an address typed
+ * without its scheme is given https:// (otherwise it would become a link to a
+ * page on this site), and anything carrying a different scheme — a typo'd
+ * mailto:, or worse — is not linked at all rather than passed to a browser.
+ */
+export const liveSiteUrl = (project: Pick<Project, 'category' | 'liveUrl'>): string | null => {
+  if (!project.category?.includes('website')) return null
+  const raw = project.liveUrl?.trim()
+  if (!raw) return null
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) return null
+  return `https://${raw}`
+}
+
 export const toPortfolioItem = (project: Project): PortfolioItem => ({
   id: project.id,
   title: project.title,
   image: project.cover,
   caption: project.summary,
   href: hasCaseStudy(project) ? `/work/${project.slug}` : null,
-  liveUrl: project.liveUrl,
+  liveUrl: liveSiteUrl(project),
 })

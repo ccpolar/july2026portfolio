@@ -1,6 +1,7 @@
 import React from 'react'
 
 import type { Homepage, Project } from '@/payload-types'
+import { liveSiteUrl } from '@/lib/portfolioItem'
 import { projectTransitionName } from '@/lib/viewTransition'
 
 import { ButtonLink } from './Button'
@@ -59,8 +60,17 @@ export const WorkSection = ({ home, projects, standalone = false }: Props) => {
       ) : null}
 
       <div className={styles.rows}>
-        {projects.map((project, i) => (
-          <a className={styles.row} key={project.id} href={`/work/${project.slug}`}>
+        {projects.map((project, i) => {
+          // A website opens the site itself, in a new tab; everything else
+          // opens its case study. See liveSiteUrl.
+          const live = liveSiteUrl(project)
+          return (
+          <a
+            className={styles.row}
+            key={project.id}
+            href={live ?? `/work/${project.slug}`}
+            {...(live ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
+          >
             <div className={styles.meta}>
               <div>
                 <h3 className={styles.title}>{project.title}</h3>
@@ -69,7 +79,8 @@ export const WorkSection = ({ home, projects, standalone = false }: Props) => {
               <div>
                 <p className={styles.summary}>{project.summary}</p>
                 <span className={styles.cue}>
-                  View project
+                  {live ? 'Visit site' : 'View project'}
+                  {live ? <span className="sr-only"> (opens in a new tab)</span> : null}
                   <svg
                     className={styles.cueArrow}
                     width="12"
@@ -107,7 +118,8 @@ export const WorkSection = ({ home, projects, standalone = false }: Props) => {
               />
             </div>
           </a>
-        ))}
+          )
+        })}
       </div>
 
       {/* Recent work is a taste; the full portfolio is the meal. This is the

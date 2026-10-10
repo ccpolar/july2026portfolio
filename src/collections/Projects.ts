@@ -24,6 +24,22 @@ export const Projects: CollectionConfig = {
     useAsTitle: 'title',
     defaultColumns: ['title', 'status', 'category', 'client', 'year', 'featured'],
     group: 'Work',
+    // Separates the list into one table per portfolio section instead of a
+    // single mixed run of everything. Payload's grouping is still marked beta;
+    // it was checked against this field before turning it on — the sections
+    // are a multi-select, and each group's query matches that section's real
+    // count. A piece in two sections appears under both.
+    groupBy: true,
+    components: {
+      // Payload has no setting for a default grouping, so this applies it the
+      // first time the list opens and then leaves the choice alone.
+      beforeListTable: [
+        {
+          path: '/components/admin/DefaultGroupBy#DefaultGroupBy',
+          clientProps: { field: 'category' },
+        },
+      ],
+    },
     description:
       'Every piece of work lives here, whatever it is, with the same tools on all of it. “Featured” puts a piece on the Recent Work page; the Portfolio sections put it on the Portfolio page. A piece can be in both, in several sections at once, or in none while it’s being written.',
     // The page itself, beside the fields, updating as you type. Saving is

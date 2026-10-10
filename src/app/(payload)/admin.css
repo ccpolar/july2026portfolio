@@ -461,3 +461,14 @@ a.doc-tabs__tab:hover {
 .nav a[href$='/globals/legal']::before {
   --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v16M6 8h12M8 8 5 15h6ZM16 8l-3 7h6ZM8 20h8'/%3E%3C/svg%3E");
 }
+
+/* — Grouped lists —
+   When a list is grouped, Payload heads each group with the field's stored
+   value rather than its label, so the Work list's sections arrived as
+   "advertising", "branding". Every one of those values is a single lowercase
+   word whose label is the same word capitalised, so capitalising the heading
+   gives back the label exactly — no second copy of the names to keep in step
+   with the field's options. */
+.group-by-header__heading {
+  text-transform: capitalize;
+}

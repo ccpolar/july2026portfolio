@@ -29,9 +29,9 @@ const Frame = ({ site }: { site: PortfolioItem }) => (
 /**
  * Website design, each shot inside a browser frame that scrolls on hover.
  *
- * The frame opens the case study when one has been written — that's the fuller
- * story — and falls back to the live site otherwise, so a site with nothing
- * written up yet is still reachable.
+ * The frame opens the live site, in a new tab. A website is shown as the thing
+ * it is: someone looking at one wants to use it, not read about it. Only a site
+ * with no address yet falls back to its case study, so it stays reachable.
  */
 export const WebsiteShowcase = ({ items }: { items: PortfolioItem[] }) => {
   if (!items.length) return null
@@ -39,9 +39,9 @@ export const WebsiteShowcase = ({ items }: { items: PortfolioItem[] }) => {
   return (
     <div className={styles.grid}>
       {items.map((site) => {
-        const href = site.href ?? site.liveUrl ?? null
+        const href = site.liveUrl ?? site.href ?? null
         // Leaving the site is the one case that wants a new tab.
-        const external = !site.href && Boolean(site.liveUrl)
+        const external = Boolean(site.liveUrl)
 
         return (
           <figure className={styles.item} key={site.id}>
@@ -52,6 +52,7 @@ export const WebsiteShowcase = ({ items }: { items: PortfolioItem[] }) => {
                 {...(external ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
               >
                 <Frame site={site} />
+                {external ? <span className="sr-only"> (opens in a new tab)</span> : null}
               </a>
             ) : (
               <div className={styles.window}>
@@ -60,10 +61,10 @@ export const WebsiteShowcase = ({ items }: { items: PortfolioItem[] }) => {
             )}
             <figcaption className={styles.caption}>
               <span className={styles.title}>{site.title}</span>
-              {site.href ? (
+              {site.liveUrl ? (
+                <span className={styles.visit}>Visit site ↗</span>
+              ) : site.href ? (
                 <span className={styles.visit}>View project →</span>
-              ) : site.liveUrl ? (
-                <span className={styles.visit}>Visit site →</span>
               ) : null}
             </figcaption>
           </figure>

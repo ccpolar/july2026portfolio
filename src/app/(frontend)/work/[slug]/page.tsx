@@ -9,6 +9,7 @@ import { MediaImage } from '@/components/MediaImage'
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { getChrome } from '@/lib/chrome'
+import { liveSiteUrl } from '@/lib/portfolioItem'
 import { projectTransitionName } from '@/lib/viewTransition'
 
 import styles from './page.module.css'
@@ -52,7 +53,10 @@ const getSiblings = cache(async () => {
     depth: 1,
     limit: 50,
   })
-  return docs
+  // Only pieces that open a case study. A website opens the live site instead,
+  // so stepping onto one with "Next project" would land on a page nothing else
+  // on the site links to any more.
+  return docs.filter((doc) => !liveSiteUrl(doc))
 })
 
 // No generateStaticParams: whether a draft opens depends on who's asking,
