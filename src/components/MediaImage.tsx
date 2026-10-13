@@ -5,6 +5,10 @@ type Props = {
   sizes: string
   className?: string
   priority?: boolean
+  /** Said instead when the upload has no alt text of its own. Alt text is
+   *  optional in the admin, so a batch can be dropped in without naming each
+   *  file; where it matters, the page describes the image from its context. */
+  fallbackAlt?: string
 }
 
 const isMedia = (value: unknown): value is Media =>
@@ -14,7 +18,7 @@ const isMedia = (value: unknown): value is Media =>
  * Renders a Payload upload using the resized variants Payload already
  * generated, so the browser downloads the smallest file that fits the slot.
  */
-export const MediaImage = ({ media, sizes, className, priority }: Props) => {
+export const MediaImage = ({ media, sizes, className, priority, fallbackAlt }: Props) => {
   if (!isMedia(media) || !media.url) return null
 
   const variants = [media.sizes?.thumb, media.sizes?.wide, media.sizes?.full]
@@ -31,7 +35,7 @@ export const MediaImage = ({ media, sizes, className, priority }: Props) => {
       sizes={sizes}
       width={media.width ?? undefined}
       height={media.height ?? undefined}
-      alt={media.alt ?? ''}
+      alt={media.alt?.trim() || fallbackAlt || ''}
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : 'auto'}
       decoding="async"

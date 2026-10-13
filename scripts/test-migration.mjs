@@ -26,10 +26,14 @@ console.log(`Running the last ${section.length} statements (from the category en
 const db = new PGlite()
 
 await db.exec(`
-  CREATE TABLE "media" ("id" serial PRIMARY KEY, "url" varchar);
+  CREATE TABLE "media" ("id" serial PRIMARY KEY, "url" varchar, "alt" varchar NOT NULL DEFAULT '');
   -- Later statements add columns to these two globals; they only need to exist.
   CREATE TABLE "homepage" ("id" serial PRIMARY KEY);
   CREATE TABLE "theme" ("id" serial PRIMARY KEY);
+  -- Their labels start out required, as on the live site, so the statements
+  -- that make them optional have something to relax.
+  CREATE TABLE "documents" ("id" serial PRIMARY KEY, "label" varchar NOT NULL);
+  CREATE TABLE "videos" ("id" serial PRIMARY KEY, "label" varchar NOT NULL);
   CREATE TABLE "projects" (
     "id" serial PRIMARY KEY NOT NULL,
     "title" varchar NOT NULL,
@@ -192,5 +196,17 @@ const moved = (await db.query(`SELECT count(*)::int n FROM portfolio_migration`)
 check('all 37 source rows recorded as moved', moved === 37, `${moved} rows`)
 const nulls = (await db.query(`SELECT count(*)::int n FROM projects WHERE summary IS NULL`)).rows[0].n
 check('summaries can now be empty', nulls > 0, `${nulls} rows with none`)
+const optional = (await db.query(
+  `SELECT table_name, is_nullable FROM information_schema.columns
+   WHERE (table_name = 'media' AND column_name = 'alt')
+      OR (table_name IN ('documents', 'videos') AND column_name = 'label')`,
+)).rows
+check(
+  'alt text and file labels are optional',
+  optional.length === 3 && optional.every((r) => r.is_nullable === 'YES'),
+  optional.map((r) => `${r.table_name}=${r.is_nullable}`).join(', '),
+)
+await db.exec(`INSERT INTO media (url, alt) VALUES ('img-no-alt', NULL)`)
+check('an image saves with no alt text', true)
 
 process.exit(checks.every(Boolean) ? 0 : 1)

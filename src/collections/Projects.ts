@@ -245,7 +245,7 @@ export const Projects: CollectionConfig = {
               admin: {
                 condition: (data) => usesShowcase(data),
                 description:
-                  'Every email (or ad) in this project, at full length — drop in as many as you like and drag to reorder. They sit in a four-column grid under the write-up, each shown whole, never cropped. Upload them at their real size; tall is fine.',
+                  'Every email (or ad) in this project, shown whole in a four-column grid under the write-up — never cropped. Drop the whole set in at once, then drag to reorder. Upload them at their real size; tall is fine.',
               },
             },
             {

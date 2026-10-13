@@ -472,3 +472,56 @@ a.doc-tabs__tab:hover {
   --admin-group-heading-size: 1.25rem;
   text-transform: capitalize;
 }
+
+/* — The showcase grid's drop zone —
+   The field takes a whole flow of emails or a campaign's ads in one drop:
+   Payload opens them together with a single Save. Its stock drop zone is a
+   thin dotted bar saying "drag and drop a file", which reads as one at a
+   time, so on this field it becomes a proper target that says what it does.
+   The stock wording is swapped for ours with the same font-size trick the
+   Work list headings use, since it's Payload's text, not ours, to change. */
+#field-showcase .dropzone {
+  min-height: 9rem;
+  padding: 1.5rem;
+  border: 1.5px dashed var(--theme-elevation-300);
+  border-radius: 14px;
+  background: var(--theme-elevation-50);
+}
+
+#field-showcase .dropzone.dragging {
+  border-color: var(--admin-accent-solid);
+  background: var(--admin-accent-wash);
+}
+
+#field-showcase .upload__dropzoneContent {
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+}
+
+#field-showcase .upload__dragAndDropText {
+  display: block;
+  font-size: 0;
+  line-height: 0;
+  text-transform: none;
+  text-align: center;
+}
+
+#field-showcase .upload__dragAndDropText::before {
+  content: 'Drop all your images here at once';
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--theme-elevation-800);
+}
+
+#field-showcase .upload__dragAndDropText::after {
+  content: 'Every file you drop uploads together with one Save. No alt text needed.';
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--theme-elevation-500);
+}

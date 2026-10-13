@@ -208,7 +208,7 @@ export interface Project {
    */
   order?: number | null;
   /**
-   * Every email (or ad) in this project, at full length — drop in as many as you like and drag to reorder. They sit in a four-column grid under the write-up, each shown whole, never cropped. Upload them at their real size; tall is fine.
+   * Every email (or ad) in this project, shown whole in a four-column grid under the write-up — never cropped. Drop the whole set in at once, then drag to reorder. Upload them at their real size; tall is fine.
    */
   showcase?: (number | Media)[] | null;
   /**
@@ -389,9 +389,9 @@ export interface Project {
 export interface Media {
   id: number;
   /**
-   * Describe the image the way you would to someone who cannot see it. This is read aloud by screen readers and shown if the image fails to load.
+   * Optional. A short description of the image, read aloud by screen readers. Leave it empty and the site describes it from the project it belongs to.
    */
-  alt: string;
+  alt?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -439,9 +439,9 @@ export interface Media {
 export interface Document {
   id: number;
   /**
-   * What this is, for your own reference — e.g. “Mafia Capsule email”.
+   * What this is, for your own reference — e.g. “Mafia Capsule email”. Leave it empty to use the filename.
    */
-  label: string;
+  label?: string | null;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -463,9 +463,9 @@ export interface Document {
 export interface Video {
   id: number;
   /**
-   * What this is, for your own reference.
+   * What this is, for your own reference. Leave it empty to use the filename.
    */
-  label: string;
+  label?: string | null;
   /**
    * Optional still shown before the video plays, and while it loads. Without one the first frame is used.
    */

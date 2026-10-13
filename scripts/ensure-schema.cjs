@@ -579,6 +579,14 @@ const STATEMENTS = [
   `CREATE INDEX IF NOT EXISTS "projects_rels_parent_idx" ON "projects_rels" USING btree ("parent_id")`,
   `CREATE INDEX IF NOT EXISTS "projects_rels_path_idx" ON "projects_rels" USING btree ("path")`,
   `CREATE INDEX IF NOT EXISTS "projects_rels_media_id_idx" ON "projects_rels" USING btree ("media_id")`,
+
+  // Alt text on images, and the label on PDFs and videos, are optional now,
+  // so a batch of files can be dropped in and saved without naming each one
+  // first. Relaxing a constraint only — safe to run again, and nothing
+  // existing changes.
+  `ALTER TABLE "media" ALTER COLUMN "alt" DROP NOT NULL`,
+  `ALTER TABLE "documents" ALTER COLUMN "label" DROP NOT NULL`,
+  `ALTER TABLE "videos" ALTER COLUMN "label" DROP NOT NULL`,
 ]
 
 /**

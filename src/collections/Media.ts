@@ -23,12 +23,15 @@ export const Media: CollectionConfig = {
   },
   fields: [
     {
+      // Optional, so a whole batch of images can be dropped in and saved in
+      // one go. Where it's left empty the site describes the image from its
+      // context instead — a showcase email is read out as the project and
+      // its place in the run (see MediaImage's fallbackAlt).
       name: 'alt',
       type: 'text',
-      required: true,
       admin: {
         description:
-          'Describe the image the way you would to someone who cannot see it. This is read aloud by screen readers and shown if the image fails to load.',
+          'Optional. A short description of the image, read aloud by screen readers. Leave it empty and the site describes it from the project it belongs to.',
       },
     },
   ],

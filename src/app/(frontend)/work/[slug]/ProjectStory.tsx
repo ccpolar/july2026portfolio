@@ -88,6 +88,9 @@ const ShowcaseStory = ({ project }: Props) => {
       ? project.client
       : null
   const pieces = (project.showcase ?? []).filter((m): m is Media => typeof m === 'object' && m !== null)
+  // What one piece of the grid is called when an image has no alt text of
+  // its own: "Guerrilla Golf, email 3 of 6".
+  const pieceNoun = project.category?.includes('email') ? 'email' : 'piece'
 
   return (
     <>
@@ -106,6 +109,7 @@ const ShowcaseStory = ({ project }: Props) => {
           <MediaImage
             className={styles.image}
             media={project.cover}
+            fallbackAlt={project.title}
             priority
             sizes="(min-width: 88rem) 88rem, 100vw"
           />
@@ -168,6 +172,7 @@ const ShowcaseStory = ({ project }: Props) => {
                       <MediaImage
                         className={styles.showcaseImage}
                         media={media}
+                        fallbackAlt={`${project.title}, ${pieceNoun} ${index + 1} of ${pieces.length}`}
                         sizes={`(min-width: 88rem) ${Math.round(88 / count)}rem, ${Math.round(96 / count)}vw`}
                       />
                     </div>
@@ -236,6 +241,7 @@ const Story = ({ project, email }: Props) => {
           <MediaImage
             className={styles.image}
             media={project.cover}
+            fallbackAlt={project.title}
             priority
             sizes="(min-width: 88rem) 88rem, 100vw"
           />

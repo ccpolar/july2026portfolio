@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { fileLabelField } from './fileLabel'
 
 /**
  * Video files for motion graphics, kept apart from the image library for the
@@ -21,12 +22,7 @@ export const Videos: CollectionConfig = {
     mimeTypes: ['video/mp4', 'video/webm', 'video/quicktime'],
   },
   fields: [
-    {
-      name: 'label',
-      type: 'text',
-      required: true,
-      admin: { description: 'What this is, for your own reference.' },
-    },
+    fileLabelField('What this is, for your own reference.'),
     {
       name: 'poster',
       type: 'upload',

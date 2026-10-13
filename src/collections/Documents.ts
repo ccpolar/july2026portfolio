@@ -1,10 +1,11 @@
 import type { CollectionConfig } from 'payload'
+import { fileLabelField } from './fileLabel'
 
 /**
  * PDFs, kept apart from the image library on purpose: Media converts every
- * upload to WebP and insists on alt text, neither of which makes sense for a
- * document. These are what a "scroll window" block shows when the piece is a
- * PDF rather than a long image.
+ * upload to WebP, which makes no sense for a document. These are what a
+ * "scroll window" block shows when the piece is a PDF rather than a long
+ * image.
  */
 export const Documents: CollectionConfig = {
   slug: 'documents',
@@ -22,11 +23,6 @@ export const Documents: CollectionConfig = {
     mimeTypes: ['application/pdf'],
   },
   fields: [
-    {
-      name: 'label',
-      type: 'text',
-      required: true,
-      admin: { description: 'What this is, for your own reference — e.g. “Mafia Capsule email”.' },
-    },
+    fileLabelField('What this is, for your own reference — e.g. “Mafia Capsule email”.'),
   ],
 }
