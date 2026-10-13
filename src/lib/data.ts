@@ -123,7 +123,7 @@ export const getPortfolio = cache(async () => {
     where: {
       // Named rather than "not none", so a row whose category was never set
       // can't slip in on a NULL.
-      category: { in: ['branding', 'merchandise', 'advertising', 'website'] },
+      category: { in: ['branding', 'merchandise', 'advertising', 'email', 'website'] },
       status: { equals: 'live' },
     },
     sort: 'order',
@@ -138,6 +138,7 @@ export const getPortfolio = cache(async () => {
     branding: of('branding'),
     merchandise: of('merchandise'),
     advertising: of('advertising'),
+    email: of('email'),
     websites: of('website'),
   }
 })

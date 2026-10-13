@@ -27,6 +27,9 @@ const db = new PGlite()
 
 await db.exec(`
   CREATE TABLE "media" ("id" serial PRIMARY KEY, "url" varchar);
+  -- Later statements add columns to these two globals; they only need to exist.
+  CREATE TABLE "homepage" ("id" serial PRIMARY KEY);
+  CREATE TABLE "theme" ("id" serial PRIMARY KEY);
   CREATE TABLE "projects" (
     "id" serial PRIMARY KEY NOT NULL,
     "title" varchar NOT NULL,

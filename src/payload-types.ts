@@ -177,7 +177,7 @@ export interface Project {
   /**
    * Tick each section of the Portfolio page this should appear in. Leave them all unticked to keep it off that page. Separate from “Featured” above, which is the Recent Work page.
    */
-  category?: ('branding' | 'merchandise' | 'advertising' | 'website')[] | null;
+  category?: ('branding' | 'merchandise' | 'advertising' | 'email' | 'website')[] | null;
   /**
    * Where “Visit site” sends people — e.g. https://example.com
    */
@@ -207,6 +207,10 @@ export interface Project {
    * Lower numbers appear first — within Recent Work, and within each portfolio section.
    */
   order?: number | null;
+  /**
+   * Every email (or ad) in this project, at full length — drop in as many as you like and drag to reorder. They sit in a four-column grid under the write-up, each shown whole, never cropped. Upload them at their real size; tall is fine.
+   */
+  showcase?: (number | Media)[] | null;
   /**
    * Optional longer case study, shown on the project page.
    */
@@ -835,6 +839,7 @@ export interface ProjectsSelect<T extends boolean = true> {
       };
   featured?: T;
   order?: T;
+  showcase?: T;
   body?: T;
   layout?:
     | T
@@ -1177,7 +1182,7 @@ export interface Homepage {
   available?: boolean | null;
   availabilityLabel?: string | null;
   /**
-   * A fan of photographs between the headline and the paragraph below it. They shuffle on their own, so every one gets its turn in the middle. Seven is the full spread; fewer simply makes a smaller fan, and none hides it altogether. Portrait crops sit best — they are shown tall.
+   * A hand of photographs between the headline and the paragraph below it. They rest as a stack and fan open when a visitor reaches them, so nothing moves on its own. Seven is the full spread; fewer simply makes a smaller fan, and none hides it altogether. They are cut to one shape, set below — portrait crops sit best.
    */
   heroCards?:
     | {
@@ -1186,7 +1191,7 @@ export interface Homepage {
       }[]
     | null;
   /**
-   * The shape every card is cut to. “As uploaded” leaves each picture at its own proportions. The taller shapes crop in from the sides — which is what gives the row real height when the photographs are widescreen, and what lets the setting below go further.
+   * The shape every card is cut to. The fan reads as a hand of cards when they all share one shape, so 4:5 is the standard; the other shapes crop in further from the sides, which gives the fan more height when the photographs are widescreen and lets the setting below go further.
    */
   heroCardsShape?: ('natural' | 'square' | 'portrait' | 'tall') | null;
   /**

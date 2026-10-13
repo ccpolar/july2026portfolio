@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${home.portfolioHeading?.trim() || 'Portfolio'} — ${chrome.siteName}`,
     description:
       home.portfolioIntro?.trim() ||
-      'The full body of work — branding, merchandise, advertising, and website design.',
+      'The full body of work — branding, merchandise, advertising, email, and website design.',
   }
 }
 
@@ -29,10 +29,10 @@ const Empty = ({ label }: { label: string }) => (
 
 export default async function PortfolioPage() {
   const [chrome, portfolio, home] = await Promise.all([getChrome(), getPortfolio(), getHomepage()])
-  const { branding, merchandise, advertising, websites } = portfolio
+  const { branding, merchandise, advertising, email, websites } = portfolio
 
-  // One scroll, four categories in order, rather than four tab panels behind
-  // four clicks. Every category keeps its place even when empty, so the page
+  // One scroll, every category in order, rather than tab panels behind
+  // clicks. Every category keeps its place even when empty, so the page
   // reads the same way each visit and a link to one still lands somewhere.
   const sections = [
     {
@@ -56,6 +56,17 @@ export default async function PortfolioPage() {
         <AdvertisingGallery items={advertising} />
       ) : (
         <Empty label="Advertising" />
+      ),
+    },
+    {
+      // Same two-up grid as advertising: a tile is the project's hero, and
+      // the emails themselves are what its page is for.
+      id: 'email',
+      label: 'Email Design',
+      content: email.length ? (
+        <AdvertisingGallery items={email} />
+      ) : (
+        <Empty label="Email design" />
       ),
     },
     {

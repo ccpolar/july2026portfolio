@@ -36,7 +36,7 @@ export const DashboardOverview = async ({ req }: Props) => {
       countOf('projects'),
       countOf('projects', { featured: { equals: true } }),
       countOf('projects', {
-        category: { in: ['branding', 'merchandise', 'advertising', 'website'] },
+        category: { in: ['branding', 'merchandise', 'advertising', 'email', 'website'] },
       }),
       countOf('snippets'),
       countOf('posts'),

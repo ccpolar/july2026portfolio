@@ -551,6 +551,34 @@ const STATEMENTS = [
    EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
   `ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "status" "enum_projects_status" DEFAULT 'live'`,
 
+  // Email Design, a fifth portfolio section. Adding a value to an enum is
+  // allowed inside a transaction from Postgres 12 on, so long as nothing in
+  // that same transaction uses it — nothing here does.
+  `ALTER TYPE "public"."enum_projects_category" ADD VALUE IF NOT EXISTS 'email' BEFORE 'website'`,
+
+  // The showcase grid on an email or advertising project: many images in one
+  // field, which Payload keeps in a relationships table beside the project.
+  // Column by column rather than one CREATE TABLE, in case the table already
+  // exists from some other relationship and only the media column is new.
+  `CREATE TABLE IF NOT EXISTS "projects_rels" (
+     "id" serial PRIMARY KEY NOT NULL,
+     "order" integer,
+     "parent_id" integer NOT NULL,
+     "path" varchar NOT NULL
+   )`,
+  `ALTER TABLE "projects_rels" ADD COLUMN IF NOT EXISTS "media_id" integer`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_rels" ADD CONSTRAINT "projects_rels_parent_fk"
+       FOREIGN KEY ("parent_id") REFERENCES "public"."projects"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `DO $$ BEGIN
+     ALTER TABLE "projects_rels" ADD CONSTRAINT "projects_rels_media_fk"
+       FOREIGN KEY ("media_id") REFERENCES "public"."media"("id") ON DELETE cascade ON UPDATE no action;
+   EXCEPTION WHEN duplicate_object THEN NULL; END $$`,
+  `CREATE INDEX IF NOT EXISTS "projects_rels_order_idx" ON "projects_rels" USING btree ("order")`,
+  `CREATE INDEX IF NOT EXISTS "projects_rels_parent_idx" ON "projects_rels" USING btree ("parent_id")`,
+  `CREATE INDEX IF NOT EXISTS "projects_rels_path_idx" ON "projects_rels" USING btree ("path")`,
+  `CREATE INDEX IF NOT EXISTS "projects_rels_media_id_idx" ON "projects_rels" USING btree ("media_id")`,
 ]
 
 /**

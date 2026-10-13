@@ -186,3 +186,147 @@
 .nextLink:focus-visible .nextArrow {
   transform: translateX(4px);
 }
+
+/* — Showcase: email design and advertising — */
+
+.showcaseTop {
+  padding-top: clamp(var(--space-lg), 4vw, var(--space-2xl));
+}
+
+/* Up here the link sits on the bluest stretch of the sky, where the muted
+   grey falls short of a readable contrast; full ink holds in both themes. */
+.showcaseTop .back {
+  margin-bottom: var(--space-md);
+  color: var(--ink);
+}
+
+/* A wide band rather than the usual 16:9: it sets the scene for the brand,
+   and the work itself is waiting in the grid below rather than here. Taller
+   on a phone, where a band this thin would be a sliver. */
+.heroFrame {
+  overflow: hidden;
+  border-radius: var(--radius-media);
+  background: var(--surface);
+  aspect-ratio: 4 / 3;
+}
+
+@media (min-width: 40rem) {
+  .heroFrame {
+    aspect-ratio: 5 / 2;
+  }
+}
+
+.showcaseIntro {
+  padding-block: clamp(var(--space-xl), 5vw, var(--space-3xl)) clamp(var(--space-xl), 5vw, 4rem);
+}
+
+.showcaseTitle {
+  font-size: var(--text-display);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+  line-height: 1;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.services {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem var(--space-xs);
+  margin-top: var(--space-md);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.servicesLabel {
+  font-size: var(--text-label);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.showcaseSummary {
+  font-size: var(--text-lead);
+  max-width: 62ch;
+  margin-top: var(--space-lg);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.showcaseIntro .prose {
+  margin-top: var(--space-md);
+}
+
+.showcaseIntro .facts {
+  max-width: 62ch;
+}
+
+.showcaseGridSection {
+  padding-bottom: var(--section);
+}
+
+/* Masonry, the way an email portfolio is read: every piece at its own full
+   length, side by side, tops level, nothing cropped. Independent columns
+   rather than rows, so a 600-pixel welcome email and a 3,000-pixel newsletter
+   can sit next to each other without either one deciding a row height. Which
+   piece goes in which column is worked out in ProjectStory (see masonry());
+   here there's one arrangement per width, and only the matching one shows. */
+.showcaseGrid {
+  --showcase-gap: clamp(0.5rem, 0.9vw, 0.875rem);
+
+  display: none;
+  align-items: start;
+  gap: var(--showcase-gap);
+}
+
+.showcaseCols2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.showcaseCols3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.showcaseCols4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (min-width: 48rem) {
+  .showcaseCols2 {
+    display: none;
+  }
+
+  .showcaseCols3 {
+    display: grid;
+  }
+}
+
+@media (min-width: 64rem) {
+  .showcaseCols3 {
+    display: none;
+  }
+
+  .showcaseCols4 {
+    display: grid;
+  }
+}
+
+.showcaseColumn {
+  display: grid;
+  gap: var(--showcase-gap);
+  min-width: 0;
+}
+
+.showcaseImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: calc(var(--radius-media) * 0.5);
+  /* Most emails are white at the edges; a hairline keeps one from dissolving
+     into the light sky behind it. Drawn inside, so it doesn't change the
+     image's size. */
+  outline: 1px solid var(--edge);
+  outline-offset: -1px;
+  background: var(--surface);
+}

@@ -1,6 +1,6 @@
 import type { Media, Project } from '@/payload-types'
 
-/** One of the four sections of the portfolio page. */
+/** One of the sections of the portfolio page. */
 export type PortfolioSection = NonNullable<Project['category']>[number]
 
 /**
@@ -40,7 +40,22 @@ export const hasCaseStudy = (project: Project) =>
   Boolean(project.slug) &&
   (hasText((project.body as { root?: RichTextNode } | null | undefined)?.root?.children) ||
     Boolean(project.layout?.length) ||
-    Boolean(project.gallery?.length))
+    Boolean(project.gallery?.length) ||
+    Boolean(project.showcase?.length))
+
+/**
+ * Whether a piece is laid out as a showcase: a full-width hero, the brand and
+ * what was done for it, then every piece of the work in a masonry grid.
+ *
+ * Email design and advertising are both a run of finished pieces — every email
+ * in a flow, every ad in a campaign — and the point of the page is seeing all
+ * of them, so they share the one layout built for that. Loosely typed so the
+ * admin can ask the same question of a form that's still being filled in.
+ */
+export const usesShowcase = (project: { category?: unknown } | null | undefined): boolean => {
+  const category = project?.category
+  return Array.isArray(category) && (category.includes('email') || category.includes('advertising'))
+}
 
 /**
  * Where a website project sends people: the live site itself.

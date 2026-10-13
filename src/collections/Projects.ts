@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { revalidateProject, revalidateProjectDelete } from '../hooks/revalidate'
+import { usesShowcase } from '../lib/portfolioItem'
 import { adminOrigin } from '../lib/previewUrl'
 import { caseStudyBlocks } from './blocks'
 
@@ -140,6 +141,7 @@ export const Projects: CollectionConfig = {
                 { label: 'Branding', value: 'branding' },
                 { label: 'Merchandise', value: 'merchandise' },
                 { label: 'Advertising', value: 'advertising' },
+                { label: 'Email Design', value: 'email' },
                 { label: 'Website', value: 'website' },
               ],
               admin: {
@@ -225,6 +227,23 @@ export const Projects: CollectionConfig = {
           description:
             'The write-up and the layout beneath it — on anything, wherever it appears. The preview beside you updates as you type.',
           fields: [
+            {
+              // The run of finished pieces an email or advertising case study
+              // is really about — every email in a flow, every ad in a
+              // campaign — shown at full length in a masonry grid under the
+              // write-up. One field taking many files, so a whole flow can be
+              // dragged in at once rather than added one row at a time.
+              name: 'showcase',
+              label: 'Showcase grid',
+              type: 'upload',
+              relationTo: 'media',
+              hasMany: true,
+              admin: {
+                condition: (data) => usesShowcase(data),
+                description:
+                  'Every email (or ad) in this project, at full length — drop in as many as you like and drag to reorder. They sit in a four-column grid under the write-up, each shown whole, never cropped. Upload them at their real size; tall is fine.',
+              },
+            },
             {
               name: 'body',
               type: 'richText',
