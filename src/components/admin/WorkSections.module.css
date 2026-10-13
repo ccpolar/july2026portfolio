@@ -1,0 +1,86 @@
+/* The Portfolio page's sections, above the Work list: one row of soft tiles,
+   the same surface and rounding as the dashboard's, so it reads as part of
+   the same panel rather than something bolted on. */
+.sections {
+  display: grid;
+  gap: 0.625rem;
+  margin-bottom: 1.75rem;
+}
+
+.heading {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--theme-elevation-550);
+}
+
+.list {
+  display: grid;
+  /* Fit, not fill: five sections stretch across the list's full width
+     rather than huddling at the left with "Email Design" wrapping. */
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  gap: 0.625rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.section {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    'name add'
+    'count add';
+  align-items: center;
+  gap: 0.125rem 0.75rem;
+  padding: 0.875rem 0.875rem 0.875rem 1rem;
+  background: var(--theme-elevation-100);
+  border: 1px solid var(--theme-border-color);
+  border-radius: 14px;
+}
+
+.name {
+  grid-area: name;
+  font-weight: 600;
+  color: var(--theme-elevation-1000);
+}
+
+.count {
+  grid-area: count;
+  font-size: 0.8125rem;
+  color: var(--theme-elevation-600);
+}
+
+/* An empty section is the one most likely to need starting, so its count
+   says so in the accent rather than fading into the rest. */
+.section[data-empty] .count {
+  color: var(--admin-accent-text);
+}
+
+.add {
+  grid-area: add;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.75rem;
+  border: 1px solid var(--theme-border-color);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--theme-elevation-800);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease;
+}
+
+.add:hover,
+.add:focus-visible {
+  background: var(--admin-accent-solid);
+  border-color: var(--admin-accent-solid);
+  color: var(--admin-accent-ink);
+}

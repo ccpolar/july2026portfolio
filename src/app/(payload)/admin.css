@@ -465,10 +465,10 @@ a.doc-tabs__tab:hover {
 /* — Grouped lists —
    When a list is grouped, Payload heads each group with the field's stored
    value rather than its label, so the Work list's sections arrived as
-   "advertising", "branding". Every one of those values is a single lowercase
-   word whose label is the same word capitalised, so capitalising the heading
-   gives back the label exactly — no second copy of the names to keep in step
-   with the field's options. */
+   "advertising", "branding". Capitalising covers most of them; the Work
+   list's own section names ("Email Design", stored as "email") are put in
+   place by WorkSections, which reads them from the one list of sections. */
 .group-by-header__heading {
+  --admin-group-heading-size: 1.25rem;
   text-transform: capitalize;
 }

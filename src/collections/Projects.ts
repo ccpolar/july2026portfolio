@@ -2,6 +2,7 @@ import type { CollectionConfig } from 'payload'
 
 import { revalidateProject, revalidateProjectDelete } from '../hooks/revalidate'
 import { usesShowcase } from '../lib/portfolioItem'
+import { isPortfolioSection, PORTFOLIO_SECTIONS } from '../lib/portfolioSections'
 import { adminOrigin } from '../lib/previewUrl'
 import { caseStudyBlocks } from './blocks'
 
@@ -35,6 +36,8 @@ export const Projects: CollectionConfig = {
       // Payload has no setting for a default grouping, so this applies it the
       // first time the list opens and then leaves the choice alone.
       beforeListTable: [
+        // Every portfolio section, empty or not, with a way to add to it.
+        '/components/admin/WorkSections#WorkSections',
         {
           path: '/components/admin/DefaultGroupBy#DefaultGroupBy',
           clientProps: { field: 'category' },
@@ -137,13 +140,14 @@ export const Projects: CollectionConfig = {
               label: 'Portfolio sections',
               type: 'select',
               hasMany: true,
-              options: [
-                { label: 'Branding', value: 'branding' },
-                { label: 'Merchandise', value: 'merchandise' },
-                { label: 'Advertising', value: 'advertising' },
-                { label: 'Email Design', value: 'email' },
-                { label: 'Website', value: 'website' },
-              ],
+              options: PORTFOLIO_SECTIONS.map(({ label, value }) => ({ label, value })),
+              // "Add" on one of the sections above the Work list opens a new
+              // piece with ?section=<value>, so it arrives already ticked into
+              // that section. Anything else starts with none ticked.
+              defaultValue: ({ req }) => {
+                const section = req?.query?.section
+                return isPortfolioSection(section) ? [section] : undefined
+              },
               admin: {
                 description:
                   'Tick each section of the Portfolio page this should appear in. Leave them all unticked to keep it off that page. Separate from “Featured” above, which is the Recent Work page.',

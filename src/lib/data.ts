@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { cache } from 'react'
 
 import { type PortfolioSection, toPortfolioItem } from './portfolioItem'
+import { PORTFOLIO_SECTION_VALUES } from './portfolioSections'
 
 const client = cache(async () => getPayload({ config }))
 
@@ -123,7 +124,7 @@ export const getPortfolio = cache(async () => {
     where: {
       // Named rather than "not none", so a row whose category was never set
       // can't slip in on a NULL.
-      category: { in: ['branding', 'merchandise', 'advertising', 'email', 'website'] },
+      category: { in: PORTFOLIO_SECTION_VALUES },
       status: { equals: 'live' },
     },
     sort: 'order',

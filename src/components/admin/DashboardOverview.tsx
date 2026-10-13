@@ -1,5 +1,7 @@
 import type { PayloadRequest, Where } from 'payload'
 
+import { PORTFOLIO_SECTION_VALUES } from '@/lib/portfolioSections'
+
 import styles from './DashboardOverview.module.css'
 
 /**
@@ -36,7 +38,7 @@ export const DashboardOverview = async ({ req }: Props) => {
       countOf('projects'),
       countOf('projects', { featured: { equals: true } }),
       countOf('projects', {
-        category: { in: ['branding', 'merchandise', 'advertising', 'email', 'website'] },
+        category: { in: PORTFOLIO_SECTION_VALUES },
       }),
       countOf('snippets'),
       countOf('posts'),
