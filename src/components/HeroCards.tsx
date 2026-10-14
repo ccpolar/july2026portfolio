@@ -1,6 +1,13 @@
 'use client'
 
-import { type AnimationEvent, type CSSProperties, useCallback, useRef, useState } from 'react'
+import {
+  type AnimationEvent,
+  type CSSProperties,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import type { Homepage } from '@/payload-types'
 
@@ -32,10 +39,12 @@ const OPEN_ROT = 18
  *  rather than a V. */
 const ARC = 0.17
 
-/** How much wider than the open values above the fan swings at the peak of
- *  its spread. "All the way" is this, not 1: the stage reserves room for the
- *  fan at this width, and the spread uses all of it. */
-const PEAK = 1.28
+/** The hovered card's rise. */
+const LIFT_PX = 18
+/** What hovering widens the fan by: a tenth everywhere, and half again as
+ *  much from the outermost card as from the middle one. */
+const BLOOM_BASE = 0.1
+const BLOOM_EDGE = 0.18
 
 /** The proportions each shape cuts a card to. */
 const SHAPES: Record<string, number> = {
@@ -78,14 +87,21 @@ const sizeOf = (aspect: number) => ({ w: Math.sqrt(aspect), h: 1 / Math.sqrt(asp
 /**
  * The hero's photographs, held as a hand of cards.
  *
- * At rest they are a tight stack. Bring the pointer over them — or tap them,
- * which is the only way in on a phone — and they play one short move: spread
- * all the way out into an arc, hold there a moment, and gather back into the
- * stack. About three seconds, start to finish, and then they're still again.
+ * At rest they are a tight stack. Bring the pointer anywhere over them and
+ * they fan out into a shallow arc; hover one in particular and it lifts to
+ * the front while the whole fan opens a little wider — most when the card is
+ * an outer one, least when it's the middle.
  *
- * It is one timeline, not a hover state, so it finishes the same way however
- * it was started and wherever the pointer goes meanwhile. A second trigger
- * while it's running is ignored rather than restarting it mid-spread.
+ * On arrival, before any of that, they play one flourish: spread all the way
+ * out and gather back, in a second and a half, so a visitor sees there's a
+ * hand there to open. On a phone, where nothing can hover, that flourish is
+ * the whole interaction — the cards rest as a stack and a tap plays it again.
+ *
+ * The movement is a CSS transition on a transform, not a timeline. That is
+ * the whole reason moving between cards retargets cleanly: a transition
+ * always runs from wherever the card currently *is*, so changing the target
+ * mid-flight bends the path rather than restarting it. There is nothing to
+ * cancel, nothing to cue up, and nothing to clean up on unmount.
  *
  * Every number is worked out from a card's distance from the middle, so the
  * arrangement holds for any number of cards, and all of it is derived from
@@ -106,23 +122,48 @@ export const HeroCards = ({
   )
   const count = items.length
 
-  // 0 while still; 1 or 2 while playing. Two names for the same move, taken
-  // in turn, because a CSS animation only restarts when its name changes —
-  // setting the same one again would leave the second play doing nothing.
-  const [play, setPlay] = useState<0 | 1 | 2>(0)
-  const lastPlay = useRef<1 | 2>(2)
+  const [hovering, setHovering] = useState(false)
+  const [active, setActive] = useState<number | null>(null)
 
-  const start = useCallback(() => {
-    setPlay((current) => {
-      if (current) return current // already running: let it finish
-      lastPlay.current = lastPlay.current === 1 ? 2 : 1
-      return lastPlay.current
-    })
+  // The opening flourish: on arrival the cards spread all the way out and
+  // gather back, once. Rendered running from the server, so it starts with
+  // the first paint — and it's a CSS animation, which the site already holds
+  // while the loading screen is up, so it plays as the page is revealed
+  // rather than unseen behind it. 'load' waits for the hero's own entrance to
+  // settle first; 'tap' is a phone asking for it again, and starts at once.
+  // Each play starts from null — no animation at all — which is what lets
+  // the same move run again.
+  const [run, setRun] = useState<'load' | 'tap' | null>('load')
+  // Hovering waits for the flourish to finish, so the two never fight over
+  // where the cards are.
+  const open = hovering && run === null
+
+  useEffect(() => {
+    // Nothing plays for someone who asked for less motion, so there is no
+    // end to wait for.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) setRun(null)
   }, [])
 
   const onAnimationEnd = useCallback((event: AnimationEvent<HTMLDivElement>) => {
-    // Only the stage's own move — not anything that bubbles up from inside.
-    if (event.target === event.currentTarget) setPlay(0)
+    if (event.animationName.includes('spread')) setRun(null)
+  }, [])
+
+  // Plays the flourish again, unless it's already playing — a second tap
+  // mid-move lets it finish rather than snapping it back to the start.
+  const replay = () => {
+    if (!run) setRun('tap')
+  }
+
+  // Which kind of pointer the last press came from, so a tap can replay the
+  // flourish without a mouse click doing the same on a computer.
+  const lastPointer = useRef<string>('mouse')
+
+  // pointerleave fires only when the pointer leaves the stage itself, not
+  // when it crosses from one card to the next inside it, so crossing between
+  // cards retargets rather than closing and reopening the fan.
+  const onLeave = useCallback(() => {
+    setHovering(false)
+    setActive(null)
   }, [])
 
   if (!count) return null
@@ -137,6 +178,11 @@ export const HeroCards = ({
   // is even when the photographs are not all the same shape.
   const wRef = Math.max(...sizes.map((s) => s.w))
   const hRef = Math.max(...sizes.map((s) => s.h))
+
+  // How much wider the fan stands while a card is hovered. Worked out once,
+  // from which card it is, and handed to the whole fan.
+  const bloom =
+    active === null ? 1 : 1 + BLOOM_BASE + BLOOM_EDGE * Math.abs((active - centre) / maxD)
 
   /**
    * How far the fan actually reaches, at its widest.
@@ -153,7 +199,7 @@ export const HeroCards = ({
    * the cards pivot about, so the stage can be sized and the pivot placed
    * from the same two numbers.
    */
-  const widest = PEAK
+  const widest = 1 + BLOOM_BASE + BLOOM_EDGE
   let above = 0
   let below = 0
   let half = 0
@@ -188,17 +234,26 @@ export const HeroCards = ({
     <div className={styles.frame}>
       <div
         className={styles.stage}
-        // A pointer arriving plays it — a mouse, a trackpad or a stylus. A
-        // finger is left to the tap below instead: a touch fires pointerenter
-        // too, and counting both would play it twice.
+        // Pointer, not mouse: one pair of handlers covers a mouse, a trackpad
+        // and a stylus. The box is sized for the fan at its widest, so a card
+        // opening outward can never cross this boundary and set off the
+        // enter/leave pair again.
+        // A finger is left out: a touch fires pointerenter too, and with no
+        // pointer to take away again the fan would open and stay open.
         onPointerEnter={(event) => {
-          if (event.pointerType !== 'touch') start()
+          if (event.pointerType !== 'touch') setHovering(true)
         }}
-        // A tap or a click plays it on anything, and is the only way in on a
-        // phone, where there is no pointer to bring over the cards.
-        onClick={start}
+        onPointerLeave={onLeave}
+        onPointerDown={(event) => {
+          lastPointer.current = event.pointerType
+        }}
+        // On a phone, where nothing can hover, a tap plays the flourish again.
+        onClick={() => {
+          if (lastPointer.current === 'touch') replay()
+        }}
         onAnimationEnd={onAnimationEnd}
-        data-play={play || undefined}
+        data-open={open || undefined}
+        data-run={run ?? undefined}
         style={
           {
             '--count': count,
@@ -206,7 +261,10 @@ export const HeroCards = ({
             '--stage-w': stageW,
             '--above': above,
             '--below': below,
-            '--peak': PEAK,
+            '--bloom': bloom,
+            // How wide the opening flourish swings: all the room the stage
+            // reserves, the fan's own widest.
+            '--peak': widest,
           } as CSSProperties
         }
       >
@@ -220,6 +278,8 @@ export const HeroCards = ({
               <li
                 className={styles.slot}
                 key={card.id ?? i}
+                data-active={active === i || undefined}
+                onPointerEnter={() => setActive(i)}
                 style={
                   {
                     '--rest-x': d * REST_SPREAD * wRef,
