@@ -62,6 +62,16 @@
   list-style: none;
 }
 
+/* How far through its spread the fan is: 0 is the resting stack, 1 is spread
+   all the way. Registered as a number so it can be animated — an ordinary
+   custom property can only jump between values, never travel between them —
+   and inherited, so the one value on the stage moves every card at once. */
+@property --fan {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 /* Each card hangs from the same point. Rotating about the bottom of the card
    rather than its middle is what makes the row open like a hand: the corners
    stay gathered and the tops swing apart. */
@@ -77,65 +87,75 @@
   transform-origin: bottom center;
   z-index: var(--z);
 
-  /* At rest. The open values are held in their own properties and switched
-     to below, rather than being recomputed — which is what lets the whole
-     arrangement be worked out once, on the server. */
-  --x: var(--rest-x);
-  --y: var(--rest-y);
-  --r: var(--rest-r);
-  --spread: 1;
-  --lift: 0px;
+  /* Where the card stands at the peak of the spread: its open position,
+     widened to the full room the stage reserves. */
+  --peak-x: calc(var(--open-x) * var(--peak, 1));
+  --peak-r: calc(var(--open-r) * var(--peak, 1));
 
+  /* Every card is somewhere between its resting place and its peak, by
+     however far the fan has got. Both ends are worked out once, on the
+     server; only --fan moves. */
   transform: translate3d(
-      calc(var(--card-k) * var(--x) * var(--spread)),
-      calc(var(--card-k) * var(--y) + var(--lift)),
+      calc(var(--card-k) * (var(--rest-x) + (var(--peak-x) - var(--rest-x)) * var(--fan))),
+      calc(var(--card-k) * (var(--rest-y) + (var(--open-y) - var(--rest-y)) * var(--fan))),
       0
     )
-    rotate(calc(var(--r) * var(--spread) * 1deg));
-
-  /* A transition, not an animation: it always runs from wherever the card
-     currently is, so moving between cards bends the path instead of starting
-     a new one. The curve overshoots a little and settles back — the softness
-     is in the tail, not in a bounce. */
-  transition:
-    transform 720ms cubic-bezier(0.34, 1.38, 0.5, 1),
-    filter 320ms var(--ease-out-quart);
+    rotate(calc((var(--rest-r) + (var(--peak-r) - var(--rest-r)) * var(--fan)) * 1deg));
   will-change: transform;
 }
 
-/* Open — the pointer is somewhere over the stage, or something inside it has
-   taken keyboard focus. The focus half only has anything to catch once the
-   cards have somewhere to go: the hero cards are photographs with no link
-   behind them today, so nothing in here is focusable. It is written now so
-   that adding a link to a card is all it takes — see the note in
-   HeroCards.tsx. */
-.stage[data-open] .slot,
-.stage:focus-within .slot {
-  --x: var(--open-x);
-  --y: var(--open-y);
-  --r: var(--open-r);
-  --spread: var(--bloom, 1);
+/* The move itself, about three seconds: out quickly and decelerating, a
+   held beat fully open so the photographs can actually be seen, then a
+   gentler gather back into the stack. Declared twice under two names — see
+   the note on `play` in HeroCards.tsx: a CSS animation only restarts when
+   its name changes. */
+@keyframes spreadA {
+  0% {
+    --fan: 0;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  30% {
+    --fan: 1;
+  }
+  68% {
+    --fan: 1;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  100% {
+    --fan: 0;
+  }
 }
 
-/* The one being hovered — or the one holding keyboard focus — comes forward
-   of everything else, and rises. */
-.stage[data-open] .slot[data-active],
-.slot:focus-within {
-  --lift: calc(-1 * 18px);
-  z-index: 200;
+@keyframes spreadB {
+  0% {
+    --fan: 0;
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  30% {
+    --fan: 1;
+  }
+  68% {
+    --fan: 1;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  100% {
+    --fan: 0;
+  }
 }
 
-/* A focused card has to be visible as the focused one, not merely raised. */
-.slot :global(a):focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 3px;
-  border-radius: calc(var(--radius-media) * 2);
+.stage[data-play='1'] {
+  animation: spreadA 3s both;
 }
 
-/* The rest of the fan dims a touch while one card is singled out, so the
-   lifted one reads as chosen rather than merely nearer. */
-.stage[data-open] .slot:not([data-active]) {
-  filter: brightness(0.94);
+.stage[data-play='2'] {
+  animation: spreadB 3s both;
+}
+
+/* A tap is the way in on a phone, so a tap should feel like one: no grey
+   flash over the photographs, and no wait to see if it was a double-tap. */
+.stage {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .card {
@@ -157,66 +177,14 @@
   object-fit: cover;
 }
 
-/* — Touch — no pointer to hover with, so the fan is simply open and stays
-     open. Narrower and flatter than the pointer version, so the whole hand
-     fits a phone without any of it reaching off the side.
-
-     This sits after the rules above and matches them for weight, so it wins
-     on order — a touch that does fire a pointer event gets the same
-     arrangement either way, and nothing is waiting on a hover that will
-     never come. — */
-@media (hover: none) {
-  /* Written against the same selectors as the pointer rules above, not a
-     plainer one: a tap does fire a pointer event, so the stage picks up
-     data-open and data-active on a touch screen too, and a rule that only
-     matched .slot would lose to those and let the fan re-spread under the
-     finger. Matching them and coming later settles it. */
-  .slot,
-  .stage[data-open] .slot,
-  .stage:focus-within .slot {
-    --x: var(--open-x);
-    --y: var(--open-y);
-    --r: var(--open-r);
-    /* Tighter than the pointer version so the whole hand fits a phone. */
-    --spread: 0.82;
-  }
-
-  /* A tap shouldn't single a card out and strand it in front — on a touch
-     screen there is nothing to un-hover it with. */
-  .stage[data-open] .slot[data-active],
-  .slot:focus-within {
-    --lift: 0px;
-    z-index: var(--z);
-  }
-
-  .stage[data-open] .slot:not([data-active]) {
-    filter: none;
-  }
-}
-
-/* — Reduced motion — the fan is laid out open and readable from the first
-     paint, and nothing moves between states. The arrangement is still the
-     arrangement; it just doesn't travel to get there. — */
+/* — Reduced motion — no travelling at all. The fan is laid out spread from
+     the first paint, a little short of its peak so it sits comfortably, and
+     a hover or a tap changes nothing. The arrangement is still the
+     arrangement; it just doesn't move to get there. — */
 @media (prefers-reduced-motion: reduce) {
-  /* Same reasoning as the touch block: matched against the open-state
-     selectors so the arrangement can't be changed out from under someone who
-     asked for less movement. */
-  .slot,
-  .stage[data-open] .slot,
-  .stage:focus-within .slot {
-    --x: var(--open-x);
-    --y: var(--open-y);
-    --r: var(--open-r);
-    --spread: 0.9;
-    transition: none;
-  }
-
-  .stage[data-open] .slot[data-active],
-  .slot:focus-within {
-    --lift: 0px;
-  }
-
-  .stage[data-open] .slot:not([data-active]) {
-    filter: none;
+  .stage,
+  .stage[data-play] {
+    --fan: 0.75;
+    animation: none;
   }
 }

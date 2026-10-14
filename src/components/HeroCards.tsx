@@ -1,6 +1,6 @@
 'use client'
 
-import { type CSSProperties, useCallback, useState } from 'react'
+import { type AnimationEvent, type CSSProperties, useCallback, useRef, useState } from 'react'
 
 import type { Homepage } from '@/payload-types'
 
@@ -32,12 +32,10 @@ const OPEN_ROT = 18
  *  rather than a V. */
 const ARC = 0.17
 
-/** The hovered card's rise. */
-const LIFT_PX = 18
-/** What hovering widens the fan by: a tenth everywhere, and half again as
- *  much from the outermost card as from the middle one. */
-const BLOOM_BASE = 0.1
-const BLOOM_EDGE = 0.18
+/** How much wider than the open values above the fan swings at the peak of
+ *  its spread. "All the way" is this, not 1: the stage reserves room for the
+ *  fan at this width, and the spread uses all of it. */
+const PEAK = 1.28
 
 /** The proportions each shape cuts a card to. */
 const SHAPES: Record<string, number> = {
@@ -80,16 +78,14 @@ const sizeOf = (aspect: number) => ({ w: Math.sqrt(aspect), h: 1 / Math.sqrt(asp
 /**
  * The hero's photographs, held as a hand of cards.
  *
- * At rest they are a tight stack. Bring the pointer anywhere over them and
- * they fan out into a shallow arc; hover one in particular and it lifts to
- * the front while the whole fan opens a little wider — most when the card is
- * an outer one, least when it's the middle.
+ * At rest they are a tight stack. Bring the pointer over them — or tap them,
+ * which is the only way in on a phone — and they play one short move: spread
+ * all the way out into an arc, hold there a moment, and gather back into the
+ * stack. About three seconds, start to finish, and then they're still again.
  *
- * The movement is a CSS transition on a transform, not a timeline. That is
- * the whole reason moving between cards retargets cleanly: a transition
- * always runs from wherever the card currently *is*, so changing the target
- * mid-flight bends the path rather than restarting it. There is nothing to
- * cancel, nothing to cue up, and nothing to clean up on unmount.
+ * It is one timeline, not a hover state, so it finishes the same way however
+ * it was started and wherever the pointer goes meanwhile. A second trigger
+ * while it's running is ignored rather than restarting it mid-spread.
  *
  * Every number is worked out from a card's distance from the middle, so the
  * arrangement holds for any number of cards, and all of it is derived from
@@ -110,15 +106,23 @@ export const HeroCards = ({
   )
   const count = items.length
 
-  const [open, setOpen] = useState(false)
-  const [active, setActive] = useState<number | null>(null)
+  // 0 while still; 1 or 2 while playing. Two names for the same move, taken
+  // in turn, because a CSS animation only restarts when its name changes —
+  // setting the same one again would leave the second play doing nothing.
+  const [play, setPlay] = useState<0 | 1 | 2>(0)
+  const lastPlay = useRef<1 | 2>(2)
 
-  // pointerleave fires only when the pointer leaves the stage itself, not
-  // when it crosses from one card to the next inside it, so crossing between
-  // cards retargets rather than closing and reopening the fan.
-  const onLeave = useCallback(() => {
-    setOpen(false)
-    setActive(null)
+  const start = useCallback(() => {
+    setPlay((current) => {
+      if (current) return current // already running: let it finish
+      lastPlay.current = lastPlay.current === 1 ? 2 : 1
+      return lastPlay.current
+    })
+  }, [])
+
+  const onAnimationEnd = useCallback((event: AnimationEvent<HTMLDivElement>) => {
+    // Only the stage's own move — not anything that bubbles up from inside.
+    if (event.target === event.currentTarget) setPlay(0)
   }, [])
 
   if (!count) return null
@@ -133,11 +137,6 @@ export const HeroCards = ({
   // is even when the photographs are not all the same shape.
   const wRef = Math.max(...sizes.map((s) => s.w))
   const hRef = Math.max(...sizes.map((s) => s.h))
-
-  // How much wider the fan stands while a card is hovered. Worked out once,
-  // from which card it is, and handed to the whole fan.
-  const bloom =
-    active === null ? 1 : 1 + BLOOM_BASE + BLOOM_EDGE * Math.abs((active - centre) / maxD)
 
   /**
    * How far the fan actually reaches, at its widest.
@@ -154,7 +153,7 @@ export const HeroCards = ({
    * the cards pivot about, so the stage can be sized and the pivot placed
    * from the same two numbers.
    */
-  const widest = 1 + BLOOM_BASE + BLOOM_EDGE
+  const widest = PEAK
   let above = 0
   let below = 0
   let half = 0
@@ -189,13 +188,17 @@ export const HeroCards = ({
     <div className={styles.frame}>
       <div
         className={styles.stage}
-        // Pointer, not mouse: one pair of handlers covers a mouse, a trackpad
-        // and a stylus. The box is sized for the fan at its widest, so a card
-        // opening outward can never cross this boundary and set off the
-        // enter/leave pair again.
-        onPointerEnter={() => setOpen(true)}
-        onPointerLeave={onLeave}
-        data-open={open || undefined}
+        // A pointer arriving plays it — a mouse, a trackpad or a stylus. A
+        // finger is left to the tap below instead: a touch fires pointerenter
+        // too, and counting both would play it twice.
+        onPointerEnter={(event) => {
+          if (event.pointerType !== 'touch') start()
+        }}
+        // A tap or a click plays it on anything, and is the only way in on a
+        // phone, where there is no pointer to bring over the cards.
+        onClick={start}
+        onAnimationEnd={onAnimationEnd}
+        data-play={play || undefined}
         style={
           {
             '--count': count,
@@ -203,7 +206,7 @@ export const HeroCards = ({
             '--stage-w': stageW,
             '--above': above,
             '--below': below,
-            '--bloom': bloom,
+            '--peak': PEAK,
           } as CSSProperties
         }
       >
@@ -217,8 +220,6 @@ export const HeroCards = ({
               <li
                 className={styles.slot}
                 key={card.id ?? i}
-                data-active={active === i || undefined}
-                onPointerEnter={() => setActive(i)}
                 style={
                   {
                     '--rest-x': d * REST_SPREAD * wRef,
