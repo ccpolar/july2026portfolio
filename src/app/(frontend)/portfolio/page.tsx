@@ -34,7 +34,7 @@ export default async function PortfolioPage() {
   // One scroll, every category in order, rather than tab panels behind
   // clicks. Every category keeps its place even when empty, so the page
   // reads the same way each visit and a link to one still lands somewhere.
-  const sections = [
+  const allSections = [
     {
       id: 'branding',
       label: 'Branding',
@@ -57,6 +57,8 @@ export default async function PortfolioPage() {
       // The same tiles as advertising: a piece with a case study opens it,
       // one that's a single image opens full screen.
       id: 'garment',
+      // Off the page entirely until it has something in it.
+      hideWhenEmpty: true,
       label: 'Garment Design',
       count: garment.length,
       content: garment.length ? (
@@ -94,6 +96,8 @@ export default async function PortfolioPage() {
       content: websites.length ? <WebsiteShowcase items={websites} /> : <Empty label="Websites" />,
     },
   ]
+
+  const sections = allSections.filter((section) => !(section.hideWhenEmpty && !section.count))
 
   return (
     <>

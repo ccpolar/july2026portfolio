@@ -1,6 +1,6 @@
 'use client'
 
-import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react'
+import { type CSSProperties, useState } from 'react'
 import { flushSync } from 'react-dom'
 
 import type { PortfolioItem } from '@/lib/portfolioItem'
@@ -11,17 +11,9 @@ import styles from './MerchShowcase.module.css'
 
 type Layout = 'carousel' | 'grid'
 
-const Chevron = ({ dir }: { dir: 'left' | 'right' }) => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path
-      d={dir === 'left' ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7'}
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
+/** Below this many shots one run of the belt can be narrower than the column,
+ *  and the loop would show a gap — so a short set sits still as a row. */
+const MIN_TO_DRIFT = 5
 
 const CarouselIcon = () => (
   <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -44,12 +36,15 @@ type ViewTransitionDocument = Document & {
 }
 
 /**
- * Apparel graphics as a carousel of square shots, one row you can page
- * through, with a small toggle that lays the whole set out as a grid instead.
+ * Apparel graphics as a carousel of square shots drifting past on their own,
+ * with a small toggle that lays the whole set out as a grid instead.
  *
  * The carousel is the default: it shows the work at a size worth looking at
- * without the section taking several screens of scroll. The grid is for
- * seeing everything at once.
+ * without the section taking several screens of scroll. It moves the way the
+ * testimonials do — two copies of the run on one belt, slid left by exactly
+ * one copy and started again, so the loop has no seam — and holds still while
+ * hovered or focused so a shot can be looked at, and for anyone who asked for
+ * less motion. The grid is for seeing everything at once.
  *
  * Switching is a view transition: each shot carries its own name for the
  * length of the switch, so the browser moves every one from its place in the
@@ -61,30 +56,6 @@ export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
   const { open, element } = useLightbox(items)
   const [layout, setLayout] = useState<Layout>('carousel')
   const [morphing, setMorphing] = useState(false)
-  const trackRef = useRef<HTMLUListElement>(null)
-  const [edges, setEdges] = useState({ start: true, end: false })
-
-  // Whether the row can scroll further either way, so the arrows can say so.
-  const updateEdges = useCallback(() => {
-    const track = trackRef.current
-    if (!track || layout !== 'carousel') return
-    const max = track.scrollWidth - track.clientWidth
-    setEdges({ start: track.scrollLeft <= 2, end: track.scrollLeft >= max - 2 })
-  }, [layout])
-
-  useEffect(() => {
-    updateEdges()
-    window.addEventListener('resize', updateEdges)
-    return () => window.removeEventListener('resize', updateEdges)
-  }, [updateEdges])
-
-  // One step is most of a screenful of the row, so a press always shows
-  // something new while keeping a sliver of what was there for continuity.
-  const page = (dir: -1 | 1) => {
-    const track = trackRef.current
-    if (!track) return
-    track.scrollBy({ left: dir * track.clientWidth * 0.85, behavior: 'smooth' })
-  }
 
   const switchTo = (next: Layout) => {
     if (next === layout) return
@@ -112,6 +83,8 @@ export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
 
   if (!items.length) return null
 
+  const drifts = items.length >= MIN_TO_DRIFT
+
   return (
     <div className={styles.showcase} data-layout={layout}>
       <div className={styles.controls}>
@@ -135,58 +108,62 @@ export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
             <span>Grid</span>
           </button>
         </div>
-
-        {layout === 'carousel' ? (
-          <div className={styles.arrows}>
-            <button
-              type="button"
-              className={styles.arrow}
-              onClick={() => page(-1)}
-              disabled={edges.start}
-              aria-label="Previous"
-            >
-              <Chevron dir="left" />
-            </button>
-            <button
-              type="button"
-              className={styles.arrow}
-              onClick={() => page(1)}
-              disabled={edges.end}
-              aria-label="Next"
-            >
-              <Chevron dir="right" />
-            </button>
-          </div>
-        ) : null}
       </div>
 
-      <ul
-        className={styles.track}
-        ref={trackRef}
-        onScroll={updateEdges}
-        data-morphing={morphing || undefined}
-      >
-        {items.map((item, index) => (
-          <li
-            className={styles.item}
-            key={item.id}
-            style={{ '--vt': `merch-${item.id}` } as CSSProperties}
-          >
-            <button
-              type="button"
-              className={styles.thumb}
-              onClick={() => open(index)}
-              aria-label={`View ${item.title} full size`}
+      <div className={styles.belt} data-drifts={drifts || undefined}>
+        <ul
+          className={styles.track}
+          data-morphing={morphing || undefined}
+          style={{ '--count': items.length } as CSSProperties}
+        >
+          {items.map((item, index) => (
+            <li
+              className={styles.item}
+              key={item.id}
+              style={{ '--vt': `merch-${item.id}` } as CSSProperties}
             >
-              <MediaImage
-                className={styles.image}
-                media={item.image}
-                sizes="(min-width: 64rem) 20rem, 60vw"
-              />
-            </button>
-          </li>
-        ))}
-      </ul>
+              <button
+                type="button"
+                className={styles.thumb}
+                onClick={() => open(index)}
+                aria-label={`View ${item.title} full size`}
+              >
+                <MediaImage
+                  className={styles.image}
+                  media={item.image}
+                  sizes="(min-width: 64rem) 20rem, 60vw"
+                />
+              </button>
+            </li>
+          ))}
+          {/* The belt's second copy, so the drift can loop without a seam —
+            carousel only, hidden from screen readers and the keyboard, and
+            with no transition names (two shots sharing a name would stop
+            the switch to the grid from animating at all). */}
+          {layout === 'carousel' && drifts
+            ? items.map((item, index) => (
+                <li
+                  className={`${styles.item} ${styles.again}`}
+                  key={`${item.id}-again`}
+                  aria-hidden="true"
+                >
+                  <button
+                    type="button"
+                    className={styles.thumb}
+                    tabIndex={-1}
+                    onClick={() => open(index)}
+                  >
+                    <MediaImage
+                      className={styles.image}
+                      media={item.image}
+                      sizes="(min-width: 64rem) 20rem, 60vw"
+                    />
+                  </button>
+                </li>
+              ))
+            : null}
+        </ul>
+      </div>
 
       {element}
     </div>

@@ -2,8 +2,8 @@
    either way — work photographed the same way in every frame reads as a set
    rather than a pile. */
 
-/* — Controls — the layout toggle at the left, the carousel's arrows at the
-     right. Small and quiet: the work is the point of the section. — */
+/* — Controls — the layout toggle. Small and quiet: the work is the point of
+     the section. — */
 .controls {
   display: flex;
   align-items: center;
@@ -48,39 +48,9 @@
   color: var(--bg);
 }
 
-.toggleButton:focus-visible,
-.arrow:focus-visible {
+.toggleButton:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
-}
-
-.arrows {
-  display: inline-flex;
-  gap: var(--space-2xs);
-}
-
-.arrow {
-  display: inline-grid;
-  place-items: center;
-  width: 2.25rem;
-  height: 2.25rem;
-  border: 1px solid var(--edge);
-  border-radius: 999px;
-  background: color-mix(in oklch, var(--bg) 70%, transparent);
-  color: var(--ink);
-  cursor: pointer;
-  transition:
-    background-color var(--dur-fast) var(--ease-out-quart),
-    opacity var(--dur-fast) var(--ease-out-quart);
-}
-
-.arrow:hover:not(:disabled) {
-  background: var(--surface);
-}
-
-.arrow:disabled {
-  opacity: 0.35;
-  cursor: default;
 }
 
 /* — The shots — */
@@ -90,30 +60,50 @@
   list-style: none;
 }
 
-/* Carousel: one row, scrolled sideways and settling on a shot rather than
-   between two. About three and a half across on a desktop and one and a half
-   on a phone, so there is always part of the next one in view to say the row
-   carries on. */
-[data-layout='carousel'] .track {
-  display: flex;
-  gap: clamp(var(--space-xs), 2vw, var(--space-lg));
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  /* Room for the shots' hover scale and focus ring, which would otherwise be
-     clipped by the scrolling box. */
-  padding-block: 4px;
+/* Carousel: one row drifting past on its own, the way the testimonials do.
+   The belt clips it to the column; the track inside is two copies of the run
+   laid end to end, and slides left by exactly one copy before starting again,
+   at which point the second copy is where the first began — so the loop has
+   no seam. About three and a half shots across on a desktop and one and a
+   half on a phone, so the part-shown next one says the row carries on. */
+.belt {
+  /* The drift is measured in this gap, so the track and the keyframes agree. */
+  --gap: clamp(var(--space-xs), 2vw, var(--space-lg));
 }
 
-[data-layout='carousel'] .track::-webkit-scrollbar {
-  display: none;
+[data-layout='carousel'] .belt {
+  overflow: hidden;
+  /* Room for the hover scale and the focus ring, which the clip would cut. */
+  padding-block: 4px;
+  margin-block: -4px;
+}
+
+[data-layout='carousel'] .track {
+  display: flex;
+  gap: var(--gap);
+}
+
+[data-layout='carousel'] [data-drifts] .track {
+  width: max-content;
+  /* A few seconds per shot: slow enough to look at each one as it passes. */
+  animation: drift calc(var(--count, 8) * 4s) linear infinite;
+}
+
+@keyframes drift {
+  to {
+    transform: translateX(calc(-50% - var(--gap) / 2));
+  }
+}
+
+/* Held still while it's being looked at, by pointer or by keyboard. */
+[data-layout='carousel'] .belt:hover .track,
+[data-layout='carousel'] .belt:focus-within .track {
+  animation-play-state: paused;
 }
 
 [data-layout='carousel'] .item {
-  flex: 0 0 clamp(11rem, 26vw, 20rem);
-  scroll-snap-align: start;
+  flex: none;
+  width: clamp(11rem, 26vw, 20rem);
 }
 
 /* Grid: every shot at once — three across on a phone, four once there's room.
@@ -191,8 +181,27 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-layout='carousel'] .track {
-    scroll-behavior: auto;
+  /* Nothing drifts for someone who asked for less motion. The row becomes an
+     ordinary sideways scroller instead, so every shot is still reachable, and
+     the second copy goes — without the loop it would only be a repeat.
+     Matched against the drift rule's own selector, so this one wins. */
+  [data-layout='carousel'] [data-drifts] .track {
+    animation: none;
+  }
+
+  [data-layout='carousel'] .belt {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    pointer-events: auto;
+  }
+
+  [data-layout='carousel'] .item {
+    scroll-snap-align: start;
+  }
+
+  .again {
+    display: none;
   }
 
   .image {
