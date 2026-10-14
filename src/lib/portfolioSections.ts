@@ -13,7 +13,10 @@
  */
 export const PORTFOLIO_SECTIONS = [
   { label: 'Branding', value: 'branding' },
-  { label: 'Merchandise', value: 'merchandise' },
+  // Shown as Apparel Graphics; still stored as 'merchandise', which every
+  // existing piece and every /portfolio#merchandise link already uses.
+  { label: 'Apparel Graphics', value: 'merchandise' },
+  { label: 'Garment Design', value: 'garment' },
   { label: 'Advertising', value: 'advertising' },
   { label: 'Email Design', value: 'email' },
   { label: 'Website', value: 'website' },

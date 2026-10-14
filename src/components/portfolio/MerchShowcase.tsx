@@ -1,6 +1,7 @@
 'use client'
 
-import { type CSSProperties, useEffect, useRef, useState } from 'react'
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 
 import type { PortfolioItem } from '@/lib/portfolioItem'
 
@@ -8,98 +9,169 @@ import { MediaImage } from '../MediaImage'
 import { useLightbox } from './Lightbox'
 import styles from './MerchShowcase.module.css'
 
-/** How far apart the stagger spreads the cards, and how many steps it runs for
- *  before they all leave together — a long grid shouldn't take twice as long
- *  to deal out as a short one. The step is wide enough that cards leave one
- *  at a time at a readable pace rather than in a single burst. */
-const STEP_MS = 80
-const MAX_STEPS = 10
+type Layout = 'carousel' | 'grid'
+
+const Chevron = ({ dir }: { dir: 'left' | 'right' }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d={dir === 'left' ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7'}
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
+
+const CarouselIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <rect x="5" y="4" width="10" height="12" rx="2" stroke="currentColor" strokeWidth="1.6" />
+    <path d="M2 6v8M18 6v8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+  </svg>
+)
+
+const GridIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+    <rect x="11" y="3" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+    <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+    <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+  </svg>
+)
+
+type ViewTransitionDocument = Document & {
+  startViewTransition?: (update: () => void) => { finished: Promise<void> }
+}
 
 /**
- * Merchandise as a grid of square shots, dealt out of a pile as you reach it.
+ * Apparel graphics as a carousel of square shots, one row you can page
+ * through, with a small toggle that lays the whole set out as a grid instead.
  *
- * The grid itself is the resting state: it is laid out, visible and clickable
- * with no JavaScript at all. The animation is added on top — each card is told
- * how far it sits from the middle of the grid, and plays that journey in
- * reverse the first time the grid comes up the screen, so a stack in the
- * centre scatters out into the arrangement that was already there.
+ * The carousel is the default: it shows the work at a size worth looking at
+ * without the section taking several screens of scroll. The grid is for
+ * seeing everything at once.
  *
- * It's deliberately only ever played once, and only when the grid starts out
- * below the fold: collapsing a grid someone is already looking at, to re-deal
- * it, would read as a glitch rather than as an entrance.
+ * Switching is a view transition: each shot carries its own name for the
+ * length of the switch, so the browser moves every one from its place in the
+ * row to its place in the grid rather than redrawing the section. Where view
+ * transitions aren't supported, or less motion was asked for, it simply
+ * switches.
  */
 export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
   const { open, element } = useLightbox(items)
-  const gridRef = useRef<HTMLUListElement>(null)
-  const [dealt, setDealt] = useState(false)
+  const [layout, setLayout] = useState<Layout>('carousel')
+  const [morphing, setMorphing] = useState(false)
+  const trackRef = useRef<HTMLUListElement>(null)
+  const [edges, setEdges] = useState({ start: true, end: false })
+
+  // Whether the row can scroll further either way, so the arrows can say so.
+  const updateEdges = useCallback(() => {
+    const track = trackRef.current
+    if (!track || layout !== 'carousel') return
+    const max = track.scrollWidth - track.clientWidth
+    setEdges({ start: track.scrollLeft <= 2, end: track.scrollLeft >= max - 2 })
+  }, [layout])
 
   useEffect(() => {
-    const grid = gridRef.current
-    if (!grid) return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    updateEdges()
+    window.addEventListener('resize', updateEdges)
+    return () => window.removeEventListener('resize', updateEdges)
+  }, [updateEdges])
 
-    // Already on screen when the page settled — this visitor has seen the grid
-    // in place, so there's nothing to deal out to them.
-    const box = grid.getBoundingClientRect()
-    if (box.top < window.innerHeight) return
+  // One step is most of a screenful of the row, so a press always shows
+  // something new while keeping a sliver of what was there for continuity.
+  const page = (dir: -1 | 1) => {
+    const track = trackRef.current
+    if (!track) return
+    track.scrollBy({ left: dir * track.clientWidth * 0.85, behavior: 'smooth' })
+  }
 
-    const cards = [...grid.children] as HTMLElement[]
-
-    // Where the pile sits. Across the grid, its middle. Down it, the grid's
-    // middle only while that is somewhere the pile will actually be seen —
-    // one column on a phone makes this grid several screens tall, and the
-    // centre of it would put the pile a thousand pixels below the fold, so
-    // every card would make its journey off-screen and simply be in place by
-    // the time it was scrolled to. Past that, the pile moves up to sit just
-    // inside the top of the grid, which is the part being looked at when the
-    // deal starts.
-    const measure = () => {
-      const g = grid.getBoundingClientRect()
-      const originX = g.left + g.width / 2
-      const originY = g.top + Math.min(g.height / 2, window.innerHeight * 0.45)
-      cards.forEach((card, i) => {
-        const r = card.getBoundingClientRect()
-        card.style.setProperty('--dx', `${(originX - (r.left + r.width / 2)).toFixed(1)}px`)
-        card.style.setProperty('--dy', `${(originY - (r.top + r.height / 2)).toFixed(1)}px`)
-        // A pile is never perfectly square: a degree or two each way, fixed per
-        // position so it's the same every time rather than random.
-        card.style.setProperty('--rot', `${(((i % 5) - 2) * 1.6).toFixed(1)}deg`)
-        card.style.setProperty('--step', `${Math.min(i, MAX_STEPS)}`)
-      })
+  const switchTo = (next: Layout) => {
+    if (next === layout) return
+    const doc = document as ViewTransitionDocument
+    const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!doc.startViewTransition || still) {
+      setLayout(next)
+      return
     }
-
-    measure()
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return
-        // Re-measure immediately before playing: the column count may have
-        // changed since mount if the window was resized on the way down.
-        measure()
-        setDealt(true)
-        observer.disconnect()
-      },
-      // Fires as the grid's top edge just clears the bottom of the screen, so
-      // the snap to the pile happens below the fold and only the scatter is
-      // actually watched.
-      { rootMargin: '0px 0px -72px 0px' },
-    )
-    observer.observe(grid)
-    return () => observer.disconnect()
-  }, [])
+    // Names go on for the switch only. Left on all the time they would
+    // collide with the page-to-page transitions elsewhere on the site.
+    // data-local-morph keeps the rest of the page from crossfading — see
+    // globals.css.
+    const root = document.documentElement
+    root.setAttribute('data-local-morph', '')
+    flushSync(() => setMorphing(true))
+    const transition = doc.startViewTransition(() => {
+      flushSync(() => setLayout(next))
+    })
+    void transition.finished.finally(() => {
+      root.removeAttribute('data-local-morph')
+      setMorphing(false)
+    })
+  }
 
   if (!items.length) return null
 
   return (
-    <>
+    <div className={styles.showcase} data-layout={layout}>
+      <div className={styles.controls}>
+        <div className={styles.toggle} role="group" aria-label="Show apparel graphics as">
+          <button
+            type="button"
+            className={styles.toggleButton}
+            aria-pressed={layout === 'carousel'}
+            onClick={() => switchTo('carousel')}
+          >
+            <CarouselIcon />
+            <span>Carousel</span>
+          </button>
+          <button
+            type="button"
+            className={styles.toggleButton}
+            aria-pressed={layout === 'grid'}
+            onClick={() => switchTo('grid')}
+          >
+            <GridIcon />
+            <span>Grid</span>
+          </button>
+        </div>
+
+        {layout === 'carousel' ? (
+          <div className={styles.arrows}>
+            <button
+              type="button"
+              className={styles.arrow}
+              onClick={() => page(-1)}
+              disabled={edges.start}
+              aria-label="Previous"
+            >
+              <Chevron dir="left" />
+            </button>
+            <button
+              type="button"
+              className={styles.arrow}
+              onClick={() => page(1)}
+              disabled={edges.end}
+              aria-label="Next"
+            >
+              <Chevron dir="right" />
+            </button>
+          </div>
+        ) : null}
+      </div>
+
       <ul
-        className={styles.grid}
-        ref={gridRef}
-        data-dealt={dealt || undefined}
-        style={{ '--step-ms': `${STEP_MS}ms` } as CSSProperties}
+        className={styles.track}
+        ref={trackRef}
+        onScroll={updateEdges}
+        data-morphing={morphing || undefined}
       >
         {items.map((item, index) => (
-          <li className={styles.gridItem} key={item.id}>
+          <li
+            className={styles.item}
+            key={item.id}
+            style={{ '--vt': `merch-${item.id}` } as CSSProperties}
+          >
             <button
               type="button"
               className={styles.thumb}
@@ -109,7 +181,7 @@ export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
               <MediaImage
                 className={styles.image}
                 media={item.image}
-                sizes="(min-width: 64rem) 18rem, 33vw"
+                sizes="(min-width: 64rem) 20rem, 60vw"
               />
             </button>
           </li>
@@ -117,6 +189,6 @@ export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
       </ul>
 
       {element}
-    </>
+    </div>
   )
 }

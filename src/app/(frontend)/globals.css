@@ -318,6 +318,18 @@ button {
   animation: vt-fade-in 300ms 90ms var(--ease-out-quart) both;
 }
 
+/* A switch within the page — the apparel graphics carousel turning into a
+   grid — moves its own pieces and nothing else, so the page must not blink
+   underneath it. The rest swaps in place at once. */
+html[data-local-morph]::view-transition-old(root) {
+  animation: none;
+  opacity: 0;
+}
+
+html[data-local-morph]::view-transition-new(root) {
+  animation: none;
+}
+
 @keyframes vt-fade-out {
   to {
     opacity: 0;

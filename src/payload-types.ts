@@ -177,7 +177,7 @@ export interface Project {
   /**
    * Tick each section of the Portfolio page this should appear in. Leave them all unticked to keep it off that page. Separate from “Featured” above, which is the Recent Work page.
    */
-  category?: ('branding' | 'merchandise' | 'advertising' | 'email' | 'website')[] | null;
+  category?: ('branding' | 'merchandise' | 'garment' | 'advertising' | 'email' | 'website')[] | null;
   /**
    * Where “Visit site” sends people — e.g. https://example.com
    */

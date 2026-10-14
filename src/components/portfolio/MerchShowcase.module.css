@@ -1,26 +1,145 @@
-/* — The grid — every shot at once, square, nothing moving once it has
-     arrived. Square shots: merchandise photographed the same way in every
-     frame reads as a set rather than a pile. */
-/* Three across on a phone, four once there's room for them. Fixed counts
-   rather than auto-fill: the shots are square and small, so what matters is
-   how many sit in a row, not holding any one of them to a minimum width. */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(var(--space-2xs), 3vw, var(--space-xl));
+/* Apparel graphics: a carousel by default, a grid on request. Square shots
+   either way — work photographed the same way in every frame reads as a set
+   rather than a pile. */
+
+/* — Controls — the layout toggle at the left, the carousel's arrows at the
+     right. Small and quiet: the work is the point of the section. — */
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.toggle {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--bg) 70%, transparent);
+}
+
+.toggleButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font: inherit;
+  font-size: var(--text-label);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    color var(--dur-fast) var(--ease-out-quart);
+}
+
+.toggleButton:hover {
+  color: var(--ink);
+}
+
+.toggleButton[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.toggleButton:focus-visible,
+.arrow:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.arrows {
+  display: inline-flex;
+  gap: var(--space-2xs);
+}
+
+.arrow {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--bg) 70%, transparent);
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    opacity var(--dur-fast) var(--ease-out-quart);
+}
+
+.arrow:hover:not(:disabled) {
+  background: var(--surface);
+}
+
+.arrow:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* — The shots — */
+.track {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* Carousel: one row, scrolled sideways and settling on a shot rather than
+   between two. About three and a half across on a desktop and one and a half
+   on a phone, so there is always part of the next one in view to say the row
+   carries on. */
+[data-layout='carousel'] .track {
+  display: flex;
+  gap: clamp(var(--space-xs), 2vw, var(--space-lg));
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  /* Room for the shots' hover scale and focus ring, which would otherwise be
+     clipped by the scrolling box. */
+  padding-block: 4px;
+}
+
+[data-layout='carousel'] .track::-webkit-scrollbar {
+  display: none;
+}
+
+[data-layout='carousel'] .item {
+  flex: 0 0 clamp(11rem, 26vw, 20rem);
+  scroll-snap-align: start;
+}
+
+/* Grid: every shot at once — three across on a phone, four once there's room.
+   Fixed counts rather than auto-fill: the shots are square and small, so what
+   matters is how many sit in a row. */
+[data-layout='grid'] .track {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(var(--space-2xs), 3vw, var(--space-xl));
+}
+
 @media (min-width: 64rem) {
-  .grid {
+  [data-layout='grid'] .track {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
-.gridItem {
+.item {
   margin: 0;
+  min-width: 0;
+}
+
+/* Each shot carries its own name only while the layout is switching, so the
+   browser can move it from the row to the grid (see MerchShowcase.tsx). */
+.track[data-morphing] .item {
+  view-transition-name: var(--vt);
 }
 
 .thumb {
@@ -37,6 +156,11 @@
   cursor: pointer;
 }
 
+.thumb:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
 .image {
   width: 100%;
   height: 100%;
@@ -49,39 +173,26 @@
   transform: scale(1.03);
 }
 
-/* — Dealing the grid out ────────────────────────────────────────────────────
-   The grid above is the resting state and is laid out, visible and clickable
-   with no JavaScript at all. This only runs when the component has measured
-   each card's distance from the middle of the grid into --dx/--dy and set
-   --dealt on reaching it, so the animation is an addition to an arrangement
-   that was already there rather than the thing that reveals it.
+/* The labels drop on a narrow phone; the icons and the pressed state carry
+   the meaning, and each button keeps its name for a screen reader. */
+@media (max-width: 26rem) {
+  .toggleButton span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
 
-   backwards fill is what makes it read as a pile: each card holds the stacked
-   position through its own delay, then leaves, so they peel off the top one
-   after another instead of expanding all at once. */
-.grid[data-dealt] .gridItem {
-  /* Slow enough to watch a card travel rather than just notice that it has.
-     ease-out-quart rather than expo: expo puts nearly all of its distance in
-     the first fraction of the run, which at this length reads as the card
-     being already there and then easing the last few pixels. Quart keeps the
-     move visible across the whole duration and still settles rather than
-     stopping. */
-  animation: deal 1150ms var(--ease-out-quart) backwards;
-  animation-delay: calc(var(--step, 0) * var(--step-ms, 34ms));
-  will-change: transform;
-}
-
-@keyframes deal {
-  from {
-    transform: translate(var(--dx, 0), var(--dy, 0)) scale(0.82) rotate(var(--rot, 0deg));
+  .toggleButton {
+    padding: 0.4375rem 0.625rem;
   }
 }
 
-/* Nothing is dealt out for someone who asked for less motion — the component
-   doesn't set --dealt at all in that case, and this is the belt and braces. */
 @media (prefers-reduced-motion: reduce) {
-  .grid[data-dealt] .gridItem {
-    animation: none;
+  [data-layout='carousel'] .track {
+    scroll-behavior: auto;
   }
 
   .image {

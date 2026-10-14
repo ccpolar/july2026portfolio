@@ -24,3 +24,60 @@
   color: var(--muted);
   max-width: 60ch;
 }
+
+/* — The section guide — every category as a link, under the intro, so a
+     visitor can go straight to the one they came for. Wraps onto a second
+     line on a phone rather than scrolling sideways: six short names fit, and
+     a hidden overflow would hide the very sections it exists to point at. */
+.guide {
+  margin-top: calc(-1 * clamp(0.25rem, 1.5vw, 1rem));
+}
+
+.guideList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs) var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guideLink {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4375rem;
+  padding: 0.5rem 0.9375rem;
+  border: 1px solid var(--edge-strong);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--bg) 72%, transparent);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    color var(--dur-fast) var(--ease-out-quart),
+    border-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.guideLink:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
+.guideLink:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.guideCount {
+  font-size: var(--text-label);
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+  transition: color var(--dur-fast) var(--ease-out-quart);
+}
+
+.guideLink:hover .guideCount {
+  color: color-mix(in oklch, var(--bg) 75%, transparent);
+}

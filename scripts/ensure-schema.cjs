@@ -587,6 +587,11 @@ const STATEMENTS = [
   `ALTER TABLE "media" ALTER COLUMN "alt" DROP NOT NULL`,
   `ALTER TABLE "documents" ALTER COLUMN "label" DROP NOT NULL`,
   `ALTER TABLE "videos" ALTER COLUMN "label" DROP NOT NULL`,
+
+  // Garment Design, a portfolio section of its own beside Apparel Graphics.
+  // Same rule as Email Design: allowed inside the transaction, and nothing
+  // here uses the new value.
+  `ALTER TYPE "public"."enum_projects_category" ADD VALUE IF NOT EXISTS 'garment' AFTER 'merchandise'`,
 ]
 
 /**

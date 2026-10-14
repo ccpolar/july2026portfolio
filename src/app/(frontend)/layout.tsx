@@ -100,7 +100,7 @@ export default async function FrontendLayout({ children }: { children: React.Rea
   const liveServices = services.filter((s) => s.description?.trim()).map((s) => s.title)
   const intakeServices = liveServices.length
     ? liveServices
-    : ['Branding', 'Brand Kit OS', 'UI Design', 'Merchandise', 'Advertising']
+    : ['Branding', 'Brand Kit OS', 'UI Design', 'Apparel Graphics', 'Garment Design', 'Advertising']
 
   return (
     // suppressHydrationWarning: the theme and intro scripts set data-theme and

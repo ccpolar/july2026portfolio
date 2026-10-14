@@ -138,6 +138,7 @@ export const getPortfolio = cache(async () => {
   return {
     branding: of('branding'),
     merchandise: of('merchandise'),
+    garment: of('garment'),
     advertising: of('advertising'),
     email: of('email'),
     websites: of('website'),

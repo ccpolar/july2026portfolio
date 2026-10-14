@@ -1,15 +1,22 @@
 /* Generous separation between categories — on one long scroll the space is
    most of what tells you a new category has started, before the rule does. */
 .section {
-  padding-top: clamp(var(--space-2xl), 7vw, 6rem);
-  /* Scrolling to a category shouldn't bury its name under the floating nav. */
-  scroll-margin-top: clamp(5rem, 11vh, 7.5rem);
+  /* Kept as properties so the jump below can subtract the padding exactly. */
+  --section-gap: clamp(var(--space-2xl), 7vw, 6rem);
+
+  padding-top: var(--section-gap);
+  /* Jumping to a category — from the guide at the top, or a link to
+     /portfolio#… — lands its name just under the floating nav. The page
+     already keeps anchors clear of the nav (scroll-padding-top in
+     globals.css); what this takes back is the gap above the section, which
+     is padding and would otherwise push the name a good way further down. */
+  scroll-margin-top: calc(var(--space-sm) - var(--section-gap));
 }
 
 /* The first category sits right under the page's own intro, which has already
    paid for that space. */
 .section:first-of-type {
-  padding-top: clamp(var(--space-xl), 4vw, 3rem);
+  --section-gap: clamp(var(--space-xl), 4vw, 3rem);
 }
 
 /* Name at the left, rule running out to the right margin from it. */

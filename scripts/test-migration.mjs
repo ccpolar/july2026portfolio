@@ -206,6 +206,14 @@ check(
   optional.length === 3 && optional.every((r) => r.is_nullable === 'YES'),
   optional.map((r) => `${r.table_name}=${r.is_nullable}`).join(', '),
 )
+const sectionValues = (
+  await db.query(`SELECT unnest(enum_range(NULL::enum_projects_category))::text AS v`)
+).rows.map((r) => r.v)
+check(
+  'Garment Design sits after Apparel Graphics',
+  sectionValues.join(',') === 'branding,merchandise,garment,advertising,email,website',
+  sectionValues.join(','),
+)
 await db.exec(`INSERT INTO media (url, alt) VALUES ('img-no-alt', NULL)`)
 check('an image saves with no alt text', true)
 
