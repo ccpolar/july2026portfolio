@@ -60,14 +60,13 @@
   list-style: none;
 }
 
-/* Carousel: one row drifting past on its own, the way the testimonials do.
-   The belt clips it to the column; the track inside is two copies of the run
-   laid end to end, and slides left by exactly one copy before starting again,
-   at which point the second copy is where the first began — so the loop has
-   no seam. About three and a half shots across on a desktop and one and a
-   half on a phone, so the part-shown next one says the row carries on. */
+/* Carousel: one row drifting past on its own, the way the testimonials do,
+   that can also be grabbed and pulled either way. The belt clips it to the
+   column; the track inside is two copies of the run laid end to end, moved by
+   useDriftBelt so the loop has no seam whichever way it goes. About three and
+   a half shots across on a desktop and one and a half on a phone, so the
+   part-shown next one says the row carries on. */
 .belt {
-  /* The drift is measured in this gap, so the track and the keyframes agree. */
   --gap: clamp(var(--space-xs), 2vw, var(--space-lg));
 }
 
@@ -85,20 +84,39 @@
 
 [data-layout='carousel'] [data-drifts] .track {
   width: max-content;
-  /* A few seconds per shot: slow enough to look at each one as it passes. */
-  animation: drift calc(var(--count, 8) * 4s) linear infinite;
+  will-change: transform;
 }
 
-@keyframes drift {
-  to {
-    transform: translateX(calc(-50% - var(--gap) / 2));
-  }
+/* Something to take hold of. The layout drops pointer events on content so
+   the background can see the cursor, so the belt claims them back; a
+   sideways drag is the belt's, while an up-and-down one still scrolls the
+   page on a phone. */
+[data-layout='carousel'] .belt[data-drifts] {
+  pointer-events: auto;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* Held still while it's being looked at, by pointer or by keyboard. */
-[data-layout='carousel'] .belt:hover .track,
-[data-layout='carousel'] .belt:focus-within .track {
-  animation-play-state: paused;
+[data-layout='carousel'] .belt[data-drifts] .thumb {
+  cursor: inherit;
+}
+
+[data-layout='carousel'] .belt[data-dragging] {
+  cursor: grabbing;
+}
+
+/* A dragged photograph would otherwise come away as the browser's own ghost
+   image instead of moving the row. */
+[data-layout='carousel'] .belt[data-drifts] img {
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* Nothing grows under the cursor mid-drag. */
+[data-layout='carousel'] .belt[data-dragging] .image {
+  transform: none;
 }
 
 [data-layout='carousel'] .item {
@@ -184,9 +202,14 @@
   /* Nothing drifts for someone who asked for less motion. The row becomes an
      ordinary sideways scroller instead, so every shot is still reachable, and
      the second copy goes — without the loop it would only be a repeat.
-     Matched against the drift rule's own selector, so this one wins. */
+     useDriftBelt doesn't run at all here. */
   [data-layout='carousel'] [data-drifts] .track {
-    animation: none;
+    transform: none;
+  }
+
+  [data-layout='carousel'] .belt[data-drifts] {
+    cursor: auto;
+    touch-action: auto;
   }
 
   [data-layout='carousel'] .belt {
@@ -212,4 +235,11 @@
   .thumb:focus-visible .image {
     transform: none;
   }
+}
+
+/* The grid is laid out where it stands. The belt's offset is cleared when the
+   carousel stops, but this guarantees the grid never starts out shifted by a
+   frame of it — which would also throw off the switch's animation. */
+[data-layout='grid'] .track {
+  transform: none !important;
 }

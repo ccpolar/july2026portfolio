@@ -1,6 +1,6 @@
 'use client'
 
-import { type CSSProperties, useState } from 'react'
+import { type CSSProperties, useRef, useState } from 'react'
 import { flushSync } from 'react-dom'
 
 import type { PortfolioItem } from '@/lib/portfolioItem'
@@ -8,6 +8,7 @@ import type { PortfolioItem } from '@/lib/portfolioItem'
 import { MediaImage } from '../MediaImage'
 import { useLightbox } from './Lightbox'
 import styles from './MerchShowcase.module.css'
+import { useDriftBelt } from './useDriftBelt'
 
 type Layout = 'carousel' | 'grid'
 
@@ -41,10 +42,10 @@ type ViewTransitionDocument = Document & {
  *
  * The carousel is the default: it shows the work at a size worth looking at
  * without the section taking several screens of scroll. It moves the way the
- * testimonials do — two copies of the run on one belt, slid left by exactly
- * one copy and started again, so the loop has no seam — and holds still while
- * hovered or focused so a shot can be looked at, and for anyone who asked for
- * less motion. The grid is for seeing everything at once.
+ * testimonials do, on a loop with no seam. It holds still while hovered or
+ * focused so a shot can be looked at, can be grabbed and dragged either way,
+ * and holds still entirely for anyone who asked for less motion. The grid is
+ * for seeing everything at once.
  *
  * Switching is a view transition: each shot carries its own name for the
  * length of the switch, so the browser moves every one from its place in the
@@ -56,6 +57,12 @@ export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
   const { open, element } = useLightbox(items)
   const [layout, setLayout] = useState<Layout>('carousel')
   const [morphing, setMorphing] = useState(false)
+  const beltRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLUListElement>(null)
+
+  // The drift, the pause and the drag — see useDriftBelt.
+  const drifts = items.length >= MIN_TO_DRIFT
+  useDriftBelt({ beltRef, trackRef, enabled: layout === 'carousel' && drifts, count: items.length })
 
   const switchTo = (next: Layout) => {
     if (next === layout) return
@@ -83,8 +90,6 @@ export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
 
   if (!items.length) return null
 
-  const drifts = items.length >= MIN_TO_DRIFT
-
   return (
     <div className={styles.showcase} data-layout={layout}>
       <div className={styles.controls}>
@@ -110,9 +115,10 @@ export const MerchShowcase = ({ items }: { items: PortfolioItem[] }) => {
         </div>
       </div>
 
-      <div className={styles.belt} data-drifts={drifts || undefined}>
+      <div className={styles.belt} ref={beltRef} data-drifts={drifts || undefined}>
         <ul
           className={styles.track}
+          ref={trackRef}
           data-morphing={morphing || undefined}
           style={{ '--count': items.length } as CSSProperties}
         >
