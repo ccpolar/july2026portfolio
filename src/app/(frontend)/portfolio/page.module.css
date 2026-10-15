@@ -44,8 +44,6 @@
 
 .guideLink {
   display: inline-flex;
-  align-items: baseline;
-  gap: 0.4375rem;
   padding: 0.5rem 0.9375rem;
   border: 1px solid var(--edge-strong);
   border-radius: 999px;
@@ -71,13 +69,3 @@
   outline-offset: 2px;
 }
 
-.guideCount {
-  font-size: var(--text-label);
-  font-variant-numeric: tabular-nums;
-  color: var(--muted);
-  transition: color var(--dur-fast) var(--ease-out-quart);
-}
-
-.guideLink:hover .guideCount {
-  color: color-mix(in oklch, var(--bg) 75%, transparent);
-}

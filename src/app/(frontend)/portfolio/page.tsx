@@ -120,13 +120,6 @@ export default async function PortfolioPage() {
               <li key={section.id}>
                 <a className={styles.guideLink} href={`#${section.id}`}>
                   {section.label}
-                  {section.count ? (
-                    <span className={styles.guideCount}>
-                      <span className="sr-only">, </span>
-                      {section.count}
-                      <span className="sr-only"> {section.count === 1 ? 'piece' : 'pieces'}</span>
-                    </span>
-                  ) : null}
                 </a>
               </li>
             ))}
