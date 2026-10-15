@@ -133,6 +133,12 @@ export const useDriftBelt = ({
     const onFocusOut = (e: FocusEvent) => {
       if (!belt.contains(e.relatedTarget as Node | null)) focused = false
     }
+    // Closing a shot's full-size view with Escape hands keyboard focus back
+    // to that shot, which would hold the belt still for someone who is using
+    // a mouse. The moment the mouse moves, they aren't on the keyboard.
+    const onAnyPointerMove = () => {
+      focused = false
+    }
 
     measure()
     const resize = new ResizeObserver(() => {
@@ -151,6 +157,7 @@ export const useDriftBelt = ({
     belt.addEventListener('click', onClick, true)
     belt.addEventListener('focusin', onFocusIn)
     belt.addEventListener('focusout', onFocusOut)
+    window.addEventListener('pointermove', onAnyPointerMove, { passive: true })
     frame = requestAnimationFrame(tick)
 
     return () => {
@@ -165,6 +172,7 @@ export const useDriftBelt = ({
       belt.removeEventListener('click', onClick, true)
       belt.removeEventListener('focusin', onFocusIn)
       belt.removeEventListener('focusout', onFocusOut)
+      window.removeEventListener('pointermove', onAnyPointerMove)
       delete belt.dataset.dragging
       // Hand the track back clean — the grid lays it out with no offset.
       track.style.transform = ''
