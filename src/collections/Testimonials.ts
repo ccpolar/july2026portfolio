@@ -5,7 +5,8 @@ import { revalidateHome, revalidateHomeDelete } from '../hooks/revalidate'
 export const Testimonials: CollectionConfig = {
   slug: 'testimonials',
   access: {
-    read: () => true,
+    // Public API requests only see published quotes; signed-in admins see all.
+    read: ({ req }) => (req.user ? true : { published: { equals: true } }),
   },
   admin: {
     useAsTitle: 'name',

@@ -592,6 +592,13 @@ const STATEMENTS = [
   // Same rule as Email Design: allowed inside the transaction, and nothing
   // here uses the new value.
   `ALTER TYPE "public"."enum_projects_category" ADD VALUE IF NOT EXISTS 'garment' AFTER 'merchandise'`,
+
+  // Payload 3.92 (the security upgrade from 3.86) records when a password
+  // reset was last requested. Without this column, sign-in and reset queries
+  // on the users table fail. Nullable, no default: existing accounts are
+  // untouched. This is the only schema difference between the two versions
+  // (checked with `npm run schema:sql` on both).
+  `ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "reset_password_requested_at" timestamp(3) with time zone`,
 ]
 
 /**

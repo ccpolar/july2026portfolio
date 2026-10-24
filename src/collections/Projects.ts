@@ -20,7 +20,11 @@ export const Projects: CollectionConfig = {
   // collections were folded into, and their rows now live in this table.
   labels: { singular: 'Piece of work', plural: 'Work' },
   access: {
-    read: () => true,
+    // The public API (/api/projects, GraphQL) only ever sees live work, the same
+    // rule the site's own queries use, so a Draft stays private until it ships.
+    // Signed-in admins see everything. Pages read through the Local API, which
+    // doesn't apply these rules, so nothing on the site changes.
+    read: ({ req }) => (req.user ? true : { status: { equals: 'live' } }),
   },
   admin: {
     useAsTitle: 'title',
