@@ -174,7 +174,7 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-.tab[aria-current='page'] {
+.tab[aria-selected='true'] {
   background: rgba(255, 255, 255, 0.2);
   font-weight: 600;
   color: #fff;
@@ -629,19 +629,341 @@ a.tr:hover {
   color: var(--alp-text-faint);
 }
 
-/* — Narrower windows — the three cards stack, the hero's tabs go (the sidebar
-     reaches the same places), and the table drops its client column. — */
+/* — Tabs — buttons now, switching the panels below in place. — */
+.tab {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.tab:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: panelIn 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+.headActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.pillQuiet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 18px;
+  border: 1px solid var(--alp-border);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--alp-text-muted) !important;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.pillQuiet b {
+  font-weight: 600;
+  color: var(--alp-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.pillQuiet:hover {
+  background: var(--alp-surface-2);
+  color: var(--alp-text) !important;
+}
+
+/* Work — section filter chips. */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 14px;
+}
+
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 16px;
+  border: 1px solid var(--alp-border);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--alp-text-muted);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease;
+}
+
+.filter span {
+  color: var(--alp-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.filter:hover {
+  color: var(--alp-text);
+  border-color: var(--alp-border-strong);
+}
+
+.filter[aria-pressed='true'] {
+  background: var(--alp-invert-bg);
+  border-color: var(--alp-invert-bg);
+  color: var(--alp-invert-text);
+}
+
+.filter[aria-pressed='true'] span {
+  color: inherit;
+  opacity: 0.7;
+}
+
+.filter:focus-visible {
+  outline: 2px solid var(--alp-text);
+  outline-offset: 2px;
+}
+
+.emptyNote a {
+  color: var(--alp-text) !important;
+  font-weight: 600;
+}
+
+/* Site content — one card per collection. */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.miniNumber {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 14px 0 12px;
+}
+
+.miniNumber strong {
+  font-size: 40px;
+  line-height: 40px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.miniNumber span {
+  font-size: 13px;
+  color: var(--alp-text-muted);
+}
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px !important;
+}
+
+.itemList a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  padding: 0 10px;
+  margin: 0 -10px;
+  border-radius: 10px;
+  border-top: 1px solid var(--alp-border);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.itemList li:first-child a {
+  border-top: 0;
+}
+
+.itemList a:hover {
+  background: var(--alp-surface-2);
+}
+
+.itemList a > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemState {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--alp-text-muted);
+}
+
+.addLink {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 6px;
+  height: 34px;
+  margin-top: auto;
+  padding: 0 14px 0 10px;
+  border-radius: 17px;
+  border: 1px solid var(--alp-border);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 150ms ease;
+}
+
+.addLink:hover {
+  background: var(--alp-surface-2);
+}
+
+/* Library — a grid of the latest uploads. */
+.thumbs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  padding-bottom: 14px !important;
+}
+
+.thumbs a {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--alp-surface-2);
+  border: 1px solid var(--alp-border);
+}
+
+.thumbs img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 300ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.thumbs a:hover img {
+  transform: scale(1.04);
+}
+
+.thumbEmpty {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: 8px;
+  font-size: 12px;
+  color: var(--alp-text-faint);
+  word-break: break-all;
+}
+
+/* Site settings — one row per global. */
+.settingsList {
+  padding-bottom: 10px !important;
+}
+
+.settingRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 60px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--alp-border);
+  color: var(--alp-text-muted);
+}
+
+.settingsList li:last-child .settingRow {
+  border-bottom: 0;
+}
+
+.settingRow:hover {
+  background: var(--alp-surface-2);
+  border-radius: 10px;
+  color: var(--alp-text);
+}
+
+.settingName {
+  width: 160px;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--alp-text);
+}
+
+.settingDesc {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--alp-text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.settingRow > svg {
+  flex-shrink: 0;
+}
+
+/* — Narrower windows — the three cards stack, the hero's tabs move under its
+     buttons and scroll sideways, and the table drops its client column. — */
 @media (max-width: 1100px) {
   .row {
     flex-direction: column;
   }
 
+  .heroBottom {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .actions {
+    justify-content: flex-start;
+  }
+
   .tabs {
+    overflow-x: auto;
+    scrollbar-width: none;
+    margin-inline: -28px;
+    padding-inline: 28px;
+  }
+
+  .tabs::-webkit-scrollbar {
     display: none;
   }
 
-  .heroBottom {
-    justify-content: flex-end;
+  .settingName {
+    width: 120px;
   }
 
   .cClient {
@@ -667,6 +989,19 @@ a.tr:hover {
     display: none;
   }
 
+  .tabs {
+    margin-inline: -20px;
+    padding-inline: 20px;
+  }
+
+  .settingDesc {
+    display: none;
+  }
+
+  .settingName {
+    flex: 1;
+  }
+
   .cSection {
     display: none;
   }
@@ -675,5 +1010,6 @@ a.tr:hover {
 @media (prefers-reduced-motion: reduce) {
   .page * {
     transition: none !important;
+    animation: none !important;
   }
 }
