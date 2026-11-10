@@ -176,23 +176,24 @@ export const MeshGradient = () => {
     return () => window.removeEventListener(USE_COLORS_EVENT, onColors)
   }, [])
 
-  // Paint the result. One paint a frame at most, however fast a point moves.
+  // Paint the result, straight away. It used to wait for the next animation
+  // frame, and a frame isn't promised: while the site's page-to-page
+  // transition is running none arrive, and the picture stayed blank for
+  // anyone who came in through the navbar. The preview is small enough
+  // (a few milliseconds) to paint whenever the state changes.
   useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      const el = canvas.current
-      const ctx = el?.getContext('2d')
-      if (!el || !ctx) return
-      const w = Math.round(aspect >= 1 ? PREVIEW : PREVIEW * aspect)
-      const h = Math.round(aspect >= 1 ? PREVIEW / aspect : PREVIEW)
-      if (el.width !== w || el.height !== h) {
-        el.width = w
-        el.height = h
-      }
-      const image = ctx.createImageData(w, h)
-      renderMesh(image.data, w, h, state)
-      ctx.putImageData(image, 0, 0)
-    })
-    return () => cancelAnimationFrame(frame)
+    const el = canvas.current
+    const ctx = el?.getContext('2d')
+    if (!el || !ctx) return
+    const w = Math.round(aspect >= 1 ? PREVIEW : PREVIEW * aspect)
+    const h = Math.round(aspect >= 1 ? PREVIEW / aspect : PREVIEW)
+    if (el.width !== w || el.height !== h) {
+      el.width = w
+      el.height = h
+    }
+    const image = ctx.createImageData(w, h)
+    renderMesh(image.data, w, h, state)
+    ctx.putImageData(image, 0, 0)
   }, [state, aspect])
 
   // The colour map only changes with the colours.
@@ -247,7 +248,7 @@ export const MeshGradient = () => {
   const download = async () => {
     setBusy(true)
     // Let the button show it's working before the render takes the thread.
-    await new Promise((resolve) => requestAnimationFrame(() => setTimeout(resolve, 0)))
+    await new Promise((resolve) => setTimeout(resolve, 40))
     try {
       const w = Math.round(aspect >= 1 ? EXPORT_LONG_EDGE : EXPORT_LONG_EDGE * aspect)
       const h = Math.round(aspect >= 1 ? EXPORT_LONG_EDGE / aspect : EXPORT_LONG_EDGE)
