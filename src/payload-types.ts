@@ -114,6 +114,7 @@ export interface Config {
     identity: Identity;
     'loading-screen': LoadingScreen;
     legal: Legal;
+    toolbox: Toolbox;
   };
   globalsSelect: {
     homepage: HomepageSelect<false> | HomepageSelect<true>;
@@ -122,10 +123,10 @@ export interface Config {
     identity: IdentitySelect<false> | IdentitySelect<true>;
     'loading-screen': LoadingScreenSelect<false> | LoadingScreenSelect<true>;
     legal: LegalSelect<false> | LegalSelect<true>;
+    toolbox: ToolboxSelect<false> | ToolboxSelect<true>;
   };
   locale: null;
   widgets: {
-    overview: OverviewWidget;
     collections: CollectionsWidget;
   };
   user: User;
@@ -1434,6 +1435,30 @@ export interface Legal {
   createdAt?: string | null;
 }
 /**
+ * The Toolbox page at /toolbox: small web tools for visitors (a mesh gradient maker and a palette maker). The tools themselves are built in; here you choose whether the page is shown and what it says at the top.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "toolbox".
+ */
+export interface Toolbox {
+  id: number;
+  /**
+   * On: the toolbox icon appears in the navigation bar and the page is live. Off: the icon and the footer link go, and /toolbox shows “page not found”.
+   */
+  enabled?: boolean | null;
+  heading?: string | null;
+  /**
+   * One or two sentences under the heading.
+   */
+  intro?: string | null;
+  /**
+   * Where the palette tool’s “Open the full Colorify” button goes.
+   */
+  colorifyUrl?: string | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage_select".
  */
@@ -1559,13 +1584,16 @@ export interface LegalSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "overview_widget".
+ * via the `definition` "toolbox_select".
  */
-export interface OverviewWidget {
-  data?: {
-    [k: string]: unknown;
-  };
-  width: 'full';
+export interface ToolboxSelect<T extends boolean = true> {
+  enabled?: T;
+  heading?: T;
+  intro?: T;
+  colorifyUrl?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

@@ -1,4 +1,4 @@
-import { countPublishedPosts, getContact, getLegal } from '@/lib/data'
+import { countPublishedPosts, getContact, getLegal, getToolbox } from '@/lib/data'
 import { hasText } from '@/lib/richText'
 
 import { LandscapeScene } from './LandscapeScene'
@@ -35,15 +35,17 @@ const Link = ({ label, href }: FooterLink) =>
  * they are exactly where a copyright line would otherwise fall.
  *
  * Reads its own content, so each page only passes the site name. Every
- * column is driven from /admin: socials come from Contact, Blog appears once
+ * column is driven from /admin: socials come from Contact, Toolbox follows
+ * its own switch, Blog appears once
  * a post is published (as in the header), and each legal link appears once
  * its page has text.
  */
 export const SiteFooter = async ({ siteName }: { siteName: string }) => {
-  const [contact, legal, postCount] = await Promise.all([
+  const [contact, legal, postCount, toolbox] = await Promise.all([
     getContact(),
     getLegal(),
     countPublishedPosts(),
+    getToolbox(),
   ])
 
   const newsletter = contact.newsletter?.enabled ? contact.newsletter : null
@@ -55,6 +57,7 @@ export const SiteFooter = async ({ siteName }: { siteName: string }) => {
       links: [
         { label: 'Moodboard', href: '/moodboard' },
         { label: 'Snippets', href: '/snippets' },
+        ...(toolbox?.enabled !== false ? [{ label: 'Toolbox', href: '/toolbox' }] : []),
         ...(postCount > 0 ? [{ label: 'Blog', href: '/blog' }] : []),
         { label: 'Recent Work', href: '/work' },
         { label: 'All Work', href: '/portfolio' },

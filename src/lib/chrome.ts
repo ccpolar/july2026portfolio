@@ -2,7 +2,7 @@ import { cache } from 'react'
 
 import type { Media } from '@/payload-types'
 
-import { countPublishedPosts, getContact, getIdentity } from './data'
+import { countPublishedPosts, getContact, getIdentity, getToolbox } from './data'
 
 /**
  * Everything the site header and footer need, fetched once per request.
@@ -16,13 +16,16 @@ export type ChromeProps = {
    *  intrinsic size to lay itself out from. */
   logo: { url: string; height: number; ratio: number | null } | null
   showBlog: boolean
+  /** The toolbox icon in the header; switched in /admin under Toolbox. */
+  showToolbox: boolean
 }
 
 export const getChrome = cache(async (): Promise<ChromeProps> => {
-  const [contact, identity, postCount] = await Promise.all([
+  const [contact, identity, postCount, toolbox] = await Promise.all([
     getContact(),
     getIdentity(),
     countPublishedPosts(),
+    getToolbox(),
   ])
 
   const media =
@@ -47,5 +50,7 @@ export const getChrome = cache(async (): Promise<ChromeProps> => {
     siteName: identity?.siteName || 'Cam',
     logo: url && showLogo ? { url, height: identity?.logoHeight ?? 28, ratio } : null,
     showBlog: postCount > 0,
+    // Absent on a database saved before the field existed, which means on.
+    showToolbox: toolbox?.enabled !== false,
   }
 })

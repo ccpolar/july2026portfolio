@@ -1,0 +1,111 @@
+/* The same opening rhythm as the portfolio page — heading, intro, a guide of
+   pills, then each section on a rule — so the toolbox reads as another room
+   of the same house rather than an app bolted onto it. */
+.head {
+  padding-block: clamp(3rem, 8vw, 6rem) clamp(1.5rem, 4vw, 2.5rem);
+}
+
+.heading {
+  font-size: var(--text-h1);
+  font-weight: 700;
+  letter-spacing: var(--tracking-display);
+}
+
+.intro {
+  color: var(--muted);
+  font-size: var(--text-lead);
+  max-width: 52ch;
+  margin-top: var(--space-md);
+  line-height: 1.55;
+}
+
+.guide {
+  margin-top: calc(-1 * clamp(0.25rem, 1.5vw, 1rem));
+}
+
+.guideList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs) var(--space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guideLink {
+  display: inline-flex;
+  padding: 0.5rem 0.9375rem;
+  border: 1px solid var(--edge-strong);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--bg) 72%, transparent);
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    color var(--dur-fast) var(--ease-out-quart),
+    border-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.guideLink:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
+.guideLink:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.body {
+  padding-bottom: var(--section);
+}
+
+/* — One tool — */
+.section {
+  --section-gap: clamp(var(--space-2xl), 7vw, 6rem);
+
+  padding-top: var(--section-gap);
+  /* A jump from the guide lands the tool's name just under the floating
+     nav; see PortfolioSection for the arithmetic. */
+  scroll-margin-top: calc(var(--space-sm) - var(--section-gap));
+}
+
+.section:first-of-type {
+  --section-gap: clamp(var(--space-xl), 4vw, 3rem);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+}
+
+.sectionHeading {
+  font-size: var(--text-h2);
+  font-weight: 700;
+  letter-spacing: var(--tracking-heading);
+  flex: none;
+}
+
+.rule {
+  flex: 1;
+  height: 1px;
+  background: var(--edge-strong);
+  transform: translateY(-0.35em);
+}
+
+.blurb {
+  max-width: 56ch;
+  margin-block: var(--space-sm) clamp(var(--space-md), 3vw, var(--space-xl));
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .guideLink {
+    transition: none;
+  }
+}

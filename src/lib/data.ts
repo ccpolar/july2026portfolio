@@ -83,6 +83,20 @@ export const getLegal = cache(async () => {
   return payload.findGlobal({ slug: 'legal', depth: 0 })
 })
 
+/**
+ * The Toolbox page's switch and wording. Read by the header on every page,
+ * so a failure here must never be the reason a page doesn't render: it
+ * answers null instead, and callers fall back to the defaults.
+ */
+export const getToolbox = cache(async () => {
+  try {
+    const payload = await client()
+    return await payload.findGlobal({ slug: 'toolbox', depth: 0 })
+  } catch {
+    return null
+  }
+})
+
 export const getIdentity = cache(async () => {
   const payload = await client()
   return payload.findGlobal({ slug: 'identity', depth: 1 })

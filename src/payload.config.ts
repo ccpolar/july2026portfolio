@@ -26,6 +26,7 @@ import { Identity } from './globals/Identity'
 import { Legal } from './globals/Legal'
 import { LoadingScreen } from './globals/LoadingScreen'
 import { Theme } from './globals/Theme'
+import { Toolbox } from './globals/Toolbox'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -85,7 +86,7 @@ export default buildConfig({
     Subscribers,
     Users,
   ],
-  globals: [Homepage, Contact, Theme, Identity, LoadingScreen, Legal],
+  globals: [Homepage, Contact, Theme, Identity, LoadingScreen, Legal, Toolbox],
   editor: lexicalEditor(),
   db: isPostgres
     ? postgresAdapter({

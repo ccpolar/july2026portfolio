@@ -1,0 +1,275 @@
+/* The mesh gradient tool: the picture at the left, its controls in a rail
+   at the right, the actions in a bar underneath. The picture is the only
+   colour on the page, so everything around it stays in the site's own
+   ink-and-hairline vocabulary. */
+
+.tool {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17.5rem;
+  grid-template-areas:
+    'frame rail'
+    'bar bar'
+    'help help';
+  gap: var(--space-md) clamp(var(--space-md), 3vw, var(--space-xl));
+}
+
+/* — The picture — a quiet well the gradient sits in, so a wide or tall
+     shape has somewhere to be without the layout jumping about. — */
+.frame {
+  grid-area: frame;
+  container-type: size;
+  display: grid;
+  place-items: center;
+  height: clamp(20rem, 62vh, 34rem);
+  padding: clamp(var(--space-sm), 2vw, var(--space-md));
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+  background: color-mix(in oklch, var(--ink) 3%, transparent);
+}
+
+.stage {
+  position: relative;
+  /* As large as fits the well in both directions, at the chosen shape. */
+  width: min(100cqw, 100cqh * var(--ratio));
+  touch-action: none;
+  /* The site lets the pointer fall through page content to its background
+     (see .content in layout.module.css); the picture has to ask for it
+     back, or a double-click to add a point never arrives. */
+  pointer-events: auto;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-media);
+}
+
+/* — Points — a ring that reads on any colour: white with a dark edge. The
+     button is larger than the ring, so it is easy to grab with a thumb. — */
+.handle {
+  position: absolute;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin: -1.375rem 0 0 -1.375rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle[data-small] {
+  width: 2rem;
+  height: 2rem;
+  margin: -1rem 0 0 -1rem;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.handle::before {
+  content: '';
+  position: absolute;
+  inset: 50%;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin: -0.4375rem;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.18);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.5),
+    0 1px 4px rgb(0 0 0 / 0.35);
+  transition:
+    transform var(--dur-fast) var(--ease-out-quart),
+    background-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.handle[data-small]::before {
+  width: 0.625rem;
+  height: 0.625rem;
+  margin: -0.3125rem;
+  border-width: 1.5px;
+}
+
+.handle:hover::before {
+  transform: scale(1.2);
+}
+
+.handle[data-selected]::before {
+  background: #fff;
+  transform: scale(1.25);
+}
+
+.handle:focus-visible {
+  outline: none;
+}
+
+.handle:focus-visible::before {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.5),
+    0 0 0 6px rgb(0 0 0 / 0.55);
+}
+
+/* — The rail — */
+.rail {
+  grid-area: rail;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.group + .group {
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--edge);
+}
+
+/* Two by two, laid out as the corners they colour. */
+.wells {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xs);
+}
+
+.well {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  padding: 0.3125rem;
+  border: 1px solid var(--edge);
+  border-radius: 0.75rem;
+  background: var(--raised);
+  transition: border-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.well:hover,
+.well:focus-within {
+  border-color: var(--edge-strong);
+}
+
+.swatch {
+  position: relative;
+  flex: none;
+  width: 1.875rem;
+  height: 1.875rem;
+  border-radius: 0.5rem;
+  box-shadow: inset 0 0 0 1px var(--edge);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+/* The native picker, invisible over the swatch: the swatch is the button. */
+.swatch input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.swatch:focus-within {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.hex {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-label);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.hex:focus-visible {
+  outline: none;
+}
+
+.mapRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-xs);
+}
+
+.map {
+  position: relative;
+  flex: none;
+  width: 7.5rem;
+  aspect-ratio: 1;
+  touch-action: none;
+}
+
+/* Where the shared bar and note sit in this tool's grid. */
+.barArea {
+  grid-area: bar;
+}
+
+.noteArea {
+  grid-column: 1 / -1;
+  margin-top: calc(-1 * var(--space-xs));
+}
+
+.help {
+  grid-area: help;
+  font-size: var(--text-label);
+  color: var(--muted);
+}
+
+/* — Narrower — the rail drops under the picture and its groups sit side by
+     side while there's room, then stack. — */
+@media (max-width: 60rem) {
+  .tool {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'frame'
+      'bar'
+      'rail'
+      'help';
+  }
+
+  .frame {
+    height: clamp(18rem, 90vw, 30rem);
+  }
+
+  .rail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  .group + .group {
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .handle::before,
+  .well {
+    transition: none;
+  }
+}

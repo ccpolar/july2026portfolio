@@ -592,6 +592,19 @@ const STATEMENTS = [
   // Same rule as Email Design: allowed inside the transaction, and nothing
   // here uses the new value.
   `ALTER TYPE "public"."enum_projects_category" ADD VALUE IF NOT EXISTS 'garment' AFTER 'merchandise'`,
+
+  // The Toolbox page's switch and wording, one global. The defaults match
+  // the fields' own (src/globals/Toolbox.ts), so the page reads the same
+  // before anything has been saved.
+  `CREATE TABLE IF NOT EXISTS "toolbox" (
+     "id" serial PRIMARY KEY NOT NULL,
+     "enabled" boolean DEFAULT true,
+     "heading" varchar DEFAULT 'Toolbox',
+     "intro" varchar DEFAULT 'Small tools I reach for while designing. Free to use, nothing to sign up for.',
+     "colorify_url" varchar DEFAULT 'https://www.colorify.studio',
+     "updated_at" timestamp(3) with time zone,
+     "created_at" timestamp(3) with time zone
+   )`,
 ]
 
 /**

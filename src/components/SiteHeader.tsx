@@ -12,7 +12,23 @@ type Props = {
   siteName: string
   logo: { url: string; height: number; ratio: number | null } | null
   showBlog: boolean
+  showToolbox: boolean
 }
+
+/** A toolbox with its lid shut: the way into the small tools at /toolbox.
+ *  Drawn at the sun and moon's weight so the icons in the bar read as a set. */
+const ToolboxIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <rect x="2.25" y="6.75" width="15.5" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M7 6.75V5.25a1.5 1.5 0 0 1 1.5-1.5h3a1.5 1.5 0 0 1 1.5 1.5v1.5M2.25 11.25h15.5M10 10v2.5"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+)
 
 const MailIcon = () => (
   <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -41,7 +57,7 @@ const MailIcon = () => (
  * underneath without a backdrop filter or a border doing the work. On a dark
  * page there is nothing to invert to, so it lifts off the background instead.
  */
-export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
+export const SiteHeader = ({ siteName, logo, showBlog, showToolbox }: Props) => {
   const pathname = usePathname()
   // The portfolio is the one way into the work now, and a project page is
   // part of it, so a case study keeps the link lit.
@@ -95,6 +111,17 @@ export const SiteHeader = ({ siteName, logo, showBlog }: Props) => {
         </div>
 
         <div className={styles.actions}>
+          {showToolbox ? (
+            <a
+              className={styles.icon}
+              href="/toolbox"
+              aria-label="Toolbox"
+              title="Toolbox"
+              aria-current={pathname.startsWith('/toolbox') ? 'page' : undefined}
+            >
+              <ToolboxIcon />
+            </a>
+          ) : null}
           <ThemeToggle />
           {/* Labelled explicitly: the words are dropped on a narrow screen,
               leaving the icon to stand for it, and the button has to keep its
