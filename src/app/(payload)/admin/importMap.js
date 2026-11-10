@@ -26,9 +26,10 @@ import { WorkSections as WorkSections_f8d07106d9802937e5ff2a91dbc82b48 } from '.
 import { DefaultGroupBy as DefaultGroupBy_d8480ab15cd5b5a1012040a1542de0bd } from '../../../components/admin/DefaultGroupBy'
 import { ColorField as ColorField_f18d715b9f5ea63091d1361f9c46fa22 } from '../../../components/admin/ColorField'
 import { PaletteContrast as PaletteContrast_97c8da249c8007fe78aa1fedd5afa4ea } from '../../../components/admin/PaletteContrast'
+import { NavFooter as NavFooter_3b9e48c0766d631a740babd8ba41f9aa } from '../../../components/admin/NavFooter'
 import { NavBrand as NavBrand_d7dd6c791c113ce8ff240c7282294e70 } from '../../../components/admin/NavBrand'
 import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
-import { DashboardOverview as DashboardOverview_6eebd759fa9848ad75ed4bee6bb4023d } from '../../../components/admin/DashboardOverview'
+import { AdminDashboard as AdminDashboard_0171ae121c3d9523aafb7bdbec1300c5 } from '../../../components/admin/AdminDashboard'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -61,8 +62,9 @@ export const importMap = {
   "/components/admin/DefaultGroupBy#DefaultGroupBy": DefaultGroupBy_d8480ab15cd5b5a1012040a1542de0bd,
   "/components/admin/ColorField#ColorField": ColorField_f18d715b9f5ea63091d1361f9c46fa22,
   "/components/admin/PaletteContrast#PaletteContrast": PaletteContrast_97c8da249c8007fe78aa1fedd5afa4ea,
+  "/components/admin/NavFooter#NavFooter": NavFooter_3b9e48c0766d631a740babd8ba41f9aa,
   "/components/admin/NavBrand#NavBrand": NavBrand_d7dd6c791c113ce8ff240c7282294e70,
   "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e,
-  "/components/admin/DashboardOverview#DashboardOverview": DashboardOverview_6eebd759fa9848ad75ed4bee6bb4023d,
+  "/components/admin/AdminDashboard#AdminDashboard": AdminDashboard_0171ae121c3d9523aafb7bdbec1300c5,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

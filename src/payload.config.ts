@@ -56,22 +56,16 @@ export default buildConfig({
       : {}),
     importMap: { baseDir: path.resolve(dirname) },
     components: {
-      // Gives the sidebar a top — whose site this is, and whether it is live
-      // — before the list of sections starts.
+      // The sidebar's head (whose site this is, the way back to the dashboard,
+      // and the counts beside each collection) and its foot (the Light / Dark
+      // pill and log out). The links between are Payload's own.
       beforeNavLinks: ['/components/admin/NavBrand#NavBrand'],
-    },
-    // The landing page: what's on the site and the way back in, instead of
-    // Payload's tile per collection.
-    dashboard: {
-      widgets: [
-        {
-          slug: 'overview',
-          label: 'Overview',
-          Component: '/components/admin/DashboardOverview#DashboardOverview',
-          minWidth: 'full',
-        },
-      ],
-      defaultLayout: [{ widgetSlug: 'overview', width: 'full' }],
+      afterNavLinks: ['/components/admin/NavFooter#NavFooter'],
+      views: {
+        // The landing page — the "alpine" dashboard — in place of Payload's
+        // tile per collection.
+        dashboard: { Component: '/components/admin/AdminDashboard#AdminDashboard' },
+      },
     },
     meta: {
       titleSuffix: '· Cam',

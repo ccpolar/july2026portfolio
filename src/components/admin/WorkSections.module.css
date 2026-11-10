@@ -36,9 +36,9 @@
   align-items: center;
   gap: 0.125rem 0.75rem;
   padding: 0.875rem 0.875rem 0.875rem 1rem;
-  background: var(--theme-elevation-100);
+  background: var(--alp-surface, var(--theme-elevation-100));
   border: 1px solid var(--theme-border-color);
-  border-radius: 14px;
+  border-radius: 16px;
 }
 
 .name {
@@ -53,10 +53,10 @@
   color: var(--theme-elevation-600);
 }
 
-/* An empty section is the one most likely to need starting, so its count
-   says so in the accent rather than fading into the rest. */
+/* An empty section reads quieter, as empty states do across the admin; its
+   Add button is what says it can be started. */
 .section[data-empty] .count {
-  color: var(--admin-accent-text);
+  color: var(--alp-text-faint, var(--theme-elevation-500));
 }
 
 .add {

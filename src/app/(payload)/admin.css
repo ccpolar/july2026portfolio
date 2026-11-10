@@ -1,127 +1,161 @@
 /*
- * The admin, restyled.
+ * The admin, restyled — "alpine": spruce at night, glacier fog and lichen
+ * green, with one strong colour moment per screen (the Featured card on the
+ * dashboard). The design and its spec came from the admin-redesign handoff.
  *
  * Payload builds every screen out of its own tokens — an elevation scale, a
- * few radii, one border colour — so this works at that level rather than
- * chasing individual screens. Redefining the scale restyles the lists, the
- * forms, the drawers and anything added later, all at once.
+ * few radii, one border colour — so the palette is set at that level rather
+ * than by chasing individual screens. Redefining the whole scale (not just the
+ * handful of steps the dashboard uses) restyles the lists, the forms, the
+ * drawers and anything added later, all at once.
  *
- * Two palettes, both driven from the same set of names, so everything below
- * the palette block is written once. Payload's own light/dark switch (in the
- * account menu) sets data-theme on <html>; nothing here fights it.
+ * Two palettes from one set of names. Payload's own light/dark switch sets
+ * data-theme on <html>, and the Light / Dark pill in the sidebar drives it.
  *
- * The greys are a hair warm rather than the flat neutral ramp every dark
- * panel ships with — enough to read as chosen, not enough to look brown. The
- * one colour is Cam's red, used where something is live, selected, or about
- * to happen, and nowhere else.
+ * Rules carried over from the spec: text never takes the accent colour (bar the
+ * lichen card, where everything is lichen-ink); status always has a word as
+ * well as a dot; the brand red is for destructive actions only.
  */
 
 :root,
-html[data-theme='dark'] {
-  color-scheme: dark;
-
-  /* — The greys. Payload reads elevation 0 as "furthest back" and 1000 as
-       "furthest forward", and uses them for every surface and most text. — */
-  --theme-bg: #1b1a18;
-  --theme-elevation-0: #1b1a18;
-  --theme-elevation-50: #201f1d;
-  --theme-elevation-100: #252422;
-  --theme-elevation-150: #2b2926;
-  --theme-elevation-200: #312f2c;
-  --theme-elevation-250: #383632;
-  --theme-elevation-300: #403d39;
-  --theme-elevation-350: #4a4743;
-  --theme-elevation-400: #56534e;
-  --theme-elevation-450: #646059;
-  --theme-elevation-500: #7d7870;
-  --theme-elevation-550: #949086;
-  --theme-elevation-600: #9d9890;
-  --theme-elevation-650: #ada8a0;
-  --theme-elevation-700: #bcb7b0;
-  --theme-elevation-750: #c9c4be;
-  --theme-elevation-800: #d5d1cc;
-  --theme-elevation-850: #e0ddd9;
-  --theme-elevation-900: #eae8e5;
-  --theme-elevation-950: #f3f1ef;
-  --theme-elevation-1000: #fcfbfa;
-
-  --theme-text: #ebe9e6;
-  --theme-border-color: #353330;
-
-  /* Three steps, as in the reference: the sidebar sits deeper than the page,
-     and panels sit above it. Dark grey throughout rather than black. */
-  --admin-nav-bg: #131211;
-  --admin-panel: #252422;
-
-  /* — The one colour. `accent` is the brand red itself; `accent-solid` is a
-       touch deeper, for when white text sits on top of it and 4.1:1 is not
-       enough; `accent-text` is the red legible as small text on this
-       background. — */
-  --admin-accent: #ee3227;
-  /* The brand red at full strength carries only 4.1:1 against white text,
-     which is under the bar for a button's label — so the filled button takes
-     a slightly deeper red. The bright one stays for the washes, the focus
-     ring and the tab underline, where nothing has to be read off it. */
-  --admin-accent-solid: #d02a1f;
-  --admin-accent-ink: #ffffff;
-  --admin-accent-text: #ff7a6f;
-  --admin-accent-wash: rgba(238, 50, 39, 0.14);
-  --admin-accent-edge: rgba(238, 50, 39, 0.38);
-}
-
 html[data-theme='light'] {
   color-scheme: light;
 
-  --theme-bg: #f4f3f1;
+  --alp-font: var(--alp-font-inter, 'Inter'), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --alp-canvas: #f3f5f4;
+  --alp-surface: #ffffff;
+  --alp-surface-2: #f3f5f4;
+  --alp-border: #e3e7e5;
+  --alp-border-strong: #d9dedb;
+  --alp-text: #0e1210;
+  --alp-text-2: #2b322f;
+  --alp-text-muted: #5a625e;
+  --alp-text-faint: #6b736f;
+  --alp-invert-bg: #0e1210;
+  --alp-invert-text: #ffffff;
+  --alp-lichen: #b4de3f;
+  --alp-lichen-ink: #10160a;
+  /* Darker than the lichen in light mode, so bars and dots hold their own
+     against white. */
+  --alp-data: #5c9a24;
+  --alp-danger: #ee3227;
+
+  --theme-bg: var(--alp-canvas);
   --theme-elevation-0: #ffffff;
-  --theme-elevation-50: #faf9f8;
-  --theme-elevation-100: #f4f3f1;
-  --theme-elevation-150: #eeedea;
-  --theme-elevation-200: #e7e5e2;
-  --theme-elevation-250: #dedcd8;
-  --theme-elevation-300: #d2cfcb;
-  --theme-elevation-350: #c2bfba;
-  --theme-elevation-400: #b0ada8;
-  --theme-elevation-450: #9e9b95;
-  --theme-elevation-500: #8b8882;
-  --theme-elevation-550: #79766f;
-  --theme-elevation-600: #67645e;
-  --theme-elevation-650: #57544e;
-  --theme-elevation-700: #47443f;
-  --theme-elevation-750: #3a3733;
-  --theme-elevation-800: #2e2b28;
-  --theme-elevation-850: #24221f;
-  --theme-elevation-900: #1b1a17;
-  --theme-elevation-950: #131210;
-  --theme-elevation-1000: #0a0908;
+  --theme-elevation-50: #f3f5f4;
+  --theme-elevation-100: #e3e7e5;
+  --theme-elevation-150: #d9dedb;
+  --theme-elevation-200: #ced4d1;
+  --theme-elevation-250: #c4cac6;
+  --theme-elevation-300: #b9c0bc;
+  --theme-elevation-350: #acb4b0;
+  --theme-elevation-400: #9fa7a3;
+  --theme-elevation-450: #929b97;
+  --theme-elevation-500: #858e8a;
+  --theme-elevation-550: #78817d;
+  --theme-elevation-600: #6b736f;
+  --theme-elevation-650: #5a625e;
+  --theme-elevation-700: #4a524e;
+  --theme-elevation-750: #3b423f;
+  --theme-elevation-800: #2b322f;
+  --theme-elevation-850: #242a27;
+  --theme-elevation-900: #1d2220;
+  --theme-elevation-950: #151a18;
+  --theme-elevation-1000: #0e1210;
 
-  --theme-text: #1b1a17;
-  --theme-border-color: #ddd9d4;
+  --theme-text: var(--alp-text);
+  --theme-border-color: var(--alp-border);
+  --theme-input-bg: var(--alp-surface);
 
-  --admin-nav-bg: #ffffff;
-  --admin-panel: #ffffff;
-
-  --admin-accent: #ee3227;
-  --admin-accent-solid: #d02a1f;
-  --admin-accent-ink: #ffffff;
-  --admin-accent-text: #c0251b;
-  --admin-accent-wash: rgba(238, 50, 39, 0.1);
-  --admin-accent-edge: rgba(238, 50, 39, 0.32);
+  --admin-nav-bg: var(--alp-canvas);
+  --admin-panel: var(--alp-surface);
 }
 
-/* Payload's own status colours, kept in the same temperature as the rest. */
+html[data-theme='dark'] {
+  color-scheme: dark;
+
+  --alp-canvas: #0b0d0c;
+  --alp-surface: #151817;
+  --alp-surface-2: #1d2120;
+  --alp-border: #232826;
+  --alp-border-strong: #2e3432;
+  --alp-text: #f2f5f3;
+  --alp-text-2: #d5dad7;
+  --alp-text-muted: #a3aba7;
+  --alp-text-faint: #8a928e;
+  --alp-invert-bg: #f2f5f3;
+  --alp-invert-text: #0e1210;
+  --alp-data: #b4de3f;
+
+  --theme-bg: var(--alp-canvas);
+  --theme-elevation-0: #0b0d0c;
+  --theme-elevation-50: #151817;
+  --theme-elevation-100: #1d2120;
+  --theme-elevation-150: #232826;
+  --theme-elevation-200: #2e3432;
+  --theme-elevation-250: #363d3a;
+  --theme-elevation-300: #3f4643;
+  --theme-elevation-350: #474e4b;
+  --theme-elevation-400: #4f5753;
+  --theme-elevation-450: #5e6662;
+  --theme-elevation-500: #6d7571;
+  --theme-elevation-550: #7b837f;
+  --theme-elevation-600: #8a928e;
+  --theme-elevation-650: #a3aba7;
+  --theme-elevation-700: #b4bbb7;
+  --theme-elevation-750: #c4cac7;
+  --theme-elevation-800: #d5dad7;
+  --theme-elevation-850: #dce1de;
+  --theme-elevation-900: #e4e8e5;
+  --theme-elevation-950: #ebeeec;
+  --theme-elevation-1000: #f2f5f3;
+
+  --theme-text: var(--alp-text);
+  --theme-border-color: var(--alp-border);
+  --theme-input-bg: var(--alp-surface);
+
+  --admin-nav-bg: var(--alp-canvas);
+  --admin-panel: var(--alp-surface);
+}
+
+/* What the admin's own pieces (the Work list's section row, the drop zone,
+   the colour fields) call their accent. It was the brand red; in alpine the
+   red is kept for destructive actions, so "selected / happening" becomes the
+   inverted ink and the green, and accent text is plain text. */
 :root,
 html[data-theme='dark'],
 html[data-theme='light'] {
-  --theme-success-500: #3f9e6a;
-  --color-success-500: #3f9e6a;
-  --theme-error-500: var(--admin-accent);
-  --color-error-500: var(--admin-accent);
+  --admin-accent: var(--alp-data);
+  --admin-accent-solid: var(--alp-invert-bg);
+  --admin-accent-ink: var(--alp-invert-text);
+  --admin-accent-text: var(--alp-text);
+  --admin-accent-wash: color-mix(in oklch, var(--alp-data) 16%, transparent);
+  --admin-accent-edge: color-mix(in oklch, var(--alp-data) 55%, transparent);
 
-  /* — Corners. Payload's three radii, all opened up. — */
-  --style-radius-s: 8px;
-  --style-radius-m: 12px;
-  --style-radius-l: 18px;
+  --theme-success-500: var(--alp-data);
+  --color-success-500: var(--alp-data);
+  --theme-error-500: var(--alp-danger);
+  --color-error-500: var(--alp-danger);
+
+  --font-body: var(--alp-font);
+
+  /* — Corners. Payload's three radii, opened up to the spec's. — */
+  --style-radius-s: 10px;
+  --style-radius-m: 16px;
+  --style-radius-l: 24px;
+}
+
+body {
+  font-family: var(--alp-font);
+}
+
+/* Inter's real name is only known inside the admin's wrapper (see
+   (payload)/layout.tsx), so the font is re-declared there, where it can
+   resolve; everything in the admin inherits it from this element. */
+.alp-root {
+  --alp-font: var(--alp-font-inter), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: var(--alp-font);
+  font-family: var(--alp-font);
 }
 
 /* — Page rhythm — the default admin runs edge to edge and reads as one dense
@@ -132,45 +166,159 @@ html[data-theme='light'] {
   background: var(--theme-bg);
 }
 
-.nav {
-  background: var(--admin-nav-bg);
-  border-right: 1px solid var(--theme-border-color);
+/* — The sidebar — a floating panel rather than a strip down the edge: 248
+     wide, inset 20 from the window, rounded 28, on the canvas colour. Its
+     head (identity row and the Dashboard link) and foot (the theme pill and
+     log out) are the NavBrand and NavFooter components; the groups and links
+     in between are Payload's own, restyled here. — */
+/* The panel and the column beside it agree on its width: 248 plus the 20
+   inset. Payload reads this on the page, not just the sidebar. */
+@media (min-width: 1025px) {
+  :root {
+    --nav-width: 268px;
+  }
 }
 
-/* The sidebar's links become soft pills, with the current one filled rather
-   than underlined — easier to scan, and the one place the red says "you are
-   here". */
-.nav .nav__link,
-.nav a[class*='nav__link'] {
-  border-radius: 10px;
-  padding: 0.5rem 0.75rem;
-  margin-inline: 0.25rem;
-  color: var(--theme-elevation-650);
+.nav {
+  background: var(--alp-canvas);
+  border-right: 0;
+  font-family: var(--alp-font);
+}
+
+.nav .nav__scroll {
+  height: calc(100vh - 40px);
+  margin: 20px 0 20px 20px;
+  padding: 16px 12px;
+  background: var(--alp-surface);
+  border: 1px solid var(--alp-border);
+  border-radius: 28px;
+}
+
+.nav .nav__wrap {
+  gap: 0;
+}
+
+/* Group labels: small, quiet, spaced — labels rather than another row of
+   links competing with the real ones. Still a button: a group can be folded
+   away, it just doesn't advertise it with a chevron. */
+.nav .nav-group {
+  width: 100%;
+}
+
+.nav .nav-group__toggle {
+  align-items: center;
+  height: 32px;
+  margin: 4px 0 0;
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--alp-text-faint);
+}
+
+.nav .nav-group__toggle:hover,
+.nav .nav-group__toggle:focus-visible {
+  color: var(--alp-text);
+}
+
+.nav .nav-group__indicator {
+  display: none;
+}
+
+.nav .nav-group__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav .nav__link {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 32px;
+  padding: 0 12px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--alp-text-2);
+  text-decoration: none;
   transition:
     background-color 150ms ease,
     color 150ms ease;
 }
 
-.nav .nav__link:hover {
-  background: var(--theme-elevation-150);
-  color: var(--theme-text);
+.nav a.nav__link:hover,
+.nav a.nav__link:focus-visible {
+  background: var(--alp-surface-2);
+  color: var(--alp-text);
+  text-decoration: none;
 }
 
-.nav .nav__link.active,
-.nav .nav__link[aria-current='page'] {
-  background: var(--admin-accent-wash);
-  color: var(--admin-accent-text);
+.nav .nav__link-label {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The count beside a collection, filled in per link by NavBrand. Right
+   aligned in a fixed slot so the numbers line up down the panel. */
+.nav .nav__link::after {
+  flex: none;
+  width: 24px;
+  text-align: right;
+  font-size: 12px;
   font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--alp-text-faint);
 }
 
-/* Group headings in the sidebar: small, quiet, spaced — labels rather than
-   another row of links competing with the real ones. */
-.nav .nav-group__toggle,
-.nav [class*='nav-group__label'] {
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--theme-elevation-500);
+/* Where you are: an inverted pill, a touch taller than the rest. Payload marks
+   the current link with an indicator element rather than a class, so that is
+   what's matched; the indicator itself (a 2px bar at the edge) goes. */
+.nav .nav__link:has(.nav__link-indicator) {
+  height: 40px;
+  border-radius: 20px;
+  background: var(--alp-invert-bg);
+  color: var(--alp-invert-text);
+  font-weight: 600;
+}
+
+.nav .nav__link:has(.nav__link-indicator)::after {
+  color: inherit;
+  opacity: 0.7;
+}
+
+.nav .nav__link-indicator {
+  display: none;
+}
+
+/* Payload's own footer holds only the log-out link, which NavFooter now
+   carries beside the theme pill. */
+.nav .nav__controls {
+  display: none;
+}
+
+/* The page beside the panel sits on the same canvas, so the panel reads as
+   floating over it rather than as a column of its own. */
+.template-default,
+.template-default__wrap {
+  background: var(--alp-canvas);
+}
+
+/* On the dashboard the hero carries the date, the account and the way to every
+   section, so Payload's bar above it (breadcrumb, avatar) goes — but only while
+   the sidebar is open on a wide screen, since that bar also holds the button
+   that opens the sidebar. */
+@media (min-width: 1025px) {
+  .template-default--nav-open:has([data-alpine-dashboard]) .app-header {
+    display: none;
+  }
+
+  /* Payload's collapse arrow sits over the panel's corner. The panel is
+     meant to stay; the bar's menu button still opens it if it was closed. */
+  .template-default__nav-toggler-wrapper:has(.nav-toggler--is-open) {
+    display: none;
+  }
 }
 
 /* — Cards, lists and tables — */
@@ -237,8 +385,7 @@ html[data-theme='light'] {
   border-color: var(--theme-elevation-300);
 }
 
-/* Focus is the other place the red earns its keep: the ring says exactly
-   where typing will land. */
+/* Focus: a green ring says exactly where typing will land. */
 .field-type input:focus,
 .field-type textarea:focus,
 .rs__control--is-focused {
@@ -262,13 +409,16 @@ html[data-theme='light'] {
   margin-top: 0.375rem;
 }
 
-/* The asterisk on a required field, and anything Payload marks as an error. */
+/* The asterisk on a required field, and anything Payload marks as an error —
+   one of the few places the red still belongs. */
 .field-label .required,
 .field-error {
-  color: var(--admin-accent-text);
+  color: var(--alp-danger);
 }
 
-/* — Buttons — the one that writes to the database is the one that is red. — */
+/* — Buttons — the one that writes to the database is the inverted one: ink
+     on a light page, near-white on a dark one. Red is kept for destructive
+     actions. — */
 .btn {
   border-radius: 999px;
   font-weight: 500;
@@ -321,7 +471,7 @@ a.doc-tabs__tab:hover {
   border-radius: var(--style-radius-m);
 }
 
-/* — Document header — the open tab is underlined in red, so the section
+/* — Document header — the open tab is underlined in green, so the section
      you are editing is obvious at a glance. — */
 .doc-header__title,
 .collection-list__header h1,
@@ -353,114 +503,6 @@ a.doc-tabs__tab:hover {
   background: var(--theme-bg);
 }
 
-
-/* — Icons in the sidebar ───────────────────────────────────────────────────
-     Payload's nav is a plain list of links, so each one is given its icon by
-     the address it points at. The glyph is a mask filled with currentColor,
-     which means it picks up the link's state for free — muted at rest, bright
-     on hover, red on the section you are in — with no second colour to keep
-     in step. — */
-.nav .nav__link {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-}
-
-.nav .nav__link::before {
-  content: '';
-  flex: none;
-  width: 1.0625rem;
-  height: 1.0625rem;
-  background-color: currentColor;
-  opacity: 0.75;
-  -webkit-mask-image: var(--nav-icon);
-  mask-image: var(--nav-icon);
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  mask-position: center;
-  -webkit-mask-size: contain;
-  mask-size: contain;
-  transition: opacity 150ms ease;
-}
-
-.nav .nav__link:hover::before,
-.nav .nav__link.active::before,
-.nav .nav__link[aria-current='page']::before {
-  opacity: 1;
-}
-
-.nav a[href$='/collections/projects']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 7.5 12 3l9 4.5-9 4.5-9-4.5Z M3 12l9 4.5 9-4.5 M3 16.5 12 21l9-4.5'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/moodboard']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/snippets']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 7h3l1.5-2h7L17 7h3v12H4zM12 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/posts']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h8l4 4v14H6zM14 3v4h4M9 12h6M9 16h6'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/testimonials']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 11H5V7a3 3 0 0 1 3-3M19 11h-4V7a3 3 0 0 1 3-3M5 11v3a3 3 0 0 0 3 3M15 11v3a3 3 0 0 0 3 3'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/services']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3l2.2 5.2L20 9.5l-4 3.8 1 5.7-5-2.8-5 2.8 1-5.7-4-3.8 5.8-1.3Z'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/clients']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 20V6l6-3v17M10 20h10V10l-6-2M7 9h0M7 13h0M7 17h0M14 13h3M14 17h3'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/media']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 5h16v14H4zM4 15l4.5-4.5 4 4L16 11l4 4M9 9.5a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4Z'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/documents']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3h7l4 4v14H7zM14 3v4h4M10 13h5M10 17h5'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/videos']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h14v12H3zM17 10l4-2.5v9L17 14'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/subscribers']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6h18v12H3zM3 7l9 6 9-6'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/collections/users']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/globals/homepage']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 10.5 12 4l8 6.5V20H4zM9.5 20v-6h5v6'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/globals/contact']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 4 3 11l7 3 3 7Z M10 14l5-5'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/globals/theme']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.8-1.6 0-1.3-1.1-1.5-1.1-2.6 0-.8.7-1.4 1.6-1.4H16a5 5 0 0 0 5-5c0-4-4-7.4-9-7.4ZM7.5 12a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM10 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2ZM15 8a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/globals/identity']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3 4 6v6c0 4.4 3.4 7.9 8 9 4.6-1.1 8-4.6 8-9V6ZM9 12l2 2 4-4'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/globals/loading-screen']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3v3M12 18v3M4.2 4.2l2.2 2.2M17.6 17.6l2.2 2.2M3 12h3M18 12h3M4.2 19.8l2.2-2.2M17.6 6.4l2.2-2.2'/%3E%3C/svg%3E");
-}
-
-.nav a[href$='/globals/legal']::before {
-  --nav-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 4v16M6 8h12M8 8 5 15h6ZM16 8l-3 7h6ZM8 20h8'/%3E%3C/svg%3E");
-}
 
 /* — Grouped lists —
    When a list is grouped, Payload heads each group with the field's stored

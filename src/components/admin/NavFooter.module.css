@@ -1,0 +1,84 @@
+/* The sidebar's foot, at the bottom of the panel — and pinned there: on a
+   shorter window the links scroll beneath it, rather than pushing the theme
+   pill and log out out of reach below the fold of the panel. */
+.foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: -16px;
+  padding: 16px 0;
+  background: var(--alp-surface);
+}
+
+/* — Light / Dark — a segmented pill, 40 tall; the current choice raised. — */
+.toggle {
+  display: flex;
+  flex: 1;
+  height: 40px;
+  padding: 4px;
+  border-radius: 20px;
+  background: var(--alp-canvas);
+  border: 1px solid var(--alp-border);
+}
+
+.toggle button {
+  flex: 1;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--alp-text-faint);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.toggle button:hover {
+  color: var(--alp-text);
+}
+
+.toggle button[aria-pressed='true'] {
+  background: var(--alp-surface);
+  color: var(--alp-text);
+  font-weight: 600;
+  box-shadow: 0 0 0 1px var(--alp-border);
+}
+
+:global(html[data-theme='dark']) .toggle button[aria-pressed='true'] {
+  background: #262b29;
+  box-shadow: none;
+}
+
+.toggle button:focus-visible,
+.logout:focus-visible {
+  outline: 2px solid var(--alp-text);
+  outline-offset: 2px;
+}
+
+/* — Log out — a 40px circle. — */
+.logout {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--alp-border);
+  color: var(--alp-text-muted);
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.logout:hover {
+  background: var(--alp-surface-2);
+  color: var(--alp-text);
+}

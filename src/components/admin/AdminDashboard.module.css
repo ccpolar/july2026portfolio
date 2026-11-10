@@ -1,0 +1,679 @@
+/* The "alpine" dashboard — measurements and colours from the redesign spec.
+   Tokens (--alp-*) are defined in admin.css. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 20px 20px 16px;
+  font-family: var(--alp-font);
+  color: var(--alp-text);
+}
+
+.page * {
+  box-sizing: border-box;
+}
+
+.page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.page h1,
+.page h2 {
+  margin: 0;
+}
+
+.page ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.page a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* — Hero — the same in both themes: always the dark spruce, always white
+     text. A stack of gradients: vertical light streaks over a lichen glow on
+     a deep green. — */
+.hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 300px;
+  padding: 24px 28px 0;
+  border-radius: 28px;
+  overflow: hidden;
+  color: #fff;
+  background-color: #0f2a1a;
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(6, 18, 10, 0.34) 0px,
+      rgba(6, 18, 10, 0) 4px,
+      rgba(255, 255, 255, 0.06) 7px,
+      rgba(6, 18, 10, 0.34) 11px
+    ),
+    radial-gradient(ellipse 42% 75% at 64% 42%, #d9ec62 0%, rgba(180, 222, 63, 0.55) 38%, rgba(29, 75, 44, 0) 78%),
+    radial-gradient(ellipse 30% 85% at 34% 62%, #6fa83a 0%, rgba(29, 75, 44, 0) 72%),
+    linear-gradient(180deg, #0b2214 0%, #18432b 55%, #091a10 100%);
+}
+
+.heroTop,
+.heroBottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.heroTop {
+  align-items: center;
+}
+
+.heroBottom {
+  align-items: flex-end;
+}
+
+.date {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.86);
+}
+
+.tools,
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding-bottom: 16px;
+}
+
+.greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-block: 20px;
+}
+
+.greeting h1 {
+  font-size: 44px;
+  line-height: 48px;
+  letter-spacing: -0.03em;
+  font-weight: 400;
+  color: #fff;
+}
+
+.greeting h1 em {
+  display: block;
+  font-weight: 700;
+  font-style: italic;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 14px;
+  background: rgba(6, 14, 9, 0.72);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.chip b {
+  color: #fff;
+  font-weight: 600;
+}
+
+.chipDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--alp-lichen);
+  flex-shrink: 0;
+}
+
+.chipDotHollow {
+  background: transparent;
+  border: 1.5px solid #fff;
+}
+
+.tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  height: 42px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.88);
+  border-radius: 14px 14px 0 0;
+  transition: background-color 150ms ease;
+}
+
+.tab:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tab[aria-current='page'] {
+  background: rgba(255, 255, 255, 0.2);
+  font-weight: 600;
+  color: #fff;
+  padding: 0 18px;
+}
+
+/* Glass pills on the hero, and the one solid white one — the primary. */
+.glass {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 20px;
+  background: rgba(8, 20, 12, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background-color 150ms ease;
+}
+
+.glass:hover {
+  background: rgba(8, 20, 12, 0.62);
+}
+
+.glassQuiet {
+  font-size: 13px;
+  opacity: 0.82;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f2f5f3;
+  color: #10160a !important;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px 0 14px;
+  border-radius: 20px;
+  background: #fff;
+  color: #0e1210 !important;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: transform 80ms ease;
+}
+
+.primary:active {
+  transform: scale(0.98);
+}
+
+/* — Cards — */
+.row {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  padding: 22px 24px 24px;
+  border-radius: 24px;
+  background: var(--alp-surface);
+  border: 1px solid var(--alp-border);
+  transition: border-color 150ms ease;
+}
+
+.card:hover {
+  border-color: var(--alp-border-strong);
+}
+
+.workCard {
+  flex: 1.3;
+  min-width: 0;
+}
+
+.contentCard {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 12px;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cardHead h2 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--alp-text-muted);
+}
+
+.headLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--alp-text-muted) !important;
+  transition: color 150ms ease;
+}
+
+.headLink:hover {
+  color: var(--alp-text) !important;
+}
+
+.headNote {
+  font-size: 13px;
+  color: var(--alp-text-faint);
+}
+
+.bigNumber {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.bigNumber strong {
+  font-size: 64px;
+  line-height: 56px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bigNumber span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 2px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.bigNumber small {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--alp-text-muted);
+}
+
+/* The work card's bars: one per portfolio section, scaled to the largest. */
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 20px;
+  font-size: 13px;
+}
+
+.barLabel {
+  width: 122px;
+  flex-shrink: 0;
+  color: var(--alp-text-2);
+}
+
+.barTrack {
+  flex: 1;
+  height: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.barFill {
+  height: 8px;
+  min-width: 8px;
+  border-radius: 4px;
+  background: var(--alp-data);
+}
+
+.barValue {
+  width: 24px;
+  flex-shrink: 0;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.barEmpty {
+  font-size: 12px;
+  color: var(--alp-text-faint);
+}
+
+.bar[data-empty] .barLabel,
+.bar[data-empty] .barValue {
+  color: var(--alp-text-faint);
+}
+
+.bar:hover .barLabel {
+  color: var(--alp-text);
+}
+
+/* The site-content card: one row per collection. */
+.contentList {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-top: 10px !important;
+}
+
+.contentList li {
+  display: flex;
+  flex: 1;
+}
+
+.contentRow {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-height: 44px;
+  border-top: 1px solid var(--alp-border);
+}
+
+.contentName {
+  width: 96px;
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.contentDesc {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--alp-text-faint);
+}
+
+.contentNum {
+  width: 28px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.contentRow[data-zero] .contentNum {
+  color: var(--alp-text-faint);
+}
+
+.contentRow:hover .contentName {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The one strong colour moment: solid lichen, everything on it lichen-ink. */
+.featured {
+  flex: 0.9;
+  min-width: 0;
+  gap: 16px;
+  justify-content: space-between;
+  background: var(--alp-lichen);
+  border: 0;
+  color: var(--alp-lichen-ink);
+}
+
+.featured:hover {
+  border: 0;
+}
+
+.featured .cardHead h2 {
+  color: var(--alp-lichen-ink);
+  font-weight: 600;
+}
+
+.featured .bigNumber {
+  gap: 10px;
+  margin: 0;
+}
+
+.featuredGo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background: var(--alp-lichen-ink);
+  color: var(--alp-lichen) !important;
+  flex-shrink: 0;
+}
+
+.featuredList {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+}
+
+.featuredList a:hover {
+  text-decoration: underline !important;
+  text-underline-offset: 3px;
+}
+
+.featuredEmpty {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* — Recently edited — */
+.tableCard {
+  padding: 20px 24px 10px;
+}
+
+.tableHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+}
+
+.tableHead h2 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--alp-text);
+}
+
+.pillInvert {
+  display: inline-flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 16px;
+  border-radius: 18px;
+  background: var(--alp-invert-bg);
+  color: var(--alp-invert-text) !important;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tr {
+  display: flex;
+  align-items: center;
+  height: 50px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--alp-border);
+  font-size: 14px;
+  color: var(--alp-text-2);
+}
+
+.tr:last-child {
+  border-bottom: 0;
+}
+
+a.tr:hover {
+  background: var(--alp-surface-2);
+  border-radius: 10px;
+}
+
+.trHead {
+  height: 36px;
+  border-bottom: 0;
+  border-radius: 10px;
+  background: var(--alp-surface-2);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--alp-text-muted);
+}
+
+.tr > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 12px;
+}
+
+.cTitle {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  color: var(--alp-text);
+}
+
+.trHead .cTitle {
+  font-weight: 500;
+  color: inherit;
+}
+
+.cSection {
+  width: 180px;
+  flex-shrink: 0;
+}
+
+.cClient {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.cStatus {
+  width: 110px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--alp-text);
+}
+
+.trHead .cStatus {
+  color: inherit;
+}
+
+.cEdited {
+  width: 80px;
+  flex-shrink: 0;
+  text-align: right;
+  font-size: 13px;
+  color: var(--alp-text-muted);
+  padding-right: 0 !important;
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--alp-data);
+  flex-shrink: 0;
+}
+
+.dotHollow {
+  background: transparent;
+  border: 1.5px solid currentColor;
+}
+
+.emptyNote {
+  margin: 0 0 14px;
+  color: var(--alp-text-faint);
+}
+
+/* — Narrower windows — the three cards stack, the hero's tabs go (the sidebar
+     reaches the same places), and the table drops its client column. — */
+@media (max-width: 1100px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .tabs {
+    display: none;
+  }
+
+  .heroBottom {
+    justify-content: flex-end;
+  }
+
+  .cClient {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 12px;
+  }
+
+  .hero {
+    padding: 20px 20px 0;
+  }
+
+  .greeting h1 {
+    font-size: 34px;
+    line-height: 38px;
+  }
+
+  .tools .glassQuiet {
+    display: none;
+  }
+
+  .cSection {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page * {
+    transition: none !important;
+  }
+}
