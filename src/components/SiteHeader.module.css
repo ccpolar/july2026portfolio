@@ -231,10 +231,10 @@
   }
 }
 
-/* — The smallest phones — with the toolbox icon the bar holds five things,
-     and on a 320px screen with Blog showing that is a few pixels more than
-     there are. The gaps give them up; nothing is hidden. — */
-@media (max-width: 22.5rem) {
+/* — Small phones — with the toolbox icon the bar holds up to six things
+     (mark, View Work, Blog, toolbox, theme, mail). The gaps tighten first so
+     all of them fit on one line once Blog is showing. — */
+@media (max-width: 24.5rem) {
   .bar {
     gap: 0.625rem;
   }
@@ -245,5 +245,19 @@
 
   .actions {
     gap: 0.125rem;
+  }
+}
+
+/* The very smallest (an original iPhone SE, 320px): with Blog showing there
+   is no room left to give, so the toolbox icon steps aside there and the
+   gaps close a little further. The footer's Toolbox link is on every page,
+   so it is still one tap away. */
+@media (max-width: 22rem) {
+  .bar:has(a[href='/blog']) {
+    gap: 0.5rem;
+  }
+
+  .bar:has(a[href='/blog']) .icon {
+    display: none;
   }
 }
