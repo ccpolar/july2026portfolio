@@ -36,28 +36,33 @@
     color 320ms var(--ease-out-quart);
 }
 
-/* The native picker, invisible across the whole swatch. */
+/* The whole swatch is the button that opens the colour picker (Colorify's,
+   see colorPicker/). The controls on top of it take their own presses. */
 .pick {
   position: absolute;
   inset: 0;
-  cursor: pointer;
-}
-
-.pick input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
   padding: 0;
   border: 0;
-  opacity: 0;
+  background: none;
   cursor: pointer;
 }
 
-.pick:focus-within {
+.pick:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: -4px;
   border-radius: 0.5rem;
+}
+
+/* The swatch the picker is open for: a ring inside it, in the swatch's own
+   text colour, so it's clear which colour is being changed. */
+.pick[aria-expanded='true'] {
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+
+/* While the picker is open the swatch follows it exactly: the soft fade a
+   generated palette arrives with would make it trail behind the wheel. */
+.swatch:has(.pick[aria-expanded='true']) {
+  transition: none;
 }
 
 .actions,

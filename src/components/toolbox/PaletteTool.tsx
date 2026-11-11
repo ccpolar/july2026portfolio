@@ -17,6 +17,9 @@ import {
   generatePalette,
 } from '@/lib/palette'
 
+import ColorPicker from './colorPicker/color-picker'
+import './colorPicker/color-picker.css'
+import './colorPicker/color-picker.theme.css'
 import { Icon } from './icons'
 import styles from './PaletteTool.module.css'
 import ui from './controls.module.css'
@@ -81,6 +84,60 @@ export const PaletteTool = ({ colorifyUrl }: { colorifyUrl: string }) => {
   // A colour picker fires on every pixel of a drag; those all count as one
   // step back.
   const lastEdit = useRef({ key: '', at: 0 })
+
+  // — The colour picker (Colorify's): one for the whole tool, opened from
+  //   whichever swatch was clicked. While it's open every change shows
+  //   live; closing it is what counts as one step for Undo. —
+  const picker = useRef<ColorPicker | null>(null)
+  const picking = useRef<{ role: Swatch['role']; before: Swatch[]; from: string; anchor: HTMLElement } | null>(null)
+  const [pickingRole, setPickingRole] = useState<Swatch['role'] | null>(null)
+  const swatchesNow = useRef(swatches)
+  swatchesNow.current = swatches
+
+  useEffect(() => {
+    const instance = new ColorPicker({
+      onChange: (color) => {
+        const role = picking.current?.role
+        if (!role) return
+        const hex = color.hex.toLowerCase()
+        setSwatches((all) => all.map((s) => (s.role === role ? { ...s, hex } : s)))
+      },
+      onClose: (color) => {
+        const session = picking.current
+        picking.current = null
+        setPickingRole(null)
+        if (!session) return
+        const hex = color.hex.toLowerCase()
+        if (hex !== session.from) {
+          setHistory((h) => [...h.slice(-29), session.before])
+          lastEdit.current = { key: '', at: 0 }
+          setNote(`${session.role} set to ${hex.toUpperCase()}.`)
+        }
+        // Closed from inside (Esc, the close button): back to the swatch it
+        // came from, so the keyboard doesn't lose its place.
+        if (instance.el.contains(document.activeElement)) session.anchor.focus()
+      },
+    })
+    picker.current = instance
+    return () => {
+      picking.current = null
+      instance.close()
+      instance.el.remove()
+      picker.current = null
+    }
+  }, [])
+
+  const openPicker = (swatch: Swatch, anchor: HTMLElement) => {
+    const instance = picker.current
+    if (!instance) return
+    if (instance.isOpen && picking.current?.role === swatch.role) {
+      instance.close()
+      return
+    }
+    picking.current = { role: swatch.role, before: swatchesNow.current, from: swatch.hex, anchor }
+    setPickingRole(swatch.role)
+    instance.open(anchor, swatch.hex)
+  }
 
   useEffect(() => {
     const fromLink = decodePalette(new URLSearchParams(window.location.search).get('palette'))
@@ -159,10 +216,14 @@ export const PaletteTool = ({ colorifyUrl }: { colorifyUrl: string }) => {
             style={{ background: swatch.hex, color: readableOn(swatch.hex) }}
           >
             {/* The whole swatch opens the colour picker. */}
-            <label className={styles.pick}>
-              <span className="sr-only">Pick the {swatch.role} colour</span>
-              <input type="color" value={swatch.hex} onChange={(e) => setHex(i, e.target.value)} />
-            </label>
+            <button
+              type="button"
+              className={styles.pick}
+              aria-label={`Pick the ${swatch.role} colour`}
+              aria-haspopup="dialog"
+              aria-expanded={pickingRole === swatch.role}
+              onClick={(e) => openPicker(swatch, e.currentTarget)}
+            />
 
             <div className={styles.actions}>
               <button

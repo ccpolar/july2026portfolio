@@ -1,0 +1,26 @@
+/* The colour picker in the site's own clothes. Only its --cp-* variables
+   and its typeface are set here; the picker's rules are left as they were.
+
+   Every value is one of the site's theme tokens, which already change with
+   light and dark mode (and with whatever colours are set in /admin), so this
+   one rule covers both themes. "html .cp" outranks the picker's own ".cp"
+   whichever stylesheet happens to load first. */
+html .cp {
+  --cp-bg: var(--bg);
+  --cp-fg: var(--ink);
+  --cp-muted: var(--muted);
+  --cp-field: color-mix(in oklch, var(--ink) 6%, var(--bg));
+  --cp-field-hover: color-mix(in oklch, var(--ink) 10%, var(--bg));
+  --cp-line: var(--edge-strong);
+  --cp-focus: var(--ink);
+
+  font-family: var(--font-text);
+}
+
+/* In dark mode a soft shadow disappears into the page, so the edge does the
+   work instead. */
+html[data-theme='dark'] .cp {
+  box-shadow:
+    0 0 0 1px var(--cp-line),
+    0 16px 40px -8px rgb(0 0 0 / 0.6);
+}
