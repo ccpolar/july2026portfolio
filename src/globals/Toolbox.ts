@@ -19,7 +19,7 @@ export const Toolbox: GlobalConfig = {
   admin: {
     group: 'Site',
     description:
-      'The Toolbox page at /toolbox: small web tools for visitors (a mesh gradient maker and a palette maker). The tools themselves are built in; here you choose whether the page is shown and what it says at the top.',
+      'The Toolbox page at /toolbox: small web tools for visitors (a mesh gradient maker, a palette maker and QuickGrid, a bento grid maker). The tools themselves are built in; here you choose whether the page is shown and what it says at the top.',
   },
   hooks: {
     // The toolbox icon sits in the header, and the header is on every page.

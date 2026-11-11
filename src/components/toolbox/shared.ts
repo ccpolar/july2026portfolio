@@ -1,7 +1,7 @@
 /** Bits both tools use: where they keep their last state, how one hands
  *  colours to the other, and a copy that reports whether it worked. */
 
-export const STORAGE = { mesh: 'toolbox:mesh', palette: 'toolbox:palette' } as const
+export const STORAGE = { mesh: 'toolbox:mesh', palette: 'toolbox:palette', grid: 'toolbox:grid' } as const
 
 /** Fired on window by the palette tool; detail is an array of hex colours. */
 export const USE_COLORS_EVENT = 'toolbox:use-colors'

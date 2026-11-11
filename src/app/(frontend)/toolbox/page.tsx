@@ -6,6 +6,7 @@ import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
 import { MeshGradient } from '@/components/toolbox/MeshGradient'
 import { PaletteTool } from '@/components/toolbox/PaletteTool'
+import { QuickGrid } from '@/components/toolbox/QuickGrid'
 import { TOOLBOX_DEFAULTS } from '@/globals/Toolbox'
 import { getChrome } from '@/lib/chrome'
 import { getToolbox } from '@/lib/data'
@@ -82,6 +83,13 @@ export default async function ToolboxPage() {
       blurb:
         'A palette built the way a brand uses one: a primary, a surface, an accent, a support and an ink. Lock what you like and roll the rest.',
       tool: <PaletteTool colorifyUrl={toolbox.colorifyUrl} />,
+    },
+    {
+      id: 'quickgrid',
+      label: 'QuickGrid',
+      blurb:
+        'Bento grids from a number. Say how many tiles, pick a style, shuffle until it clicks, then take it into Figma or Illustrator as plain shapes.',
+      tool: <QuickGrid />,
     },
   ]
 

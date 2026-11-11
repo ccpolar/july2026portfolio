@@ -1,0 +1,381 @@
+/* QuickGrid: the same arrangement as the mesh gradient tool (picture left,
+   controls in a rail at the right, actions underneath) so the toolbox reads
+   as one set of tools. */
+
+.tool {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 17.5rem;
+  grid-template-areas:
+    'frame rail'
+    'bar bar'
+    'help help';
+  gap: var(--space-md) clamp(var(--space-md), 3vw, var(--space-xl));
+}
+
+/* — The artboard — a quiet well, as large as the rail beside it, with the
+     grid sized to fit inside at its own shape. — */
+.frame {
+  grid-area: frame;
+  container-type: size;
+  display: grid;
+  place-items: center;
+  min-height: clamp(20rem, 58vh, 32rem);
+  padding: clamp(var(--space-sm), 2vw, var(--space-md));
+  border: 1px solid var(--edge);
+  border-radius: var(--radius-control);
+  background: color-mix(in oklch, var(--ink) 3%, transparent);
+}
+
+/* White in both themes, like an artboard in a design app: the tiles are
+   being designed for somewhere else, not for this page. */
+.stage {
+  position: relative;
+  width: min(100cqw, 100cqh * var(--ratio));
+  background: #fff;
+  box-shadow:
+    0 0 0 1px var(--edge),
+    0 8px 24px -12px rgb(0 0 0 / 0.25);
+}
+
+/* Each tile moves to its new place rather than jumping, so a shuffle or a
+   change of style reads as the grid rearranging itself. New tiles grow in. */
+.tile {
+  position: absolute;
+  transition:
+    left 420ms var(--ease-out-expo),
+    top 420ms var(--ease-out-expo),
+    width 420ms var(--ease-out-expo),
+    height 420ms var(--ease-out-expo),
+    border-radius 220ms var(--ease-out-quart),
+    background-color 160ms var(--ease-out-quart);
+  animation: tileIn 360ms var(--ease-out-expo) backwards;
+}
+
+@keyframes tileIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+/* — The rail — */
+.rail {
+  grid-area: rail;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.group + .group {
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--edge);
+}
+
+/* Tiles: the number, with steps either side, over a slider. */
+.countRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--bg) 70%, transparent);
+}
+
+.stepper button {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.stepper button:hover:not(:disabled) {
+  background: var(--brand-wash);
+}
+
+.stepper button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.stepper input {
+  width: 2.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-lead);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.stepper button:focus-visible,
+.stepper input:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+  border-radius: 0.5rem;
+}
+
+/* Sliders in the site's ink. */
+.range,
+.slider input {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--ink);
+  cursor: pointer;
+}
+
+.slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.sliderHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.value {
+  font-size: var(--text-label);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
+}
+
+.warning {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--edge-strong);
+  border-radius: 0.625rem;
+  background: var(--brand-wash);
+  font-size: var(--text-label);
+  line-height: 1.4;
+  color: var(--ink);
+}
+
+/* Style: four buttons, two by two, each with a drawing of its layout, as
+   in the Illustrator plugin it's modelled on. */
+.styles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xs);
+}
+
+.styleButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--edge-strong);
+  border-radius: 0.75rem;
+  background: color-mix(in oklch, var(--bg) 72%, transparent);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out-quart),
+    border-color var(--dur-fast) var(--ease-out-quart),
+    color var(--dur-fast) var(--ease-out-quart);
+}
+
+.styleButton:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.styleButton[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+
+.styleButton:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* Canvas: five shapes on one line, then the size in pixels. */
+.sizes {
+  display: flex;
+  width: 100%;
+}
+
+.sizes button {
+  flex: 1;
+  padding-inline: 0.25rem;
+  white-space: nowrap;
+}
+
+.dimensions {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  color: var(--muted);
+  font-size: var(--text-label);
+}
+
+.side {
+  width: 4.5rem;
+  padding: 0.4375rem 0.5rem;
+  border: 1px solid var(--edge);
+  border-radius: 0.625rem;
+  background: var(--raised);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-label);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.side:hover,
+.side:focus {
+  border-color: var(--edge-strong);
+}
+
+.side:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+.unit {
+  margin-left: 0.125rem;
+}
+
+/* Tile colour: a swatch that opens the picker, and the hex to type over. */
+.well {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3125rem;
+  border: 1px solid var(--edge);
+  border-radius: 0.75rem;
+  background: var(--raised);
+}
+
+.well:focus-within {
+  border-color: var(--edge-strong);
+}
+
+.swatch {
+  flex: none;
+  width: 1.875rem;
+  height: 1.875rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  box-shadow: inset 0 0 0 1px var(--edge);
+  cursor: pointer;
+}
+
+.swatch:focus-visible,
+.swatch[aria-expanded='true'] {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.hex {
+  flex: 1;
+  min-width: 0;
+  padding: 0.25rem 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--text-label);
+  font-variant-numeric: tabular-nums;
+}
+
+.hex:focus-visible {
+  outline: none;
+}
+
+/* Where the shared bar and note sit in this tool's grid. */
+.barArea {
+  grid-area: bar;
+}
+
+.noteArea {
+  grid-column: 1 / -1;
+  margin-top: calc(-1 * var(--space-xs));
+}
+
+.help {
+  grid-area: help;
+  max-width: 72ch;
+  font-size: var(--text-label);
+  color: var(--muted);
+}
+
+/* — Narrower — the rail drops under the artboard, its groups side by side
+     while there's room; the artboard hugs the grid. — */
+@media (max-width: 60rem) {
+  .tool {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'frame'
+      'bar'
+      'rail'
+      'help';
+  }
+
+  .frame {
+    min-height: 0;
+    container-type: inline-size;
+  }
+
+  .stage {
+    width: min(100cqw, 62vh * var(--ratio));
+  }
+
+  .rail {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+    gap: var(--space-md);
+  }
+
+  .group + .group {
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile {
+    transition: none;
+    animation: none;
+  }
+
+  .stepper button,
+  .styleButton {
+    transition: none;
+  }
+}
