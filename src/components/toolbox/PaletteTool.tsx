@@ -17,9 +17,7 @@ import {
   generatePalette,
 } from '@/lib/palette'
 
-import ColorPicker from './colorPicker/color-picker'
-import './colorPicker/color-picker.css'
-import './colorPicker/color-picker.theme.css'
+import { useColorPicker } from './colorPicker/useColorPicker'
 import { Icon } from './icons'
 import styles from './PaletteTool.module.css'
 import ui from './controls.module.css'
@@ -85,58 +83,27 @@ export const PaletteTool = ({ colorifyUrl }: { colorifyUrl: string }) => {
   // step back.
   const lastEdit = useRef({ key: '', at: 0 })
 
-  // — The colour picker (Colorify's): one for the whole tool, opened from
-  //   whichever swatch was clicked. While it's open every change shows
+  // — The colour picker (Colorify's, shared with the mesh gradient), opened
+  //   from whichever swatch was clicked. While it's open every change shows
   //   live; closing it is what counts as one step for Undo. —
-  const picker = useRef<ColorPicker | null>(null)
-  const picking = useRef<{ role: Swatch['role']; before: Swatch[]; from: string; anchor: HTMLElement } | null>(null)
+  const picker = useColorPicker()
   const [pickingRole, setPickingRole] = useState<Swatch['role'] | null>(null)
   const swatchesNow = useRef(swatches)
   swatchesNow.current = swatches
 
-  useEffect(() => {
-    const instance = new ColorPicker({
-      onChange: (color) => {
-        const role = picking.current?.role
-        if (!role) return
-        const hex = color.hex.toLowerCase()
-        setSwatches((all) => all.map((s) => (s.role === role ? { ...s, hex } : s)))
-      },
-      onClose: (color) => {
-        const session = picking.current
-        picking.current = null
-        setPickingRole(null)
-        if (!session) return
-        const hex = color.hex.toLowerCase()
-        if (hex !== session.from) {
-          setHistory((h) => [...h.slice(-29), session.before])
-          lastEdit.current = { key: '', at: 0 }
-          setNote(`${session.role} set to ${hex.toUpperCase()}.`)
-        }
-        // Closed from inside (Esc, the close button): back to the swatch it
-        // came from, so the keyboard doesn't lose its place.
-        if (instance.el.contains(document.activeElement)) session.anchor.focus()
+  const openPicker = (swatch: Swatch, anchor: HTMLElement) => {
+    const before = swatchesNow.current
+    setPickingRole(swatch.role)
+    picker.toggle(anchor, swatch.hex, {
+      onChange: (hex) => setSwatches((all) => all.map((s) => (s.role === swatch.role ? { ...s, hex } : s))),
+      onClose: (hex, changed) => {
+        setPickingRole((role) => (role === swatch.role ? null : role))
+        if (!changed) return
+        setHistory((h) => [...h.slice(-29), before])
+        lastEdit.current = { key: '', at: 0 }
+        setNote(`${swatch.role} set to ${hex.toUpperCase()}.`)
       },
     })
-    picker.current = instance
-    return () => {
-      picking.current = null
-      instance.close()
-      instance.el.remove()
-      picker.current = null
-    }
-  }, [])
-
-  const openPicker = (swatch: Swatch, anchor: HTMLElement) => {
-    const instance = picker.current
-    if (!instance) return
-    if (instance.isOpen && picking.current?.role === swatch.role) {
-      instance.close()
-      return
-    }
-    picking.current = { role: swatch.role, before: swatchesNow.current, from: swatch.hex, anchor }
-    setPickingRole(swatch.role)
-    instance.open(anchor, swatch.hex)
   }
 
   useEffect(() => {

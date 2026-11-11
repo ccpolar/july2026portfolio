@@ -73,7 +73,7 @@ export default async function ToolboxPage() {
       id: 'mesh-gradient',
       label: 'Mesh gradient',
       blurb:
-        'Four colours and a handful of points. Drag them until it looks right, then take it with you as a PNG.',
+        'A handful of points, each its own colour. Drag them until it looks right, then take it with you as a PNG.',
       tool: <MeshGradient />,
     },
     {

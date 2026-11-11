@@ -2,20 +2,24 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { parseColor } from '@/lib/color'
+import { parseColor, readableOn } from '@/lib/color'
 import {
   DEFAULT_MESH,
   MAX_POINTS,
+  MIN_POINTS,
   type MeshPoint,
   type MeshState,
   RATIOS,
+  colorAt,
   decodeMesh,
+  emptiestSpot,
   encodeMesh,
+  meshFromColors,
   randomMesh,
   renderMesh,
-  sourceAt,
 } from '@/lib/meshGradient'
 
+import { useColorPicker } from './colorPicker/useColorPicker'
 import { Icon } from './icons'
 import styles from './MeshGradient.module.css'
 import ui from './controls.module.css'
@@ -23,27 +27,27 @@ import { STORAGE, USE_COLORS_EVENT, copyText, readStored, writeStored } from './
 
 const clamp01 = (n: number) => Math.min(1, Math.max(0, n))
 
-const CORNERS = ['Top left', 'Top right', 'Bottom left', 'Bottom right'] as const
-
 /** The long edge of the live preview. A gradient has no detail to lose, so
  *  it is painted small and scaled up, which keeps dragging smooth on a phone. */
 const PREVIEW = 320
-const MAP = 96
 const EXPORT_LONG_EDGE = 2400
 
 type HandleProps = {
-  points: { x: number; y: number }[]
+  points: MeshPoint[]
   selected: number
-  small?: boolean
-  label: (index: number) => string
+  picking: number | null
   onSelect: (index: number) => void
   onMove: (index: number, x: number, y: number) => void
-  onRemove?: (index: number) => void
+  onRemove: (index: number) => void
+  onPick: (index: number, anchor: HTMLElement) => void
 }
 
-/** Draggable points over a canvas. Each is a button: it can be focused,
- *  nudged with the arrow keys, and removed with Delete. */
-const Handles = ({ points, selected, small, label, onSelect, onMove, onRemove }: HandleProps) => {
+/**
+ * The points over the picture, each a ring filled with its own colour. Each
+ * is a button: drag it to move it, double-click it (or press Enter) to pick
+ * its colour, nudge it with the arrow keys, remove it with Delete.
+ */
+const Handles = ({ points, selected, picking, onSelect, onMove, onRemove, onPick }: HandleProps) => {
   const start = (index: number) => (event: React.PointerEvent<HTMLButtonElement>) => {
     const handle = event.currentTarget
     const box = handle.parentElement!.getBoundingClientRect()
@@ -61,7 +65,7 @@ const Handles = ({ points, selected, small, label, onSelect, onMove, onRemove }:
     handle.addEventListener('pointercancel', stop)
   }
 
-  const key = (index: number) => (event: React.KeyboardEvent) => {
+  const key = (index: number) => (event: React.KeyboardEvent<HTMLButtonElement>) => {
     const step = event.shiftKey ? 0.05 : 0.01
     const { x, y } = points[index]
     const moves: Record<string, [number, number]> = {
@@ -73,9 +77,12 @@ const Handles = ({ points, selected, small, label, onSelect, onMove, onRemove }:
     if (moves[event.key]) {
       event.preventDefault()
       onMove(index, clamp01(x + moves[event.key][0]), clamp01(y + moves[event.key][1]))
-    } else if ((event.key === 'Delete' || event.key === 'Backspace') && onRemove) {
+    } else if (event.key === 'Delete' || event.key === 'Backspace') {
       event.preventDefault()
       onRemove(index)
+    } else if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onPick(index, event.currentTarget)
     }
   }
 
@@ -86,12 +93,13 @@ const Handles = ({ points, selected, small, label, onSelect, onMove, onRemove }:
           key={i}
           type="button"
           className={styles.handle}
-          data-small={small || undefined}
           data-selected={i === selected || undefined}
-          style={{ left: `${point.x * 100}%`, top: `${point.y * 100}%` }}
-          aria-label={label(i)}
+          data-picking={i === picking || undefined}
+          style={{ left: `${point.x * 100}%`, top: `${point.y * 100}%`, '--point': point.color } as React.CSSProperties}
+          aria-label={`Point ${i + 1} of ${points.length}, ${point.color.toUpperCase()}. Drag to move, Enter to change its colour`}
           aria-pressed={i === selected}
           onPointerDown={start(i)}
+          onDoubleClick={(e) => onPick(i, e.currentTarget)}
           onFocus={() => onSelect(i)}
           onKeyDown={key(i)}
         />
@@ -100,22 +108,53 @@ const Handles = ({ points, selected, small, label, onSelect, onMove, onRemove }:
   )
 }
 
-/** One corner's colour: a swatch that opens the picker, and the hex to type. */
-const Well = ({ label, value, onChange }: { label: string; value: string; onChange: (hex: string) => void }) => {
+/** One point's colour in the rail: a swatch that opens the picker, the hex
+ *  to type over, and a way to remove it. */
+const Well = ({
+  index,
+  point,
+  selected,
+  picking,
+  canRemove,
+  onPick,
+  onSelect,
+  onChange,
+  onRemove,
+}: {
+  index: number
+  point: MeshPoint
+  selected: boolean
+  picking: boolean
+  canRemove: boolean
+  onPick: (anchor: HTMLElement) => void
+  onSelect: () => void
+  onChange: (hex: string) => void
+  onRemove: () => void
+}) => {
   const [draft, setDraft] = useState<string | null>(null)
   return (
-    <div className={styles.well}>
-      <label className={styles.swatch} style={{ background: value }}>
-        <span className="sr-only">{label} colour</span>
-        <input type="color" value={value} onChange={(e) => onChange(e.target.value)} />
-      </label>
+    <li className={styles.well} data-selected={selected || undefined} onFocus={onSelect}>
+      <button
+        type="button"
+        className={styles.swatch}
+        style={{ background: point.color, color: readableOn(point.color) }}
+        aria-label={`Pick the colour of point ${index + 1}`}
+        aria-haspopup="dialog"
+        aria-expanded={picking}
+        onClick={(e) => {
+          onSelect()
+          onPick(e.currentTarget)
+        }}
+      >
+        <span aria-hidden="true">{index + 1}</span>
+      </button>
       <input
         className={styles.hex}
         type="text"
         spellCheck={false}
         autoComplete="off"
-        aria-label={`${label} hex`}
-        value={draft ?? value.toUpperCase()}
+        aria-label={`Point ${index + 1} hex`}
+        value={draft ?? point.color.toUpperCase()}
         onChange={(e) => {
           setDraft(e.target.value)
           const parsed = parseColor(e.target.value)
@@ -126,28 +165,39 @@ const Well = ({ label, value, onChange }: { label: string; value: string; onChan
           if (e.key === 'Enter') e.currentTarget.blur()
         }}
       />
-    </div>
+      <button
+        type="button"
+        className={styles.wellRemove}
+        aria-label={`Remove point ${index + 1}`}
+        title="Remove"
+        disabled={!canRemove}
+        onClick={onRemove}
+      >
+        <Icon name="close" size={13} />
+      </button>
+    </li>
   )
 }
 
 /**
- * A mesh gradient maker. Four corner colours make a plain gradient (the
- * colour map); points drag that gradient around on the result. Each point
- * can be moved in both views: on the result to say where it sits, on the
- * colour map to say which colour it carries.
+ * A mesh gradient maker: points on a picture, each with its own colour,
+ * blended smoothly into one another. Drag a point to move its colour about;
+ * pick a new colour for it from the rail, or by double-clicking it.
  */
 export const MeshGradient = () => {
   const [state, setState] = useState<MeshState>(DEFAULT_MESH)
   const [selected, setSelected] = useState(0)
+  const [picking, setPicking] = useState<number | null>(null)
   const [loaded, setLoaded] = useState(false)
   const [busy, setBusy] = useState(false)
   const [note, setNote] = useState('')
 
   const canvas = useRef<HTMLCanvasElement>(null)
-  const map = useRef<HTMLCanvasElement>(null)
+  const picker = useColorPicker()
 
   const ratio = RATIOS.find((r) => r.value === state.ratio) ?? RATIOS[0]
   const aspect = ratio.w / ratio.h
+  const count = state.points.length
 
   // A link's gradient wins; failing that, whatever was here last time.
   useEffect(() => {
@@ -161,20 +211,19 @@ export const MeshGradient = () => {
     if (loaded) writeStored(STORAGE.mesh, encodeMesh(state))
   }, [state, loaded])
 
-  // The palette tool can hand its colours over.
+  // The palette tool can hand its colours over: one point each.
   useEffect(() => {
     const onColors = (event: Event) => {
       const colors = (event as CustomEvent<string[]>).detail
       if (!colors?.length) return
-      setState((s) => ({
-        ...s,
-        colors: [0, 1, 2, 3].map((i) => colors[i % colors.length]) as MeshState['colors'],
-      }))
-      setNote('Palette colours applied to the gradient.')
+      picker.close()
+      setState((s) => meshFromColors(s, colors))
+      setSelected(0)
+      setNote(`Palette applied: ${Math.min(colors.length, MAX_POINTS)} points, one for each colour.`)
     }
     window.addEventListener(USE_COLORS_EVENT, onColors)
     return () => window.removeEventListener(USE_COLORS_EVENT, onColors)
-  }, [])
+  }, [picker])
 
   // Paint the result, straight away. It used to wait for the next animation
   // frame, and a frame isn't promised: while the site's page-to-page
@@ -196,53 +245,43 @@ export const MeshGradient = () => {
     ctx.putImageData(image, 0, 0)
   }, [state, aspect])
 
-  // The colour map only changes with the colours.
-  const colorKey = state.colors.join()
-  useEffect(() => {
-    const ctx = map.current?.getContext('2d')
-    if (!ctx) return
-    const image = ctx.createImageData(MAP, MAP)
-    renderMesh(image.data, MAP, MAP, state, { warp: false })
-    ctx.putImageData(image, 0, 0)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [colorKey])
-
   const setPoint = useCallback((index: number, patch: Partial<MeshPoint>) => {
     setState((s) => ({ ...s, points: s.points.map((p, i) => (i === index ? { ...p, ...patch } : p)) }))
   }, [])
 
+  /** Opens the picker for one point, beside whatever was used to ask. */
+  const pickColor = (index: number, anchor: HTMLElement) => {
+    const point = state.points[index]
+    if (!point) return
+    setSelected(index)
+    setPicking(index)
+    picker.toggle(anchor, point.color, {
+      onChange: (hex) => setPoint(index, { color: hex }),
+      onClose: (hex, changed) => {
+        setPicking((current) => (current === index ? null : current))
+        if (changed) setNote(`Point ${index + 1} set to ${hex.toUpperCase()}.`)
+      },
+    })
+  }
+
   const addPoint = (at?: { x: number; y: number }) => {
-    if (state.points.length >= MAX_POINTS) return
-    let spot = at
-    if (!spot) {
-      // The emptiest place of a handful of tries, so a new point doesn't
-      // land on top of one that's already there.
-      let best = -1
-      for (let i = 0; i < 40; i++) {
-        const x = 0.12 + Math.random() * 0.76
-        const y = 0.12 + Math.random() * 0.76
-        const nearest = Math.min(...state.points.map((p) => Math.hypot(p.dx - x, p.dy - y)), 2)
-        if (nearest > best) {
-          best = nearest
-          spot = { x, y }
-        }
-      }
-    }
-    if (!spot) return
-    // It starts out carrying the colour already under it, so adding a point
-    // changes nothing until it is dragged.
-    const [sx, sy] = sourceAt(state.points, spot.x, spot.y, aspect)
-    const point = { dx: spot.x, dy: spot.y, sx: clamp01(sx), sy: clamp01(sy) }
+    if (count >= MAX_POINTS) return
+    picker.close()
+    const spot = at ?? emptiestSpot(state.points)
+    // It starts out with the colour already showing there, so adding a point
+    // changes almost nothing until it's given a colour or moved.
+    const point = { ...spot, color: colorAt(state.points, spot.x, spot.y, aspect) }
     setState((s) => ({ ...s, points: [...s.points, point] }))
-    setSelected(state.points.length)
-    setNote(`Point ${state.points.length + 1} added. Drag it to bend the gradient.`)
+    setSelected(count)
+    setNote(`Point ${count + 1} added. Give it a colour, or drag it somewhere.`)
   }
 
   const removePoint = (index: number) => {
-    if (!state.points[index]) return
+    if (!state.points[index] || count <= MIN_POINTS) return
+    picker.close()
     setState((s) => ({ ...s, points: s.points.filter((_, i) => i !== index) }))
-    setSelected(Math.max(0, Math.min(index, state.points.length - 2)))
-    setNote(`Point removed. ${state.points.length - 1} left.`)
+    setSelected(Math.max(0, Math.min(index, count - 2)))
+    setNote(`Point ${index + 1} removed. ${count - 1} left.`)
   }
 
   const download = async () => {
@@ -280,8 +319,6 @@ export const MeshGradient = () => {
     setNote((await copyText(url)) ? 'Link copied.' : 'Could not copy the link.')
   }
 
-  const count = state.points.length
-
   return (
     <div className={styles.tool}>
       <div className={styles.frame}>
@@ -299,63 +336,44 @@ export const MeshGradient = () => {
         >
           <canvas ref={canvas} className={styles.canvas} role="img" aria-label="The mesh gradient" />
           <Handles
-            points={state.points.map((p) => ({ x: p.dx, y: p.dy }))}
+            points={state.points}
             selected={selected}
-            label={(i) => `Point ${i + 1} of ${count}, position on the gradient`}
+            picking={picking}
             onSelect={setSelected}
-            onMove={(i, x, y) => setPoint(i, { dx: x, dy: y })}
+            onMove={(i, x, y) => setPoint(i, { x, y })}
             onRemove={removePoint}
+            onPick={pickColor}
           />
         </div>
       </div>
 
       <div className={styles.rail}>
-        <fieldset className={styles.group}>
-          <legend className={ui.label}>Corner colours</legend>
-          <div className={styles.wells}>
-            {CORNERS.map((corner, i) => (
+        <div className={styles.group}>
+          <div className={styles.groupHead}>
+            <h3 className={ui.label} id="mesh-colours-label">
+              Colours
+            </h3>
+            <span className={styles.count}>
+              {count} of {MAX_POINTS}
+            </span>
+          </div>
+          <ul className={styles.wells} aria-labelledby="mesh-colours-label">
+            {state.points.map((point, i) => (
               <Well
-                key={corner}
-                label={corner}
-                value={state.colors[i]}
-                onChange={(hex) =>
-                  setState((s) => ({
-                    ...s,
-                    colors: s.colors.map((c, j) => (j === i ? hex : c)) as MeshState['colors'],
-                  }))
-                }
+                key={i}
+                index={i}
+                point={point}
+                selected={i === selected}
+                picking={i === picking}
+                canRemove={count > MIN_POINTS}
+                onPick={(anchor) => pickColor(i, anchor)}
+                onSelect={() => setSelected(i)}
+                onChange={(hex) => setPoint(i, { color: hex })}
+                onRemove={() => removePoint(i)}
               />
             ))}
-          </div>
-        </fieldset>
-
-        <div className={styles.group}>
-          <h3 className={ui.label} id="mesh-map-label">
-            Colour map
-          </h3>
-          <div className={styles.mapRow}>
-            <div className={styles.map}>
-              <canvas
-                ref={map}
-                width={MAP}
-                height={MAP}
-                className={styles.canvas}
-                role="img"
-                aria-labelledby="mesh-map-label"
-              />
-              <Handles
-                small
-                points={state.points.map((p) => ({ x: p.sx, y: p.sy }))}
-                selected={selected}
-                label={(i) => `Point ${i + 1} of ${count}, the colour it takes`}
-                onSelect={setSelected}
-                onMove={(i, x, y) => setPoint(i, { sx: x, sy: y })}
-              />
-            </div>
-            <p className={ui.hint}>
-              Where each point takes its colour. Move one to change it.
-            </p>
-          </div>
+          </ul>
+          <p className={ui.hint}>One colour for each point on the picture.</p>
         </div>
 
         <div className={styles.group}>
@@ -384,6 +402,7 @@ export const MeshGradient = () => {
             type="button"
             className={ui.button}
             onClick={() => {
+              picker.close()
               setState((s) => randomMesh(s.ratio))
               setSelected(0)
               setNote('New random gradient.')
@@ -404,16 +423,8 @@ export const MeshGradient = () => {
           <button
             type="button"
             className={ui.button}
-            onClick={() => removePoint(selected)}
-            disabled={count === 0}
-          >
-            <Icon name="minus" />
-            Remove point
-          </button>
-          <button
-            type="button"
-            className={ui.button}
             onClick={() => {
+              picker.close()
               setState((s) => ({ ...DEFAULT_MESH, ratio: s.ratio }))
               setSelected(0)
               setNote('Gradient reset.')
@@ -441,8 +452,8 @@ export const MeshGradient = () => {
       </div>
 
       <p className={styles.help}>
-        Drag a point to bend the gradient, or double-click the picture to add one. Arrow keys nudge the
-        selected point.
+        Drag a point to move its colour. Double-click a point to change its colour, or double-click the
+        picture to add one. Arrow keys nudge the selected point; Delete removes it.
       </p>
       <p className={`${ui.note} ${styles.noteArea}`} role="status" aria-live="polite">
         {note}
