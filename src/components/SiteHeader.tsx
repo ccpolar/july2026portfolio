@@ -30,6 +30,20 @@ const ToolboxIcon = () => (
   </svg>
 )
 
+/** Scissors: the way into Snippets, the screengrabs clipped from projects. */
+const ScissorsIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+    <circle cx="5.5" cy="5.5" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+    <circle cx="5.5" cy="14.5" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+    <path
+      d="M7.6 6.9 17 14.75M7.6 13.1 17 5.25"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+    />
+  </svg>
+)
+
 const MailIcon = () => (
   <svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true">
     <rect x="2.75" y="4.25" width="14.5" height="11.5" rx="2.25" stroke="currentColor" strokeWidth="1.6" />
@@ -111,6 +125,15 @@ export const SiteHeader = ({ siteName, logo, showBlog, showToolbox }: Props) => 
         </div>
 
         <div className={styles.actions}>
+          <a
+            className={styles.icon}
+            href="/snippets"
+            aria-label="Snippets"
+            title="Snippets"
+            aria-current={pathname.startsWith('/snippets') ? 'page' : undefined}
+          >
+            <ScissorsIcon />
+          </a>
           {showToolbox ? (
             <a
               className={styles.icon}
