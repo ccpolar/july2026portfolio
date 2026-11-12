@@ -186,6 +186,10 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radiu
       });
       dark = host.getAttribute('data-theme') === 'dark';
       root.setAttribute('data-embedded', '');
+      // The same color-scheme as the page around it: when the two differ
+      // the browser paints a solid backdrop behind the frame, and the tool
+      // is meant to be see-through.
+      root.style.colorScheme = cs.colorScheme || 'normal';
     } else {
       var stored = null;
       try { stored = localStorage.getItem('campagano_theme'); } catch (e) {}
@@ -228,10 +232,18 @@ input[type=range]::-moz-range-thumb{width:14px;height:14px;border:0;border-radiu
   --mono:var(--site-font);
 }
 html,body{font-family:var(--site-font);font-size:13.5px;background:transparent}
-body{background:var(--site-bg)}
+/* See-through: on the Toolbox page the tool sits in the same tinted well
+   as the other tools, so the well shows through rather than a panel of its
+   own. Opened on its own it gets the site background. */
+body{background:transparent}
+:root:not([data-embedded]) body{background:var(--site-bg)}
 /* The stage is a quiet well, as the other tools' pictures sit in; the
    gradient itself is its own dark world and stays exactly as it was. */
-#stage{background:color-mix(in oklch,var(--site-ink) 4%,var(--site-bg))}
+#stage{background:transparent}
+#panel{background:transparent}
+/* On a phone the picture sticks to the top while the controls scroll
+   under it, so there it needs a solid ground, the well's colour. */
+@media (max-width:820px){#stage{background:color-mix(in oklch,var(--site-ink) 3%,var(--site-bg))}}
 #frame{box-shadow:0 24px 60px -20px rgba(0,0,0,.45),0 0 0 1px var(--line)}
 /* The floating toolbar sits on the picture, so it stays dark glass; its
    one filled button takes the site's signal colour. */
@@ -276,6 +288,11 @@ input[type=range]::-moz-range-thumb{background:var(--site-ink)}
 :root[data-embedded] .brand{display:none}
 /* Scrolling past the end of the panel carries on down the page. */
 #panel{overscroll-behavior:auto}
+/* The Texture section is filled by the tool's slider builder, which takes
+   the padding off the box it fills; elsewhere that box sits inside a
+   padded section, but here it is the section. Give it back the same
+   padding as the sections above. */
+#texSl{padding:2px 20px 18px!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
