@@ -163,7 +163,7 @@ export const PaletteTool = ({ colorifyUrl }: { colorifyUrl: string }) => {
   const sendToGradient = () => {
     window.dispatchEvent(new CustomEvent(USE_COLORS_EVENT, { detail: swatches.map((s) => s.hex) }))
     document.getElementById('mesh-gradient')?.scrollIntoView()
-    setNote('Sent to the mesh gradient.')
+    setNote('Sent to MeshIt.')
   }
 
   // Every pair of swatches that text can be set in, strongest first.
@@ -300,7 +300,7 @@ export const PaletteTool = ({ colorifyUrl }: { colorifyUrl: string }) => {
           </button>
           <button type="button" className={ui.button} onClick={sendToGradient}>
             <Icon name="gradient" />
-            Use in gradient
+            Send to MeshIt
           </button>
         </div>
       </div>

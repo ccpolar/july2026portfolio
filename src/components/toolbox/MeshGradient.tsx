@@ -303,7 +303,7 @@ export const MeshGradient = () => {
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
-      link.download = `mesh-gradient-${w}x${h}.png`
+      link.download = `meshit-${w}x${h}.png`
       link.click()
       setTimeout(() => URL.revokeObjectURL(url), 2000)
       setNote(`Saved a ${w} by ${h} PNG.`)

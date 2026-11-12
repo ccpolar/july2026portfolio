@@ -17,7 +17,7 @@ export const LiquidLight = () => (
       <iframe
         className={styles.iframe}
         src={LIQUID_LIGHT_SRC}
-        title="Liquid Light gradient generator"
+        title="GradMap gradient generator"
         allow="clipboard-write; fullscreen"
         loading="lazy"
       />

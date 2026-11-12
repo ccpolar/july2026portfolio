@@ -19,7 +19,7 @@ export const Toolbox: GlobalConfig = {
   admin: {
     group: 'Site',
     description:
-      'The Toolbox page at /toolbox: small web tools for visitors (a mesh gradient maker, a palette maker, QuickGrid for bento grids, and Liquid Light for animated liquid gradients). The tools themselves are built in; here you choose whether the page is shown and what it says at the top.',
+      'The Toolbox page at /toolbox: small web tools for visitors (MeshIt for mesh gradients, Colorify Lite for palettes, QuickGrid for bento grids, and GradMap for animated liquid gradients). The tools themselves are built in; here you choose whether the page is shown and what it says at the top.',
   },
   hooks: {
     // The toolbox icon sits in the header, and the header is on every page.

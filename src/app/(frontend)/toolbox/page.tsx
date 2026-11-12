@@ -73,14 +73,14 @@ export default async function ToolboxPage() {
   const tools = [
     {
       id: 'mesh-gradient',
-      label: 'Mesh gradient',
+      label: 'MeshIt',
       blurb:
         'A handful of points, each its own colour. Drag them until it looks right, then take it with you as a PNG.',
       tool: <MeshGradient />,
     },
     {
       id: 'palette',
-      label: 'Palette',
+      label: 'Colorify Lite',
       blurb:
         'A palette built the way a brand uses one: a primary, a surface, an accent, a support and an ink. Lock what you like and roll the rest.',
       tool: <PaletteTool colorifyUrl={toolbox.colorifyUrl} />,
@@ -94,7 +94,7 @@ export default async function ToolboxPage() {
     },
     {
       id: 'liquid-light',
-      label: 'Liquid Light',
+      label: 'GradMap',
       blurb:
         'Generative liquid gradients: pick a palette and a look, swirl the paint, then save a PNG up to 6000px or record a short video.',
       tool: <LiquidLight />,

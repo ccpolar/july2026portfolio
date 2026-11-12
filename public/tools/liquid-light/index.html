@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Liquid Light — Gradient Generator</title>
+<title>GradMap — Gradient Generator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -327,7 +327,7 @@ input[type=range]::-moz-range-thumb{background:var(--site-ink)}
 
 <aside id="panel">
   <div class="brand">
-    <h1>Liquid <em>Light</em></h1>
+    <h1>Grad<em>Map</em></h1>
     <small>Gradient generator</small>
   </div>
 
@@ -967,7 +967,7 @@ async function vibe(){
 /* ============================================================
    Export
    ============================================================ */
-const stamp=()=>`liquid-light-${Math.round(S.seed*100)}`;
+const stamp=()=>`gradmap-${Math.round(S.seed*100)}`;
 function saveBlob(blob,filename){
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();
