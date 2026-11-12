@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 
 import { SiteFooter } from '@/components/SiteFooter'
 import { SiteHeader } from '@/components/SiteHeader'
+import { LiquidLight } from '@/components/toolbox/LiquidLight'
 import { MeshGradient } from '@/components/toolbox/MeshGradient'
 import { PaletteTool } from '@/components/toolbox/PaletteTool'
 import { QuickGrid } from '@/components/toolbox/QuickGrid'
@@ -90,6 +91,13 @@ export default async function ToolboxPage() {
       blurb:
         'Bento grids from a number. Say how many tiles, pick a style, shuffle until it clicks, then take it into Figma or Illustrator as plain shapes.',
       tool: <QuickGrid />,
+    },
+    {
+      id: 'liquid-light',
+      label: 'Liquid Light',
+      blurb:
+        'Generative liquid gradients: pick a palette and a look, swirl the paint, then save a PNG up to 6000px or record a short video.',
+      tool: <LiquidLight />,
     },
   ]
 
