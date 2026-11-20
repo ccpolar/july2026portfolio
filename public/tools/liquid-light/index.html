@@ -400,6 +400,13 @@ input[type=range]::-moz-range-thumb{background:var(--site-ink)}
         <label class="field"><span>Video length</span>
           <select id="vidLen"><option value="4">4 s</option><option value="6" selected>6 s</option><option value="10">10 s</option></select></label>
       </div>
+      <!-- campagano.com: video is rendered frame by frame at a set size and frame rate (see renderVideo). -->
+      <div class="two">
+        <label class="field"><span>Video size (long edge)</span>
+          <select id="vidSize"><option value="1920" selected>1920 px · 1080p</option><option value="2560">2560 px · 1440p</option><option value="3840">3840 px · 4K</option></select></label>
+        <label class="field"><span>Frame rate</span>
+          <select id="vidFps"><option value="30">30 fps</option><option value="60" selected>60 fps</option></select></label>
+      </div>
       <div class="row">
         <button class="btn accent wide" id="savePng">Save PNG</button>
         <button class="btn wide" id="saveVid">Record video</button>
@@ -437,6 +444,8 @@ input[type=range]::-moz-range-thumb{background:var(--site-ink)}
 <div id="modal"><div class="card" id="mcard"></div></div>
 <div id="toast"></div>
 
+<!-- campagano.com: writes the MP4 for the frame-by-frame video export. -->
+<script src="mp4-muxer.js"></script>
 <script>
 (() => {
 "use strict";
@@ -714,6 +723,7 @@ function layout(){
   sizeCanvas();renderOverlay();dirty=true;
 }
 function sizeCanvas(){
+  if(exporting)return; // campagano.com: a video render owns the canvas size until it finishes
   const dpr=Math.min(devicePixelRatio||1,2)*renderScale;
   const w=Math.round(fw*dpr),h=Math.round(fh*dpr);
   if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
@@ -740,9 +750,11 @@ function draw(w=canvas.width,h=canvas.height){
 }
 
 // adaptive resolution while animating
-let ema=16,lastAdapt=0,last=performance.now(),recording=false;
+let ema=16,lastAdapt=0,last=performance.now(),recording=false,exporting=false;
 function tick(now){
   const dtms=now-last,dt=Math.min(.05,dtms/1000);last=now;
+  // While a video renders, the canvas belongs to the export (see renderVideo).
+  if(exporting){requestAnimationFrame(tick);return;}
   const moving=S.animate||recording;
   if(moving){time+=dt*S.speed;if(S.animate)frameN++;dirty=true;}
   mouseActive+=((pointerIn?1:0)-mouseActive)*.06;
@@ -975,11 +987,12 @@ function saveBlob(blob,filename){
   toast('Saved '+filename);
 }
 async function exportPng(){
+  if(exporting){toast('Wait for the video to finish');return;}
   const btns=[$('savePng'),$('tbSave')];btns.forEach(b=>b.disabled=true);
   toast('Rendering…');
   await new Promise(r=>setTimeout(r,30));
   const long=Math.min(+$('expSize').value,MAXDIM);
-  const ar=fw/fh;let W,H;if(ar>=1){W=long;H=Math.round(long/ar);}else{H=long;W=Math.round(long*ar);}
+  const ar=RATIOS[S.ratio]||fw/fh;let W,H;if(ar>=1){W=long;H=Math.round(long/ar);}else{H=long;W=Math.round(long*ar);}
   const pw=canvas.width,ph=canvas.height;
   canvas.width=W;canvas.height=H;draw(W,H);
   let src=canvas;
@@ -1009,6 +1022,84 @@ async function drawText(x,W,H){
 }
 $('savePng').onclick=exportPng;$('tbSave').onclick=exportPng;
 
+/* campagano.com: video export, rendered rather than filmed.
+   The original recorded the on-screen canvas in real time: it came out at the
+   canvas's display size (often well under 1080p), and any frame the shader
+   couldn't draw in time was simply missing from the file, so the motion
+   stuttered. This renders every frame at the chosen size on a fixed clock
+   (1/fps of a second apart, whatever the machine's speed), encodes them with
+   the browser's own H.264 encoder at a high bitrate, and writes an MP4.
+   It takes longer than the clip on a slow machine, but every frame is there.
+   Browsers without WebCodecs fall back to the original live recording. */
+let cancelVideo=false;
+const AVC=['avc1.640034','avc1.640033','avc1.640032','avc1.64002A','avc1.640028','avc1.4D0034','avc1.4D0028','avc1.42003E'];
+async function pickCodec(W,H,fps,bitrate){
+  for(const codec of AVC){
+    try{const r=await VideoEncoder.isConfigSupported({codec,width:W,height:H,bitrate,framerate:fps});if(r&&r.supported)return codec;}catch(e){}
+  }
+  return null;
+}
+async function renderVideo(){
+  if(exporting){cancelVideo=true;return;}
+  if(recording)return;
+  if(typeof VideoEncoder==='undefined'||typeof VideoFrame==='undefined'||!window.Mp4Muxer){recordVideo();return;}
+  const fps=+$('vidFps').value,len=+$('vidLen').value,total=Math.round(fps*len);
+  const ar=RATIOS[S.ratio]||fw/fh; // the ratio chosen, exactly; the on-screen frame rounds a pixel or two
+  // Sizes to try: the one chosen, then smaller ones if this device's encoder can't do it.
+  const sizes=[+$('vidSize').value,2560,1920,1280].filter((v,i,a)=>v<=+$('vidSize').value&&a.indexOf(v)===i);
+  let W,H,codec,bitrate;
+  for(const long of sizes){
+    const L=Math.min(long,MAXDIM);
+    W=ar>=1?L:Math.round(L*ar);H=ar>=1?Math.round(L/ar):L;
+    W-=W%2;H-=H%2;                                  // H.264 needs even sides
+    // Generous: grain is fine noise, which is costly to encode cleanly.
+    bitrate=Math.min(120e6,Math.round(W*H*fps*0.25));
+    codec=await pickCodec(W,H,fps,bitrate);
+    if(codec)break;
+  }
+  if(!codec){recordVideo();return;}
+  if(W<Math.min(+$('vidSize').value,MAXDIM)*(ar>=1?1:ar)-2)toast(`This device can’t encode that size; rendering at ${W}×${H}`);
+
+  const muxer=new Mp4Muxer.Muxer({target:new Mp4Muxer.ArrayBufferTarget(),video:{codec:'avc',width:W,height:H,frameRate:fps},fastStart:'in-memory'});
+  let failure=null;
+  const encoder=new VideoEncoder({output:(chunk,meta)=>muxer.addVideoChunk(chunk,meta),error:e=>{failure=e;}});
+  encoder.configure({codec,width:W,height:H,bitrate,bitrateMode:'variable',framerate:fps,latencyMode:'quality',avc:{format:'avc'}});
+
+  exporting=true;cancelVideo=false;
+  const btn=$('saveVid'),label=btn.textContent;btn.textContent='Cancel';
+  const recEl=$('rec'),recTxt=recEl.querySelector('span');recEl.classList.add('on');
+  const pw=canvas.width,ph=canvas.height,t0=time;
+  if(S.speed<.05)toast('Tip: raise Speed for more motion');
+  canvas.width=W;canvas.height=H;
+  const step=S.speed/fps;
+  try{
+    for(let i=0;i<total;i++){
+      if(cancelVideo||failure)break;
+      draw(W,H);
+      const frame=new VideoFrame(canvas,{timestamp:Math.round(i*1e6/fps),duration:Math.round(1e6/fps)});
+      encoder.encode(frame,{keyFrame:i%(fps*2)===0});
+      frame.close();
+      time+=step;if(S.animate)frameN++;
+      // Keep the encoder fed but not flooded, and the page responsive.
+      while(encoder.encodeQueueSize>4&&!failure)await new Promise(r=>encoder.addEventListener('dequeue',r,{once:true}));
+      if(i%10===0){recTxt.textContent=`Rendering ${Math.round(i/total*100)}% · ${W}×${H} · ${fps} fps`;await new Promise(r=>setTimeout(r,0));}
+    }
+    if(!cancelVideo&&!failure){
+      recTxt.textContent='Finishing…';
+      await encoder.flush();
+      muxer.finalize();
+      saveBlob(new Blob([muxer.target.buffer],{type:'video/mp4'}),`${stamp()}-${W}x${H}-${fps}fps.mp4`);
+    }else if(failure){toast('The video couldn’t be encoded — try a smaller size');}
+    else toast('Video cancelled');
+  }catch(e){toast('The video couldn’t be encoded — try a smaller size');}
+  finally{
+    try{if(encoder.state!=='closed')encoder.close();}catch(e){}
+    exporting=false;cancelVideo=false;time=t0;
+    canvas.width=pw;canvas.height=ph;sizeCanvas();dirty=true;
+    recEl.classList.remove('on');btn.textContent=label;
+  }
+}
+
 async function recordVideo(){
   if(recording)return;
   if(!canvas.captureStream||typeof MediaRecorder==='undefined'){toast('Video recording isn’t supported in this browser');return;}
@@ -1031,7 +1122,7 @@ async function recordVideo(){
   recording=false;recEl.classList.remove('on');$('saveVid').disabled=false;
   saveBlob(new Blob(chunks,{type:type.split(';')[0]}),`${stamp()}-${canvas.width}x${canvas.height}.${ext}`);
 }
-$('saveVid').onclick=recordVideo;
+$('saveVid').onclick=renderVideo;
 
 /* settings */
 $('copySet').onclick=async()=>{
