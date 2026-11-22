@@ -15,7 +15,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-card);
   overflow: hidden;
   /* A hairline around the block, drawn over the colours so a white swatch
      still has an edge against a white page. */
@@ -50,7 +50,7 @@
 .pick:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: -4px;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
 }
 
 /* The swatch the picker is open for: a ring inside it, in the swatch's own
@@ -212,7 +212,7 @@
   min-height: 2.5rem;
   padding: 0.5rem 2.125rem 0.5rem 0.9375rem;
   border: 1px solid var(--edge-strong);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   background: color-mix(in oklch, var(--bg) 72%, transparent);
   color: var(--ink);
   font: inherit;
@@ -270,7 +270,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.625rem 0.875rem;
-  border-radius: 0.75rem;
+  border-radius: var(--radius-control);
   box-shadow: inset 0 0 0 1px var(--edge);
   transition:
     background-color 320ms var(--ease-out-quart),
@@ -315,7 +315,7 @@
   max-width: 46ch;
   color: var(--muted);
   font-size: var(--text-sm);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 /* — Narrower — the swatches turn into rows: a column five to a phone screen

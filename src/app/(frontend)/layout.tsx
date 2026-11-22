@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next'
 import type { Metadata } from 'next'
 import React from 'react'
 
@@ -13,6 +14,7 @@ import { SiteBackground } from '@/components/SiteBackground'
 import { getHomepage, getIdentity, getLoadingScreen, getServices, getTheme } from '@/lib/data'
 import { INTRO_BOOT_SCRIPT } from '@/lib/intro'
 import { THEME_BOOT_SCRIPT } from '@/lib/appearance'
+import { SITE_URL } from '@/lib/site'
 import { themeToCss } from '@/lib/theme'
 import type { Media } from '@/payload-types'
 
@@ -35,6 +37,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const faviconType = faviconVariant?.mimeType ?? faviconMedia?.mimeType ?? undefined
 
   return {
+    // Absolute addresses for share cards and canonical links, whatever host
+    // served the page; './' makes each page canonical to its own path.
+    metadataBase: new URL(SITE_URL),
+    alternates: { canonical: './' },
     title,
     description: home.metaDescription ?? undefined,
     // Declare the type so browsers identify the format (e.g. webp) correctly,
@@ -46,7 +52,12 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description: home.metaDescription ?? undefined,
       type: 'website',
+      url: './',
+      siteName: identity?.siteName || title,
+      // The card shown when a page is shared; case studies swap in their cover.
+      images: [{ url: '/og.png', width: 1200, height: 630, alt: title }],
     },
+    twitter: { card: 'summary_large_image' },
   }
 }
 
@@ -153,6 +164,9 @@ export default async function FrontendLayout({ children }: { children: React.Rea
             change. Outside .content so it is never dimmed or clipped by it. */}
         <SkyTransition />
         <ContactModal services={intakeServices} />
+        {/* Vercel Web Analytics: page views and referrers, no cookies and
+            no personal data, so no consent banner is needed. */}
+        <Analytics />
         {introImages.length ? (
           <IntroOverlay
             images={introImages}

@@ -14,7 +14,7 @@
   font: inherit;
   font-size: var(--text-label);
   line-height: 1.35;
-  letter-spacing: 0.02em;
+  letter-spacing: normal;
   cursor: pointer;
   /* A step back from the links beside it: this is a preference, not a
      destination. */

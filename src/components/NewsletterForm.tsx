@@ -27,6 +27,16 @@ export const NewsletterForm = () => {
         aria-describedby={state.message ? 'newsletter-status' : undefined}
         aria-invalid={state.status === 'error'}
       />
+      {/* Honeypot: off-screen and skipped by keyboard and screen readers, so
+          only a bot filling in every field puts anything here. */}
+      <input
+        type="text"
+        name="_gotcha"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={{ position: 'absolute', left: '-9999px', width: 1, height: 1, opacity: 0 }}
+      />
       <button className={styles.submit} type="submit" disabled={pending} data-pending={pending}>
         {pending ? 'Adding…' : 'Keep me posted'}
       </button>

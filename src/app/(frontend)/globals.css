@@ -77,14 +77,22 @@
   --moon-glow: radial-gradient(circle, rgb(219 234 247 / 0.2), transparent 70%);
   --moon-cast: 0 0 52px 20px rgb(219 234 247 / 0.28);
 
-  /* Every photograph, thumbnail and upload on the site. It follows the
-     theme's corner style but never goes fully square: a picture wants its
-     corners eased off the page even where a panel edge shouldn't be. */
-  --radius-media: max(var(--radius), 0.375rem);
-
-  /* Controls get their own rounding, independent of the theme's --radius
-     (which governs image frames and stays sharp by default). */
-  --radius-control: 0.875rem;
+  /* — Corners — one scale for the whole site, so nothing reads as a slightly
+     different shape from its neighbour:
+       --radius-sm       8px  small pieces nested inside something rounded
+                              (the header bar's icons, colour swatches), so
+                              the corners sit concentric with their frame
+       --radius-control 12px  every button, pill, tag, toggle and input
+       --radius-media   10px  photographs and uploads; follows the theme's
+                              corner style but never goes fully square
+       --radius-card    16px  cards and frames: work thumbnails, testimonials,
+                              hero cards, the tool panels, dialogs
+     Fully round is kept for things that are circles (dots, handles, the sun).
+     The theme's own --radius still governs image frames where it's larger. */
+  --radius-sm: 0.5rem;
+  --radius-control: 0.75rem;
+  --radius-media: max(var(--radius), 0.625rem);
+  --radius-card: 1rem;
 
   /* — 4pt spacing scale — */
   --space-3xs: 0.25rem;

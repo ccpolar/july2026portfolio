@@ -94,7 +94,7 @@
   color: var(--bg);
   text-decoration: none;
   padding: 0.35rem 0.85rem;
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   border: 1px solid color-mix(in oklch, var(--bg) 35%, transparent);
   transition:
     background-color 150ms ease,

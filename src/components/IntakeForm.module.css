@@ -103,13 +103,13 @@
 .input {
   height: 3.75rem;
   padding-inline: 1.5rem;
-  border-radius: 999px;
+  border-radius: var(--radius-control);
 }
 
 .textarea {
   min-height: 11rem;
   padding: 1.125rem 1.5rem;
-  border-radius: 1.5rem;
+  border-radius: var(--radius-card);
   line-height: 1.55;
   resize: vertical;
 }
@@ -166,7 +166,7 @@
   padding: 0.625rem 1.375rem;
   background: var(--card);
   border: 1px solid var(--card-edge);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   color: var(--on);
   font: inherit;
   font-size: var(--text-body);
@@ -218,7 +218,7 @@
   padding-inline: 1.875rem;
   background: var(--signal);
   border: 1px solid var(--signal);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   color: var(--on-signal);
   font: inherit;
   font-size: var(--text-body);
@@ -304,7 +304,7 @@
   padding: 0.875rem 1rem 0.875rem 1.25rem;
   background: color-mix(in oklch, var(--signal) 14%, var(--ink));
   border: 1px solid color-mix(in oklch, var(--signal) 45%, transparent);
-  border-radius: 1.25rem;
+  border-radius: var(--radius-card);
   font-size: var(--text-sm);
   color: var(--on);
 }
@@ -318,7 +318,7 @@
   padding: 0 1.125rem;
   background: none;
   border: 1px solid var(--card-hover);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   color: var(--on);
   font: inherit;
   font-size: var(--text-sm);

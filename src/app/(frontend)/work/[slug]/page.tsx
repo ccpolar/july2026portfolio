@@ -74,10 +74,20 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   // Optional now that a piece of work can be a picture with a name.
   const description = project.summary ?? undefined
 
+  const chrome = await getChrome()
+  // The cover is the share image, so a link to a case study shows the work.
+  const cover = project.cover && typeof project.cover === 'object' ? project.cover : null
+  const image = cover?.sizes?.wide?.url ?? cover?.url ?? null
   return {
-    title: `${project.title} — Cam`,
+    title: `${project.title} — ${chrome.siteName}`,
     description,
-    openGraph: { title: project.title, description, type: 'article' },
+    openGraph: {
+      title: project.title,
+      description,
+      type: 'article',
+      url: './',
+      ...(image ? { images: [{ url: image, alt: cover?.alt || project.title }] } : {}),
+    },
   }
 }
 

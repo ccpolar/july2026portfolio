@@ -12,7 +12,7 @@
   /* The same well as the other tools: a hairline and a faint tint, with
      the page showing through. The tool inside is see-through to match. */
   border: 1px solid var(--edge);
-  border-radius: var(--radius-control);
+  border-radius: var(--radius-card);
   overflow: hidden;
   background: color-mix(in oklch, var(--ink) 3%, transparent);
 }

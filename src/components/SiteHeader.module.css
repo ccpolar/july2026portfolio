@@ -45,7 +45,7 @@
   padding: 0.625rem;
   background: var(--bar-bg);
   color: var(--bar-on);
-  border-radius: 0 0 1.125rem 1.125rem;
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
 }
 
 /* — The mark and the name — */
@@ -142,7 +142,7 @@
   flex: none;
   width: 2rem;
   height: 2rem;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   color: inherit;
   opacity: 0.62;
   transition: opacity var(--dur-fast) var(--ease-out-quart);
@@ -161,7 +161,7 @@
   gap: 0.4375rem;
   padding: 0.5rem 0.9375rem;
   border: 0;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: var(--bar-on);
   color: var(--bar-bg);
   font-size: 0.875rem;

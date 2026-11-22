@@ -265,11 +265,15 @@ summary::after{color:var(--dim)}
 .sw .tag{text-transform:none;letter-spacing:0;font-size:11px}
 .sw .hex,.sl output,.keys kbd,#rec{font-variant-numeric:tabular-nums}
 .sl label,.toggle,.field span{color:var(--text)}
-.btn{background:var(--site-bg);border-color:var(--line2);border-radius:999px;font-size:12px;white-space:nowrap}
+.btn{background:var(--site-bg);border-color:var(--line2);border-radius:12px;font-size:12px;white-space:nowrap}
 .btn:hover{background:var(--panel2);border-color:var(--text)}
 .btn.accent{background:var(--site-ink);color:var(--site-bg)}
 .btn.accent:hover{background:color-mix(in oklch,var(--site-ink),var(--site-bg) 18%)}
-.chip-b{background:var(--site-bg);border-color:var(--line2)}
+/* Corners on the site's scale: 12px for controls, 16px for panels. */
+.chip-b{background:var(--site-bg);border-color:var(--line2);border-radius:12px}
+.sw,.field input[type=text],.field select,.vibe input,.drop{border-radius:12px}
+.toolbar{border-radius:16px}
+.tb{border-radius:11px}
 .chip-b.on{background:var(--site-ink);color:var(--site-bg)}
 .sw .x:hover{background:var(--panel2)}
 .sw-t{background:var(--line2)}

@@ -1,7 +1,29 @@
 'use server'
 
 import config from '@payload-config'
+import { headers } from 'next/headers'
 import { getPayload } from 'payload'
+
+/**
+ * A light brake on how often one visitor can send a form, so a script can't
+ * fill the subscriber list or flood the inbox. It's kept in memory, so each
+ * server instance counts on its own and a cold start forgets: enough to stop
+ * a loop hammering the form, not a determined attack (Vercel's firewall is
+ * the place for that).
+ */
+const hits = new Map<string, number[]>()
+const allowed = async (bucket: string, limit: number, windowMs: number) => {
+  const h = await headers()
+  const ip = (h.get('x-forwarded-for') ?? '').split(',')[0].trim() || h.get('x-real-ip') || 'unknown'
+  const key = `${bucket}:${ip}`
+  const now = Date.now()
+  const recent = (hits.get(key) ?? []).filter((t) => now - t < windowMs)
+  if (recent.length >= limit) return false
+  recent.push(now)
+  hits.set(key, recent)
+  if (hits.size > 5000) hits.clear()
+  return true
+}
 
 export type SubscribeState = {
   status: 'idle' | 'ok' | 'error'
@@ -46,8 +68,16 @@ export async function subscribe(
     return { status: 'error', message: 'Enter your email address.' }
   }
 
-  if (!EMAIL.test(email)) {
+  if (!EMAIL.test(email) || email.length > 200) {
     return { status: 'error', message: 'That address looks incomplete — check it and try again.' }
+  }
+
+  // A filled honeypot is a bot: tell it all went well and do nothing.
+  if (String(formData.get('_gotcha') ?? '').trim()) {
+    return { status: 'ok', message: 'Thanks — I’ll be in touch when there’s something worth sharing.' }
+  }
+  if (!(await allowed('newsletter', 5, 10 * 60_000))) {
+    return { status: 'error', message: 'That’s a few tries in a row — give it a few minutes and try again.' }
   }
 
   try {
@@ -112,6 +142,9 @@ export type IntakeResult = { status: 'ok' } | { status: 'error'; message: string
  */
 export async function submitIntake(answers: IntakeAnswers): Promise<IntakeResult> {
   if (String(answers._gotcha ?? '').trim()) return { status: 'ok' }
+  if (!(await allowed('intake', 5, 10 * 60_000))) {
+    return { status: 'error', message: 'That’s a few sends in a row — give it a few minutes, or email me directly.' }
+  }
 
   const clean = (value: unknown, max = 2000) => String(value ?? '').trim().slice(0, max)
   const name = clean(answers.name, 120)

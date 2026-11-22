@@ -46,7 +46,7 @@
   color: inherit;
   background: var(--bg);
   border: 1px solid var(--edge);
-  border-radius: calc(var(--radius-media) * 2.5);
+  border-radius: var(--radius-card);
   /* The card has to be opaque and lifted, or the one underneath shows
      through as it slides past. */
   box-shadow:
@@ -97,7 +97,7 @@
 
 .title {
   font-size: var(--text-h3);
-  letter-spacing: -0.015em;
+  letter-spacing: var(--tracking-heading);
 }
 
 .tags {
@@ -114,13 +114,13 @@
   color: var(--muted);
   padding: 0.25rem 0.625rem;
   border: 1px solid var(--edge);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   white-space: nowrap;
 }
 
 .summary {
   color: var(--muted);
-  line-height: 1.55;
+  line-height: 1.6;
   max-width: 44ch;
   text-wrap: pretty;
 }
@@ -145,7 +145,7 @@
 /* — The photograph — */
 .frame {
   overflow: hidden;
-  border-radius: calc(var(--radius-media) * 2);
+  border-radius: var(--radius-card);
   background: var(--surface);
   aspect-ratio: 4 / 3;
 }

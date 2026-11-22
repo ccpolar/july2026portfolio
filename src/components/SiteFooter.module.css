@@ -127,9 +127,9 @@
 .tagline {
   max-width: 470px;
   font-size: var(--text-body);
-  line-height: 1.45;
+  line-height: 1.6;
   font-weight: 400;
-  letter-spacing: 0.005em;
+  letter-spacing: normal;
 }
 
 /* The newsletter keeps its own compact form; this only sets its prompt in
@@ -143,7 +143,7 @@
 
 .newsletterNote {
   font-size: var(--text-label);
-  line-height: 1.45;
+  line-height: 1.6;
   color: var(--footer-muted);
 }
 
@@ -187,7 +187,7 @@
   font-size: var(--text-sm);
   line-height: 1.35;
   font-weight: 400;
-  letter-spacing: 0.02em;
+  letter-spacing: normal;
   text-underline-offset: 3px;
 }
 
@@ -228,7 +228,7 @@
   font-size: var(--text-label);
   line-height: 1.35;
   font-weight: 400;
-  letter-spacing: 0.02em;
+  letter-spacing: normal;
 }
 
 .legalEnd {

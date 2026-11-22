@@ -15,7 +15,7 @@
   height: 2rem;
   padding: 0;
   border: 0;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-sm);
   background: none;
   /* Inherited, not --ink: the header bar inverts the page, so the switch has
      to take its colour from whatever it has been put inside rather than

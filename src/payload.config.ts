@@ -90,7 +90,11 @@ export default buildConfig({
   editor: lexicalEditor(),
   db: isPostgres
     ? postgresAdapter({
-        pool: { connectionString: databaseURI },
+        // sslmode=require is already treated as verify-full by the driver (full
+        // certificate checks); saying so explicitly keeps that strict behaviour
+        // when the driver's next major version changes what 'require' means,
+        // and stops the warning it logs on every connection.
+        pool: { connectionString: databaseURI.replace(/([?&]sslmode=)(prefer|require|verify-ca)/, '$1verify-full') },
         // Auto-sync the schema on connect. Payload turns this off in production
         // by default (expecting a migration workflow); for a single-owner site
         // that rarely changes shape, letting the schema create itself on first

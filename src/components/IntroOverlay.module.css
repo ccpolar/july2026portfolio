@@ -141,7 +141,7 @@
   padding-inline: 0.875rem;
   background: rgb(255 255 255 / 0.12);
   border: 1px solid rgb(255 255 255 / 0.24);
-  border-radius: 999px;
+  border-radius: var(--radius-control);
   color: #fff;
   font: inherit;
   font-size: var(--text-label);

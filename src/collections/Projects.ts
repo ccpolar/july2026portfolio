@@ -20,7 +20,10 @@ export const Projects: CollectionConfig = {
   // collections were folded into, and their rows now live in this table.
   labels: { singular: 'Piece of work', plural: 'Work' },
   access: {
-    read: () => true,
+    // Anyone can read live work (it's on the site); drafts only when signed
+    // in. The site's own pages filter to live work as well, but the public
+    // REST and GraphQL APIs go through this rule alone.
+    read: ({ req }) => (req.user ? true : { status: { equals: 'live' } }),
   },
   admin: {
     useAsTitle: 'title',
