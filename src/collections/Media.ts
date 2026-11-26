@@ -19,7 +19,12 @@ export const Media: CollectionConfig = {
       format: 'webp',
       options: { quality: 82 },
     },
-    mimeTypes: ['image/*'],
+    // Short MP4/WebM clips go in the same library as images, so a video
+    // can be used anywhere an image can: a cover, the gallery, the email and
+    // advertising grids, image blocks. They play silently on a loop, like a
+    // GIF. Resized variants are only made for images; videos are served as
+    // uploaded, so keep them short and exported for the web.
+    mimeTypes: ['image/*', 'video/mp4', 'video/webm'],
   },
   fields: [
     {

@@ -109,7 +109,8 @@
 
 /* A dragged photograph would otherwise come away as the browser's own ghost
    image instead of moving the row. */
-[data-layout='carousel'] .belt[data-drifts] img {
+[data-layout='carousel'] .belt[data-drifts] img,
+[data-layout='carousel'] .belt[data-drifts] video {
   -webkit-user-drag: none;
   pointer-events: none;
 }

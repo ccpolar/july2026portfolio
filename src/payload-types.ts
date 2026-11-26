@@ -188,9 +188,13 @@ export interface Project {
    */
   summary?: string | null;
   /**
-   * The single decisive image for this project. Landscape works best.
+   * The single decisive image for this project. Landscape works best. A short MP4 works too: it plays silently on a loop.
    */
   cover: number | Media;
+  /**
+   * Untick to open the project page straight on the title and write-up. The cover still shows on the portfolio, Recent Work and when the page is shared.
+   */
+  showCoverOnPage?: boolean | null;
   /**
    * Short tags — e.g. Identity, Web Design, Art Direction. Two or three is plenty.
    */
@@ -832,6 +836,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   liveUrl?: T;
   summary?: T;
   cover?: T;
+  showCoverOnPage?: T;
   disciplines?:
     | T
     | {
@@ -1435,7 +1440,7 @@ export interface Legal {
   createdAt?: string | null;
 }
 /**
- * The Toolbox page at /toolbox: small web tools for visitors (a mesh gradient maker and a palette maker). The tools themselves are built in; here you choose whether the page is shown and what it says at the top.
+ * The Toolbox page at /toolbox: small web tools for visitors (MeshIt for mesh gradients, Colorify Lite for palettes, QuickGrid for bento grids, and GradMap for animated liquid gradients). The tools themselves are built in; here you choose whether the page is shown and what it says at the top.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "toolbox".

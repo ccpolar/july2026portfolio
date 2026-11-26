@@ -98,6 +98,7 @@
 .content blockquote,
 .content figcaption,
 .content img,
+.content video,
 .content svg {
   pointer-events: auto;
 }

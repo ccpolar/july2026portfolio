@@ -605,6 +605,10 @@ const STATEMENTS = [
      "updated_at" timestamp(3) with time zone,
      "created_at" timestamp(3) with time zone
    )`,
+
+  // Projects: whether the cover opens the project page. Existing rows take
+  // the default, so every project page looks as it did.
+  `ALTER TABLE "projects" ADD COLUMN IF NOT EXISTS "show_cover_on_page" boolean DEFAULT true`,
 ]
 
 /**

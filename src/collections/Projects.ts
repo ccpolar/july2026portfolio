@@ -182,7 +182,18 @@ export const Projects: CollectionConfig = {
               relationTo: 'media',
               required: true,
               admin: {
-                description: 'The single decisive image for this project. Landscape works best.',
+                description:
+                  'The single decisive image for this project. Landscape works best. A short MP4 works too: it plays silently on a loop.',
+              },
+            },
+            {
+              name: 'showCoverOnPage',
+              type: 'checkbox',
+              label: 'Show the cover at the top of the project page',
+              defaultValue: true,
+              admin: {
+                description:
+                  'Untick to open the project page straight on the title and write-up. The cover still shows on the portfolio, Recent Work and when the page is shared.',
               },
             },
             {

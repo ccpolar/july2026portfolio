@@ -76,7 +76,11 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 
   const chrome = await getChrome()
   // The cover is the share image, so a link to a case study shows the work.
-  const cover = project.cover && typeof project.cover === 'object' ? project.cover : null
+  // A video cover can't be a share image; those pages use the site's card.
+  const cover =
+    project.cover && typeof project.cover === 'object' && !project.cover.mimeType?.startsWith('video/')
+      ? project.cover
+      : null
   const image = cover?.sizes?.wide?.url ?? cover?.url ?? null
   return {
     title: `${project.title} — ${chrome.siteName}`,

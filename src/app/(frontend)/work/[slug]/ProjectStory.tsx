@@ -101,20 +101,24 @@ const ShowcaseStory = ({ project }: Props) => {
         </a>
       </div>
 
-      <div className="shell">
-        <div
-          className={styles.heroFrame}
-          style={{ viewTransitionName: projectTransitionName(project.slug ?? '') }}
-        >
-          <MediaImage
-            className={styles.image}
-            media={project.cover}
-            fallbackAlt={project.title}
-            priority
-            sizes="(min-width: 88rem) 88rem, 100vw"
-          />
+      {/* Switched off per project in /admin ("Show the cover at the top of
+          the project page"); absent means on. */}
+      {project.showCoverOnPage !== false ? (
+        <div className="shell">
+          <div
+            className={styles.heroFrame}
+            style={{ viewTransitionName: projectTransitionName(project.slug ?? '') }}
+          >
+            <MediaImage
+              className={styles.image}
+              media={project.cover}
+              fallbackAlt={project.title}
+              priority
+              sizes="(min-width: 88rem) 88rem, 100vw"
+            />
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div className={`shell ${styles.showcaseIntro}`}>
         <h1 className={styles.showcaseTitle}>{project.title}</h1>
@@ -233,20 +237,22 @@ const Story = ({ project, email }: Props) => {
         ) : null}
       </div>
 
-      <div className={`shell ${styles.cover}`}>
-        <div
-          className={styles.frame}
-          style={{ viewTransitionName: projectTransitionName(project.slug ?? '') }}
-        >
-          <MediaImage
-            className={styles.image}
-            media={project.cover}
-            fallbackAlt={project.title}
-            priority
-            sizes="(min-width: 88rem) 88rem, 100vw"
-          />
+      {project.showCoverOnPage !== false ? (
+        <div className={`shell ${styles.cover}`}>
+          <div
+            className={styles.frame}
+            style={{ viewTransitionName: projectTransitionName(project.slug ?? '') }}
+          >
+            <MediaImage
+              className={styles.image}
+              media={project.cover}
+              fallbackAlt={project.title}
+              priority
+              sizes="(min-width: 88rem) 88rem, 100vw"
+            />
+          </div>
         </div>
-      </div>
+      ) : null}
 
       <div className={`shell ${styles.body}`}>
         {project.body ? (
