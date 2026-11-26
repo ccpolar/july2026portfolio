@@ -1,7 +1,7 @@
 import React from 'react'
 
 import type { Homepage, Project } from '@/payload-types'
-import { liveSiteUrl } from '@/lib/portfolioItem'
+import { coverRatio, liveSiteUrl } from '@/lib/portfolioItem'
 import { projectTransitionName } from '@/lib/viewTransition'
 
 import { ButtonLink } from './Button'
@@ -64,6 +64,7 @@ export const WorkSection = ({ home, projects, standalone = false }: Props) => {
           // A website opens the site itself, in a new tab; everything else
           // opens its case study. See liveSiteUrl.
           const live = liveSiteUrl(project)
+          const ratio = coverRatio(project.cover)
           return (
           <a
             className={styles.row}
@@ -104,7 +105,11 @@ export const WorkSection = ({ home, projects, standalone = false }: Props) => {
               className={styles.frame}
               // Pairs with the same photograph on the project page so it moves
               // between the two instead of being redrawn.
-              style={{ viewTransitionName: projectTransitionName(project.slug) }}
+              style={{
+                viewTransitionName: projectTransitionName(project.slug),
+                ...(ratio ? { aspectRatio: String(ratio) } : {}),
+              }}
+              data-natural={ratio ? undefined : ''}
             >
               <MediaImage
                 className={styles.image}

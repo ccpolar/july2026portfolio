@@ -87,3 +87,16 @@ export const toPortfolioItem = (project: Project): PortfolioItem => ({
   href: hasCaseStudy(project) ? `/work/${project.slug}` : null,
   liveUrl: liveSiteUrl(project),
 })
+
+/**
+ * A project card's frame takes the cover's own proportions, so the whole cover shows
+ * rather than being cropped to one fixed shape. Clamped between 4:5 and 2:1
+ * so an unusually tall or wide cover can't make one card tower over the rest
+ * of the stack; only those extremes are trimmed. A video cover reports no
+ * size, so its frame takes the clip's own shape as it loads.
+ */
+export const coverRatio = (cover: Project['cover']) => {
+  const media = cover && typeof cover === 'object' ? cover : null
+  if (!media?.width || !media?.height) return null
+  return Math.min(2, Math.max(0.8, media.width / media.height))
+}

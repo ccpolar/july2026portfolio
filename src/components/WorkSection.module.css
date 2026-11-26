@@ -65,7 +65,18 @@
      project thumbnail on the site. */
   border-radius: var(--radius-card);
   background: var(--surface);
-  aspect-ratio: 4 / 3;
+  /* Each card takes its cover's own shape (coverRatio, portfolioItem.ts);
+     this is only the fallback before one is known. */
+  aspect-ratio: 16 / 9;
+}
+
+/* A cover with no recorded size (a video) sets the frame by its own shape. */
+.frame[data-natural] {
+  aspect-ratio: auto;
+}
+
+.frame[data-natural] .image {
+  height: auto;
 }
 
 .image {
@@ -194,7 +205,7 @@
     grid-template-columns: 1fr;
   }
 
-  .row:first-child .frame {
+  .row:first-child .frame:not([data-natural]) {
     grid-column: 1;
     grid-row: 2;
     aspect-ratio: 16 / 9;

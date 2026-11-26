@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react'
 
 import type { Homepage, Project } from '@/payload-types'
-import { liveSiteUrl } from '@/lib/portfolioItem'
+import { coverRatio, liveSiteUrl } from '@/lib/portfolioItem'
 import { projectTransitionName } from '@/lib/viewTransition'
 
 import { ButtonLink } from './Button'
@@ -17,6 +17,7 @@ type Props = {
  *  a ceiling, a dozen featured pieces would push the last card most of the way
  *  down the screen before it ever pins. */
 const MAX_DEPTH = 5
+
 
 const Arrow = () => (
   <svg
@@ -65,6 +66,7 @@ export const WorkStack = ({ home, projects }: Props) => {
           // A website opens the site itself, in a new tab; everything else
           // opens its case study. See liveSiteUrl.
           const live = liveSiteUrl(project)
+          const ratio = coverRatio(project.cover)
           return (
           <article
             className={styles.card}
@@ -113,7 +115,11 @@ export const WorkStack = ({ home, projects }: Props) => {
                 className={styles.frame}
                 // Pairs with the same photograph on the project page so it
                 // moves between the two instead of being redrawn.
-                style={{ viewTransitionName: projectTransitionName(project.slug) }}
+                style={{
+                  viewTransitionName: projectTransitionName(project.slug),
+                  ...(ratio ? { aspectRatio: String(ratio) } : {}),
+                }}
+                data-natural={ratio ? undefined : ''}
               >
                 <MediaImage
                   className={styles.image}

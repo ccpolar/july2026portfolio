@@ -147,7 +147,18 @@
   overflow: hidden;
   border-radius: var(--radius-card);
   background: var(--surface);
-  aspect-ratio: 4 / 3;
+  /* The cover's own shape is set on each card (see coverRatio in
+     WorkStack.tsx); this is only the fallback before one is known. */
+  aspect-ratio: 16 / 9;
+}
+
+/* A cover with no recorded size (a video) sets the frame by its own shape. */
+.frame[data-natural] {
+  aspect-ratio: auto;
+}
+
+.frame[data-natural] .image {
+  height: auto;
 }
 
 .image {
