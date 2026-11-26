@@ -214,6 +214,27 @@
     --stack-top: clamp(3.5rem, 7vh, 4.5rem);
     --peek: clamp(4.5rem, 20vw, 5.75rem);
   }
+
+  /* One column, so the words line up with the photograph's left edge (the
+     inset that frames them beside it on a wide screen only pushes them in
+     here), and the gaps come back, since a card is only as tall as its own
+     contents and the auto margins have nothing to share out. */
+  .link {
+    gap: var(--space-md);
+  }
+
+  .text {
+    padding: 0;
+    gap: var(--space-xs);
+  }
+
+  .lower {
+    gap: var(--space-sm);
+  }
+
+  .cue {
+    margin-top: 0;
+  }
 }
 
 /* Sticky is layout, not motion — it stays. The hover moves don't. */
