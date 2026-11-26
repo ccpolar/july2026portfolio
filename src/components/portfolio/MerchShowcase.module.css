@@ -145,12 +145,6 @@
   min-width: 0;
 }
 
-/* Each shot carries its own name only while the layout is switching, so the
-   browser can move it from the row to the grid (see MerchShowcase.tsx). */
-.track[data-morphing] .item {
-  view-transition-name: var(--vt);
-}
-
 .thumb {
   display: block;
   width: 100%;
